@@ -9,278 +9,373 @@ const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1 } },
 };
-
 const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 
-/* ─── Metric card ─────────────────────────────────────────── */
-function MetricCard({
-  label,
-  end,
-  decimals,
-  unit,
-}: {
-  label: string;
-  end: number;
-  decimals: number;
-  unit: string;
-}) {
-  return (
-    <div className="bg-surface p-8 rounded-sm">
-      <span className="font-label text-[10px] tracking-widest text-primary uppercase block mb-2">
-        {label}
-      </span>
-      <div className="flex items-baseline gap-2">
-        <span className="font-headline text-5xl font-bold">
-          <CountUp end={end} decimals={decimals} duration={1500} />
-        </span>
-        <span className="font-label text-sm text-on-surface-variant uppercase">
-          {unit}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Page ────────────────────────────────────────────────── */
 export default function HomePage() {
-  const heroLine1 = ["Not", "a", "template."];
-  const heroLine2 = ["Your", "plan."];
-
   return (
-    <main className="pt-24">
+    <main>
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center px-8 md:px-24">
-        {/* Right 60% image */}
+      {/* ══════════════════════════════════════════════════════
+          HERO — vintage magazine cover
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col pt-24 overflow-hidden">
+
+        {/* Athlete image — right column */}
         <motion.div
-          className="absolute right-0 top-0 w-full md:w-[60%] h-full z-0"
-          initial={{ opacity: 0, scale: 1.05 }}
+          className="absolute right-0 top-0 w-full md:w-[52%] h-full z-0"
+          initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          transition={{ duration: 1.4, ease: "easeOut" }}
         >
           <img
             src="/images/hero.jpg"
-            alt="Endurance athlete training"
-            className="w-full h-full object-cover grayscale brightness-75 opacity-60 md:opacity-100"
+            alt="Endurance athlete"
+            className="w-full h-full object-cover grayscale brightness-[0.65] opacity-50 md:opacity-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/50 to-transparent" />
+          {/* Gradient fade to background on left + bottom */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
         </motion.div>
 
-        {/* Text — left 40% */}
-        <div className="relative z-10 max-w-2xl">
-          <motion.span
-            className="font-label text-primary tracking-[0.3em] text-[10px] uppercase mb-6 block"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-          >
-            Precision Endurance
-          </motion.span>
+        {/* Content — left column */}
+        <div className="relative z-10 flex flex-col flex-1 px-8 md:px-16 pb-12 w-full md:w-[54%]">
 
-          <h1 className="font-headline text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-8">
-            {heroLine1.map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
+          {/* ── Top edition bar ────────────────────────────── */}
+          <motion.div
+            className="flex items-center gap-3 pt-2 mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            <span className="font-label text-[9px] tracking-[0.28em] text-on-surface-variant/50 uppercase">
+              Est. 2024
+            </span>
+            <div className="flex-1 h-px bg-on-surface/8" />
+            <span className="font-label text-[9px] tracking-[0.28em] text-on-surface-variant/50 uppercase">
+              Vol. I · No. 1
+            </span>
+            <div className="flex-1 h-px bg-on-surface/8" />
+            <span className="font-label text-[9px] tracking-[0.28em] text-on-surface-variant/50 uppercase">
+              March 2026
+            </span>
+          </motion.div>
+
+          {/* ── Eyebrow label with flanking rules ─────────── */}
+          <motion.div
+            className="flex items-center gap-3 mb-5"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.6 }}
+          >
+            <div className="h-px bg-primary/60 w-10" />
+            <span className="font-label text-[10px] tracking-[0.35em] text-primary uppercase">
+              Precision Endurance
+            </span>
+            <div className="h-px bg-primary/60 w-10" />
+          </motion.div>
+
+          {/* ── Masthead ───────────────────────────────────── */}
+          <div className="mb-0">
+            {["PLAN", "METRIC"].map((word, i) => (
+              <motion.div
+                key={word}
+                initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.2, duration: 0.6, ease: "easeOut" }}
-                className="inline-block mr-[0.22em]"
+                transition={{ delay: 0.55 + i * 0.12, duration: 0.7, ease: "easeOut" }}
               >
-                {word}
-              </motion.span>
-            ))}
-            <br />
-            <span className="text-primary-dim">
-              {heroLine2.map((word, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + (heroLine1.length + i) * 0.2, duration: 0.6, ease: "easeOut" }}
-                  className="inline-block mr-[0.22em]"
+                <h1
+                  className="font-headline font-extrabold tracking-[-0.04em] leading-[0.87] uppercase text-on-surface"
+                  style={{ fontSize: "clamp(4.5rem, 13vw, 10.5rem)" }}
                 >
                   {word}
-                </motion.span>
-              ))}
-            </span>
-          </h1>
+                </h1>
+              </motion.div>
+            ))}
+          </div>
 
-          <motion.p
-            className="font-body text-lg text-on-surface-variant mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
-          >
-            Personalised endurance training plans.
-          </motion.p>
-
-          <motion.p
-            className="font-body text-lg md:text-xl text-on-surface-variant max-w-lg mb-12 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.6, ease: "easeOut" }}
-          >
-            We strip away the digital noise. High-performance training
-            methodologies for triathletes, cyclists, and runners who demand
-            scientific accuracy.
-          </motion.p>
-
+          {/* ── Caption rule ───────────────────────────────── */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.6, ease: "easeOut" }}
+            className="flex items-center justify-between border-t border-b border-primary/15 py-2.5 my-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.82, duration: 0.6 }}
           >
+            <span className="font-label text-[9px] tracking-[0.22em] text-on-surface-variant/50 uppercase">
+              Personalised endurance training plans
+            </span>
+            <span className="font-label text-[9px] tracking-[0.22em] text-primary/50 uppercase">
+              Australia
+            </span>
+          </motion.div>
+
+          {/* ── Editorial READ— listing ────────────────────── */}
+          <motion.div
+            className="mb-7"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+          >
+            <p className="font-label text-[9px] tracking-[0.28em] text-primary/60 uppercase mb-2">
+              Read —
+            </p>
+            {[
+              ["Triathlon", "Sprint · Olympic · 70.3 · Full Ironman"],
+              ["Cycling",   "Power-Based Training Structures"],
+              ["Running",   "Pace & Heart Rate Programmes"],
+            ].map(([discipline, desc]) => (
+              <div
+                key={discipline}
+                className="flex items-baseline gap-3 py-1.5 border-b border-outline-variant/10 last:border-0"
+              >
+                <span className="font-label text-[10px] font-bold tracking-widest text-on-surface uppercase w-20 shrink-0">
+                  {discipline}
+                </span>
+                <span className="font-body text-[11px] text-on-surface-variant/60">
+                  {desc}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* ── Price + CTA ────────────────────────────────── */}
+          <motion.div
+            className="flex items-center gap-6 mb-auto"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.15, duration: 0.6 }}
+          >
+            <div>
+              <p className="font-label text-[9px] tracking-[0.22em] text-on-surface-variant/40 uppercase mb-0.5">
+                Plans from
+              </p>
+              <p className="font-headline text-2xl font-bold text-primary leading-none">
+                $<CountUp end={49} decimals={0} duration={1500} />
+                <span className="font-label text-[9px] text-on-surface-variant/40 ml-1 tracking-widest uppercase">
+                  per plan
+                </span>
+              </p>
+            </div>
+            <div className="w-px h-8 bg-outline-variant/25" />
             <Link
               href="/assessment"
-              className="bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:opacity-90 transition-all uppercase text-center"
+              className="bg-primary text-on-primary px-6 py-3 text-[11px] font-bold tracking-[0.2em] rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase"
             >
               Take the Assessment
             </Link>
             <Link
               href="/pricing"
-              className="bg-surface-container-high text-on-surface px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-surface-variant transition-all uppercase text-center"
+              className="font-label text-[10px] tracking-widest text-on-surface-variant/50 uppercase hover:text-on-surface transition-colors border-b border-transparent hover:border-on-surface/30 pb-px"
             >
               View Plans
             </Link>
           </motion.div>
+
+          {/* ── Bottom colophon ────────────────────────────── */}
+          <motion.div
+            className="flex items-center justify-between border-t border-on-surface/8 pt-4 mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.35, duration: 0.6 }}
+          >
+            <span className="font-label text-[8px] tracking-[0.22em] text-on-surface-variant/30 uppercase">
+              Data-driven · Human-reviewed
+            </span>
+            <span className="font-label text-[8px] tracking-[0.22em] text-on-surface-variant/30 uppercase">
+              planmetric.com.au
+            </span>
+          </motion.div>
+
         </div>
       </section>
 
-      {/* ── Metrics ───────────────────────────────────────── */}
+      {/* ── Editorial divider ─────────────────────────────── */}
+      <div className="px-8 md:px-16 py-6 border-t border-outline-variant/10">
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-outline-variant/15" />
+          <span className="font-label text-[8px] tracking-[0.35em] text-on-surface-variant/25 uppercase">◆ Features ◆</span>
+          <div className="h-px flex-1 bg-outline-variant/15" />
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          METRICS — editorial data section
+      ══════════════════════════════════════════════════════ */}
       <motion.section
-        className="py-40 px-8 md:px-24 bg-surface-container-low"
+        className="py-32 px-8 md:px-16 bg-surface-container-low"
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
       >
-        <div className="max-w-3xl">
-          <motion.h2
-            variants={item}
-            className="font-headline text-4xl font-bold tracking-tight mb-4"
-          >
-            Metrics that matter.
-          </motion.h2>
+        <div className="max-w-4xl">
+
+          {/* Section header */}
+          <motion.div variants={item} className="mb-10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px bg-primary/50 w-6" />
+              <span className="font-label text-[9px] tracking-[0.3em] text-primary uppercase">
+                The Data
+              </span>
+            </div>
+            <h2 className="font-headline text-5xl md:text-6xl font-extrabold tracking-tighter leading-none uppercase">
+              Metrics<br />That Matter.
+            </h2>
+          </motion.div>
+
           <motion.p
             variants={item}
-            className="font-body text-on-surface-variant mb-16 max-w-xl"
+            className="font-body text-on-surface-variant mb-14 max-w-md border-l-2 border-primary/30 pl-4 text-sm leading-relaxed"
           >
             Every kilometre is calculated against your current physiological
             capacity. We don&apos;t guess; we measure.
           </motion.p>
-          <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <motion.div variants={item}>
-              <MetricCard label="Distance Target" end={180.4} decimals={1} unit="KM" />
-            </motion.div>
-            <motion.div variants={item}>
-              <MetricCard label="Training Temp" end={22} decimals={0} unit="CELSIUS" />
-            </motion.div>
+
+          <motion.div
+            variants={container}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-outline-variant/10"
+          >
+            {[
+              { label: "Distance Target", end: 180.4, decimals: 1, unit: "KM" },
+              { label: "Training Temp",   end: 22,    decimals: 0, unit: "°C" },
+            ].map(({ label, end, decimals, unit }) => (
+              <motion.div key={label} variants={item} className="bg-surface-container-low p-10">
+                <span className="font-label text-[9px] tracking-[0.3em] text-primary/70 uppercase block mb-5">
+                  {label}
+                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-headline text-7xl font-extrabold tracking-tighter">
+                    <CountUp end={end} decimals={decimals} duration={1500} />
+                  </span>
+                  <span className="font-label text-sm text-on-surface-variant uppercase tracking-widest">
+                    {unit}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
+
         </div>
       </motion.section>
 
-      {/* ── Pricing tiers ─────────────────────────────────── */}
-      <section className="py-32">
+      {/* ── Editorial divider ─────────────────────────────── */}
+      <div className="px-8 md:px-16 py-6 border-t border-outline-variant/10">
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-outline-variant/15" />
+          <span className="font-label text-[8px] tracking-[0.35em] text-on-surface-variant/25 uppercase">◆ Plans ◆</span>
+          <div className="h-px flex-1 bg-outline-variant/15" />
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          PRICING — editorial card layout
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-20 px-8 md:px-16">
+
         <motion.div
-          className="text-center mb-20 px-8"
+          className="mb-14"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h2 className="font-headline text-5xl font-bold tracking-tight mb-4">
-            Select your intensity.
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-px bg-primary/50 w-6" />
+            <span className="font-label text-[9px] tracking-[0.3em] text-primary uppercase">
+              Select your intensity
+            </span>
+          </div>
+          <h2 className="font-headline text-5xl md:text-6xl font-extrabold tracking-tighter uppercase leading-none">
+            Training<br />Structures.
           </h2>
-          <div className="w-12 h-px bg-primary mx-auto" />
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-px w-full max-w-7xl mx-auto px-8 md:px-24"
+          className="grid grid-cols-1 md:grid-cols-3 gap-px bg-outline-variant/10"
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
         >
-
           {/* STARTER */}
           <motion.div
             variants={item}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
-            className="bg-surface p-12 hover:bg-surface-container-low transition-colors duration-500 border border-transparent hover:border-primary/20"
+            className="bg-surface p-10 flex flex-col justify-between border border-transparent hover:border-primary/20 transition-colors duration-500"
           >
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-on-surface-variant">
-              Level 01
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8">STARTER</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Pre-built plans optimised for common performance milestones.
-              Built on verified data structures.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {["Pre-built goal paths", "Instant digital download", "Standard metric tracking"].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm">
-                  <span className="material-symbols-outlined text-primary text-lg">check</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10">
-              $<CountUp end={49} decimals={0} duration={1500} />{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
+            <div>
+              <div className="flex items-center gap-2 mb-8">
+                <span className="font-label text-[9px] tracking-[0.3em] text-on-surface-variant/40 uppercase">Level 01</span>
+                <div className="flex-1 h-px bg-outline-variant/15" />
+              </div>
+              <h3 className="font-headline text-4xl font-extrabold tracking-tighter uppercase leading-tight mb-5">
+                Starter
+              </h3>
+              <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-8">
+                Pre-built plans optimised for common performance milestones. Built on verified data structures.
+              </p>
+              <ul className="space-y-2.5 mb-10">
+                {["Pre-built goal paths", "Instant digital download", "Standard metric tracking"].map(f => (
+                  <li key={f} className="flex items-center gap-3 text-[11px] text-on-surface/70">
+                    <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
-              SELECT STARTER
-            </Link>
+            <div>
+              <div className="border-t border-outline-variant/15 pt-5 mb-5 flex items-baseline justify-between">
+                <span className="font-headline text-3xl font-bold">$<CountUp end={49} decimals={0} duration={1500} /></span>
+                <span className="font-label text-[9px] text-on-surface-variant/50 uppercase tracking-widest">One-Time</span>
+              </div>
+              <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-3.5 text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
+                Select Starter
+              </Link>
+            </div>
           </motion.div>
 
-          {/* PREMIUM — featured */}
+          {/* PREMIUM */}
           <motion.div
             variants={item}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
-            className="bg-surface-container-low p-12 border-x border-primary/20 relative"
+            className="bg-surface-container-low p-10 flex flex-col justify-between border-x border-primary/20 relative"
           >
-            <span className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1">
-              MOST SELECTED
-            </span>
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-primary">
-              Level 02
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8">PREMIUM</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Tailored architecture built from your specific intake form data.
-              Audited by our head coach.
-            </p>
-            <ul className="space-y-4 mb-12">
-              <li className="flex items-center gap-3 text-sm">
-                <span className="material-symbols-outlined text-primary text-lg">star</span>
-                <span>Physiological Profiling</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Pace &amp; HR zones (KM based)</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Weekly schedule &amp; Coach notes</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Final Review by Lead Coach</span>
-              </li>
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10">
-              $<CountUp end={149} decimals={0} duration={1500} />{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
+            {/* Top accent line */}
+            <span className="absolute top-0 left-0 right-0 h-px bg-primary" />
+            <div>
+              <div className="flex items-center gap-2 mb-8">
+                <span className="font-label text-[9px] tracking-[0.3em] text-primary uppercase">Level 02</span>
+                <div className="flex-1 h-px bg-primary/20" />
+                <span className="font-label text-[9px] tracking-[0.2em] text-primary uppercase">Most Selected</span>
+              </div>
+              <h3 className="font-headline text-4xl font-extrabold tracking-tighter uppercase leading-tight mb-5">
+                Premium
+              </h3>
+              <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-8">
+                Tailored to your intake data. Audited by our head coach. A tactical roadmap for serious results.
+              </p>
+              <ul className="space-y-2.5 mb-10">
+                {["Physiological Profiling", "Pace & HR zones (KM based)", "Weekly schedule & Coach notes", "Final Review by Lead Coach"].map(f => (
+                  <li key={f} className="flex items-center gap-3 text-[11px] text-on-surface/80">
+                    <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <Link href="/assessment" className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-all text-center">
-              SELECT PREMIUM
-            </Link>
+            <div>
+              <div className="border-t border-primary/20 pt-5 mb-5 flex items-baseline justify-between">
+                <span className="font-headline text-3xl font-bold">$<CountUp end={149} decimals={0} duration={1500} /></span>
+                <span className="font-label text-[9px] text-on-surface-variant/50 uppercase tracking-widest">One-Time</span>
+              </div>
+              <Link href="/assessment" className="block w-full bg-primary text-on-primary py-3.5 text-[10px] font-bold tracking-widest uppercase hover:opacity-90 transition-all text-center">
+                Select Premium
+              </Link>
+            </div>
           </motion.div>
 
           {/* ELITE */}
@@ -288,53 +383,85 @@ export default function HomePage() {
             variants={item}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
-            className="bg-surface p-12 hover:bg-surface-container-low transition-colors duration-500 border border-transparent hover:border-primary/20"
+            className="bg-surface p-10 flex flex-col justify-between border border-transparent hover:border-primary/20 transition-colors duration-500"
           >
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-on-surface-variant">
-              Level 03
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8">ELITE</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Continuous performance adjustment. Monthly calls and weekly
-              data deep-dives.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited Email support"].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm">
-                  <span className="material-symbols-outlined text-primary text-lg">check</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10">
-              $<CountUp end={99} decimals={0} duration={1500} />{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ MONTH</span>
+            <div>
+              <div className="flex items-center gap-2 mb-8">
+                <span className="font-label text-[9px] tracking-[0.3em] text-on-surface-variant/40 uppercase">Level 03</span>
+                <div className="flex-1 h-px bg-outline-variant/15" />
+              </div>
+              <h3 className="font-headline text-4xl font-extrabold tracking-tighter uppercase leading-tight mb-5">
+                Elite
+              </h3>
+              <p className="font-body text-on-surface-variant text-sm leading-relaxed mb-8">
+                Continuous performance adjustment. Monthly calls and weekly data deep-dives.
+              </p>
+              <ul className="space-y-2.5 mb-10">
+                {["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited email support"].map(f => (
+                  <li key={f} className="flex items-center gap-3 text-[11px] text-on-surface/70">
+                    <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
-              JOIN ELITE
-            </Link>
+            <div>
+              <div className="border-t border-outline-variant/15 pt-5 mb-5 flex items-baseline justify-between">
+                <span className="font-headline text-3xl font-bold">$<CountUp end={99} decimals={0} duration={1500} /></span>
+                <span className="font-label text-[9px] text-on-surface-variant/50 uppercase tracking-widest">Per Month</span>
+              </div>
+              <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-3.5 text-[10px] font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
+                Join Elite
+              </Link>
+            </div>
           </motion.div>
-
         </motion.div>
       </section>
 
-      {/* ── Final CTA ─────────────────────────────────────── */}
+      {/* ── Editorial divider ─────────────────────────────── */}
+      <div className="px-8 md:px-16 py-6 border-t border-outline-variant/10">
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-outline-variant/15" />
+          <span className="font-label text-[8px] tracking-[0.35em] text-on-surface-variant/25 uppercase">◆ Begin ◆</span>
+          <div className="h-px flex-1 bg-outline-variant/15" />
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          CTA — editorial back page
+      ══════════════════════════════════════════════════════ */}
       <motion.section
-        className="py-32 text-center px-8"
+        className="py-24 px-8 md:px-16"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <h2 className="font-headline text-4xl md:text-6xl font-bold tracking-tighter mb-12">
-          Ready to evolve?
-        </h2>
-        <Link
-          href="/pricing"
-          className="inline-block bg-primary text-on-primary px-12 py-6 text-sm font-bold tracking-[0.2em] rounded-sm hover:scale-105 active:scale-95 transition-all uppercase"
-        >
-          Start Your Assessment
-        </Link>
+        <div className="border border-outline-variant/20 p-14 md:p-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-12">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-px bg-primary/50 w-6" />
+              <span className="font-label text-[9px] tracking-[0.3em] text-primary uppercase">
+                Begin
+              </span>
+            </div>
+            <h2 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter uppercase leading-none">
+              Ready to<br />
+              <span className="text-primary-dim">Evolve?</span>
+            </h2>
+          </div>
+          <div className="flex flex-col items-start md:items-end gap-3">
+            <Link
+              href="/assessment"
+              className="inline-block bg-primary text-on-primary px-10 py-5 text-[11px] font-bold tracking-[0.22em] rounded-sm hover:scale-105 active:scale-95 transition-all uppercase"
+            >
+              Start Your Assessment
+            </Link>
+            <span className="font-label text-[9px] text-on-surface-variant/35 tracking-widest uppercase">
+              Assessment takes 8–10 minutes
+            </span>
+          </div>
+        </div>
       </motion.section>
 
     </main>

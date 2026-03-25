@@ -8,7 +8,8 @@
       "WebFetch(domain:unsplash.com)",
       "WebFetch(domain:images.unsplash.com)",
       "WebFetch(domain:picsum.photos)",
-      "WebFetch(domain:api.unsplash.com)"
+      "WebFetch(domain:api.unsplash.com)",
+      "WebFetch(domain:dribbble.com)"
     ]
   }
 }
