@@ -109,6 +109,15 @@ export default function HomePage() {
           </h1>
 
           <motion.p
+            className="font-body text-lg text-on-surface-variant mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+          >
+            Personalised endurance training plans.
+          </motion.p>
+
+          <motion.p
             className="font-body text-lg md:text-xl text-on-surface-variant max-w-lg mb-12 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -126,7 +135,7 @@ export default function HomePage() {
             transition={{ delay: 1.6, duration: 0.6, ease: "easeOut" }}
           >
             <Link
-              href="/intake"
+              href="/assessment"
               className="bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:opacity-90 transition-all uppercase text-center"
             >
               Take the Assessment
@@ -143,42 +152,33 @@ export default function HomePage() {
 
       {/* ── Metrics ───────────────────────────────────────── */}
       <motion.section
-        className="py-32 px-8 md:px-24 bg-surface-container-low"
+        className="py-40 px-8 md:px-24 bg-surface-container-low"
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
       >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-end max-w-7xl mx-auto">
-          <div className="md:col-span-7">
-            <motion.h2
-              variants={item}
-              className="font-headline text-4xl font-bold tracking-tight mb-6"
-            >
-              Metrics that matter.
-            </motion.h2>
-            <motion.p
-              variants={item}
-              className="font-body text-on-surface-variant mb-12 max-w-xl"
-            >
-              Every kilometre is calculated against your current physiological
-              capacity. We don&apos;t guess; we measure.
-            </motion.p>
-            <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <motion.div variants={item}>
-                <MetricCard label="Distance Target" end={180.4} decimals={1} unit="KM" />
-              </motion.div>
-              <motion.div variants={item}>
-                <MetricCard label="Training Temp" end={22} decimals={0} unit="CELSIUS" />
-              </motion.div>
+        <div className="max-w-3xl">
+          <motion.h2
+            variants={item}
+            className="font-headline text-4xl font-bold tracking-tight mb-4"
+          >
+            Metrics that matter.
+          </motion.h2>
+          <motion.p
+            variants={item}
+            className="font-body text-on-surface-variant mb-16 max-w-xl"
+          >
+            Every kilometre is calculated against your current physiological
+            capacity. We don&apos;t guess; we measure.
+          </motion.p>
+          <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <motion.div variants={item}>
+              <MetricCard label="Distance Target" end={180.4} decimals={1} unit="KM" />
             </motion.div>
-          </div>
-          <motion.div variants={item} className="md:col-span-5 h-[400px] group">
-            <img
-              src="/images/cyclist2.jpg"
-              alt="Cyclist in action"
-              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700 rounded-sm"
-            />
+            <motion.div variants={item}>
+              <MetricCard label="Training Temp" end={22} decimals={0} unit="CELSIUS" />
+            </motion.div>
           </motion.div>
         </div>
       </motion.section>
@@ -233,9 +233,9 @@ export default function HomePage() {
               $<CountUp end={49} decimals={0} duration={1500} />{" "}
               <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
             </div>
-            <button className="w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all">
+            <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
               SELECT STARTER
-            </button>
+            </Link>
           </motion.div>
 
           {/* PREMIUM — featured */}
@@ -278,9 +278,9 @@ export default function HomePage() {
               $<CountUp end={149} decimals={0} duration={1500} />{" "}
               <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
             </div>
-            <button className="w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-all">
+            <Link href="/assessment" className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-all text-center">
               SELECT PREMIUM
-            </button>
+            </Link>
           </motion.div>
 
           {/* ELITE */}
@@ -310,9 +310,9 @@ export default function HomePage() {
               $<CountUp end={99} decimals={0} duration={1500} />{" "}
               <span className="text-sm font-label text-on-surface-variant">/ MONTH</span>
             </div>
-            <button className="w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all">
+            <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center">
               JOIN ELITE
-            </button>
+            </Link>
           </motion.div>
 
         </motion.div>

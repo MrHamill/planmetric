@@ -123,7 +123,7 @@ function StepRow({ step, index }: { step: (typeof steps)[0]; index: number }) {
 
         {step.cta && (
           <Link
-            href="/pricing"
+            href="/assessment"
             className="inline-block bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:opacity-90 transition-all uppercase"
           >
             {step.cta}
@@ -218,7 +218,7 @@ export default function ProcessPage() {
           </p>
           <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
             <Link
-              href="/pricing"
+              href="/assessment"
               className="px-10 py-5 bg-primary text-on-primary font-bold tracking-widest uppercase rounded-sm text-sm hover:scale-105 transition-transform duration-300"
             >
               BEGIN ONBOARDING

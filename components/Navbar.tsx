@@ -56,7 +56,7 @@ export default function Navbar() {
       </div>
 
       <Link
-        href="/intake"
+        href="/assessment"
         className="bg-primary text-on-primary px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:opacity-90 active:scale-95 transition-all duration-200 uppercase"
       >
         GET STARTED

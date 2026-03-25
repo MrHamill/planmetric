@@ -336,7 +336,7 @@ export default function MethodologyPage() {
           READY TO BUILD YOUR PLAN?
         </h2>
         <Link
-          href="/pricing"
+          href="/assessment"
           className="bg-primary text-on-primary px-12 py-5 font-headline font-bold text-lg hover:bg-primary-dim transition-colors active:scale-95 inline-flex items-center gap-4 group"
         >
           START THE ASSESSMENT

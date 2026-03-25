@@ -1,0 +1,80 @@
+---
+paths:
+  - "app/api/**"
+---
+
+# API Route Rules
+
+## Route Files
+
+All API routes are under `app/api/`:
+- `app/api/checkout/route.ts` — POST: creates Stripe session + saves draft to Supabase
+- `app/api/intake/route.ts` — POST: saves intake form + sends admin email
+- `app/api/intake/verify/route.ts` — GET: verifies Stripe payment, marks submission "paid"
+
+## Supabase Client
+
+Always instantiate per-request — never at module scope:
+
+```typescript
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!
+);
+```
+
+Use the service key (not the anon key) in API routes. Never expose `SUPABASE_SERVICE_KEY` to the client.
+
+## Stripe Client
+
+The Stripe client **is** safe to instantiate at module scope:
+
+```typescript
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+```
+
+- Starter and Premium use `mode: "payment"` (one-time)
+- Elite uses `mode: "subscription"`
+- Price IDs are hardcoded in `PRICE_IDS` — do not move them to env vars without updating the checkout route
+
+## Submission Status Lifecycle
+
+`intake_submissions.status` flows: `"pending_payment"` → `"paid"`
+
+- `/api/checkout` sets `"pending_payment"` when saving the draft
+- `/api/intake/verify` checks for existing `"paid"` status to prevent double-processing before updating
+
+## Error Handling Philosophy
+
+- `/api/intake` (free form save): collect errors in an array but **always return 200** — a DB or email failure should not block the athlete
+- `/api/checkout` and `/api/intake/verify`: return proper error status codes, as failures here affect the payment flow
+- Log errors with `console.error()` before returning; include the `dbError?.message` in the response `detail` field for debuggability
+
+## Dynamic Imports
+
+Use dynamic imports for heavy dependencies only where needed to reduce cold-start time:
+
+```typescript
+const { createClient } = await import("@supabase/supabase-js");
+const { Resend } = await import("resend");
+```
+
+Static imports are fine for Stripe (already at module scope).
+
+## Environment Variables
+
+| Variable | Usage |
+|---|---|
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SERVICE_KEY` | Service role key — server only |
+| `RESEND_API_KEY` | Email delivery |
+| `STRIPE_SECRET_KEY` | Stripe server SDK |
+| `NEXT_PUBLIC_SITE_URL` | Used in Stripe success/cancel redirect URLs |
+
+Always use non-null assertion (`!`) for env vars — they're expected to be set in all environments.
+
+## Email
+
+- Emails sent via Resend from `"Plan Metric <admin@planmetric.com.au>"` to `"admin@planmetric.com.au"`
+- HTML emails use the `row()` / `section()` helper pattern — maintain this when adding new email templates
+- Empty/undefined/false/null values are suppressed with the `row()` helper (returns `""`)

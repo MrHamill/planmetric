@@ -114,9 +114,9 @@ export default function PricingPage() {
                 One-Time
               </span>
             </div>
-            <button className="w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300">
+            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300 text-center">
               Pick Plan
-            </button>
+            </Link>
           </div>
         </motion.div>
 
@@ -167,9 +167,9 @@ export default function PricingPage() {
                 One-Time
               </span>
             </div>
-            <button className="w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-primary text-on-primary hover:opacity-90 transition-all duration-300">
+            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-primary text-on-primary hover:opacity-90 transition-all duration-300 text-center">
               Select Premium
-            </button>
+            </Link>
           </div>
         </motion.div>
 
@@ -213,9 +213,9 @@ export default function PricingPage() {
                 / Month
               </span>
             </div>
-            <button className="w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300">
+            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300 text-center">
               Join Elite
-            </button>
+            </Link>
           </div>
         </motion.div>
 
@@ -298,7 +298,7 @@ export default function PricingPage() {
             </p>
           </div>
           <Link
-            href="/intake"
+            href="/assessment"
             className="bg-primary text-on-primary px-10 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:scale-105 transition-transform duration-300 whitespace-nowrap"
           >
             TAKE ASSESSMENT

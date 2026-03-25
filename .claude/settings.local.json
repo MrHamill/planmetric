@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la .cursor*)",
+      "WebSearch",
+      "Bash(find /c/Users/peter/OneDrive/Desktop/planmetric/node_modules/next -name *.md)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:images.unsplash.com)",
+      "WebFetch(domain:picsum.photos)",
+      "WebFetch(domain:api.unsplash.com)"
+    ]
+  }
+}
