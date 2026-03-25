@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing | Plan Metric</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&amp;family=Manrope:wght@300;400;500;600&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#252624",
+                        "tertiary-fixed": "#ffe1b3",
+                        "inverse-surface": "#fcf9f6",
+                        "secondary": "#9f9e99",
+                        "on-background": "#e7e5e1",
+                        "on-tertiary": "#6d5935",
+                        "surface-container-lowest": "#000000",
+                        "on-surface": "#e7e5e1",
+                        "inverse-primary": "#6d5c50",
+                        "surface-dim": "#0e0e0d",
+                        "tertiary-container": "#ffe1b3",
+                        "primary-fixed": "#f6decf",
+                        "primary": "#d9c2b4",
+                        "surface-tint": "#d9c2b4",
+                        "on-error-container": "#ff9b82",
+                        "on-secondary": "#20201d",
+                        "background": "#0e0e0d",
+                        "inverse-on-surface": "#565553",
+                        "secondary-container": "#3c3b38",
+                        "on-tertiary-container": "#64502d",
+                        "tertiary-fixed-dim": "#f0d3a6",
+                        "surface-container": "#191a18",
+                        "outline": "#767572",
+                        "on-primary-container": "#e3ccbe",
+                        "outline-variant": "#484845",
+                        "secondary-fixed": "#e5e2dd",
+                        "on-tertiary-fixed-variant": "#6f5a36",
+                        "surface": "#0e0e0d",
+                        "on-primary": "#4d3d33",
+                        "tertiary-dim": "#f0d3a6",
+                        "error-container": "#7e2b17",
+                        "surface-container-highest": "#252624",
+                        "primary-dim": "#cbb4a7",
+                        "on-secondary-container": "#c1bfba",
+                        "secondary-fixed-dim": "#d7d4cf",
+                        "on-secondary-fixed-variant": "#5c5b58",
+                        "on-error": "#450900",
+                        "on-primary-fixed": "#4c3c32",
+                        "primary-fixed-dim": "#e8d0c2",
+                        "error": "#ed7f64",
+                        "surface-container-high": "#1f201e",
+                        "error-dim": "#ba573f",
+                        "tertiary": "#fff2e1",
+                        "on-surface-variant": "#acaba7",
+                        "surface-bright": "#2b2c2a",
+                        "on-secondary-fixed": "#403f3c",
+                        "surface-container-low": "#131312",
+                        "primary-container": "#544439",
+                        "on-primary-fixed-variant": "#69584d",
+                        "on-tertiary-fixed": "#513e1d",
+                        "secondary-dim": "#9f9e99"
+                    },
+                    fontFamily: {
+                        "headline": ["Epilogue"],
+                        "body": ["Manrope"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-nav {
+            background: rgba(14, 14, 13, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        body {
+            background-color: #0e0e0d;
+            color: #e7e5e1;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-transparent backdrop-blur-xl">
+<div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+<span class="text-xl font-bold tracking-tighter text-[#E7E5E1] font-headline">Plan Metric</span>
+<div class="hidden md:flex gap-10">
+<a class="font-['Epilogue'] tracking-tight text-sm uppercase font-semibold text-[#E7E5E1]/60 hover:text-[#E7E5E1] transition-colors" href="#">Home</a>
+<a class="font-['Epilogue'] tracking-tight text-sm uppercase font-semibold text-[#E7E5E1]/60 hover:text-[#E7E5E1] transition-colors" href="#">Process</a>
+<a class="font-['Epilogue'] tracking-tight text-sm uppercase font-semibold text-[#E7E5E1]/60 hover:text-[#E7E5E1] transition-colors" href="#">Methodology</a>
+<a class="font-['Epilogue'] tracking-tight text-sm uppercase font-semibold text-[#D9C2B4] border-b-2 border-[#D9C2B4] pb-1" href="#">Pricing</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 text-sm font-headline font-bold uppercase tracking-widest hover:opacity-80 transition-opacity duration-300 scale-95 duration-200 ease-in-out rounded-none">
+                Start Training
+            </button>
+</div>
+</nav>
+<main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Hero Header -->
+<header class="mb-20 max-w-3xl">
+<h1 class="text-6xl md:text-8xl font-headline font-extrabold tracking-tighter mb-8 leading-none">
+                Invest in <br/><span class="text-primary">Performance.</span>
+</h1>
+<p class="text-xl text-on-surface-variant max-w-2xl font-light leading-relaxed">
+                Precision-engineered training structures for the disciplined athlete. Every plan is calibrated to your physiological profile, focusing on KM benchmarks and thermal efficiency in Celsius.
+            </p>
+</header>
+<!-- Pricing Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32">
+<!-- STARTER Card -->
+<div class="bg-surface-container-low p-10 flex flex-col justify-between group hover:bg-surface-container transition-all duration-500 border-l border-primary/5">
+<div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-primary font-headline font-bold tracking-widest text-xs uppercase">Level 01</span>
+<span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors">download</span>
+</div>
+<h2 class="text-4xl font-headline font-bold mb-4">STARTER</h2>
+<p class="text-on-surface-variant mb-12 text-sm leading-relaxed">Fundamental blueprints for common endurance goals. Immediate access to proven methodologies.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Pre-built goal paths
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Instant digital download
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Standard metric tracking
+                        </li>
+</ul>
+</div>
+<div>
+<div class="mb-8">
+<span class="text-5xl font-headline font-bold">$49</span>
+<span class="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">One-Time</span>
+</div>
+<button class="w-full bg-surface-container-highest py-4 text-xs font-headline font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all duration-300">
+                        Pick Plan
+                    </button>
+</div>
+</div>
+<!-- PREMIUM Card (Highlighted) -->
+<div class="bg-surface-container-high p-10 flex flex-col justify-between relative overflow-hidden group border border-primary/20">
+<div class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold px-4 py-1 uppercase tracking-tighter">Most Selected</div>
+<div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-primary font-headline font-bold tracking-widest text-xs uppercase">Level 02</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<h2 class="text-4xl font-headline font-bold mb-4">PREMIUM</h2>
+<p class="text-on-surface-variant mb-12 text-sm leading-relaxed">Bespoke construction based on your physiological intake. A tactical roadmap for serious results.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Data-driven intake analysis
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Pace &amp; HR zones (KM based)
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Weekly schedule &amp; Coach notes
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Final Review by Lead Coach
+                        </li>
+</ul>
+</div>
+<div>
+<div class="mb-8">
+<span class="text-5xl font-headline font-bold">$189</span>
+<span class="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">One-Time</span>
+</div>
+<button class="w-full bg-primary py-4 text-on-primary text-xs font-headline font-bold uppercase tracking-widest hover:opacity-90 transition-all duration-300">
+                        Select Premium
+                    </button>
+</div>
+</div>
+<!-- ELITE Card -->
+<div class="bg-surface-container-low p-10 flex flex-col justify-between group hover:bg-surface-container transition-all duration-500 border-r border-primary/5">
+<div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-primary font-headline font-bold tracking-widest text-xs uppercase">Level 03</span>
+<span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors">indeterminate_question_box</span>
+</div>
+<h2 class="text-4xl font-headline font-bold mb-4">ELITE</h2>
+<p class="text-on-surface-variant mb-12 text-sm leading-relaxed">Full concierge performance management. Adaptive training that evolves with your biometric data.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Dynamic plan adjustments
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Monthly 1:1 check-ins
+                        </li>
+<li class="flex items-center gap-3 text-sm text-on-surface/80">
+<span class="material-symbols-outlined text-xs text-primary">check</span>
+                            Unlimited Email support
+                        </li>
+</ul>
+</div>
+<div>
+<div class="mb-8">
+<span class="text-5xl font-headline font-bold">$240</span>
+<span class="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">/ Month</span>
+</div>
+<button class="w-full bg-surface-container-highest py-4 text-xs font-headline font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all duration-300">
+                        Join Elite
+                    </button>
+</div>
+</div>
+</div>
+<!-- Comparison Table -->
+<section class="mb-32">
+<h3 class="text-2xl font-headline font-bold mb-12 text-center">Compare Tiers</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="p-6 text-xs font-headline uppercase tracking-widest text-on-surface-variant border-b border-outline-variant/10">Feature</th>
+<th class="p-6 text-xs font-headline uppercase tracking-widest text-on-surface border-b border-outline-variant/10">Starter</th>
+<th class="p-6 text-xs font-headline uppercase tracking-widest text-primary border-b border-outline-variant/10">Premium</th>
+<th class="p-6 text-xs font-headline uppercase tracking-widest text-on-surface border-b border-outline-variant/10">Elite</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr>
+<td class="p-6 border-b border-outline-variant/10 text-on-surface-variant">Training Metrics</td>
+<td class="p-6 border-b border-outline-variant/10">Standard (KM)</td>
+<td class="p-6 border-b border-outline-variant/10">Advanced (KM/Watts)</td>
+<td class="p-6 border-b border-outline-variant/10">Bio-Sync (KM/HRV)</td>
+</tr>
+<tr>
+<td class="p-6 border-b border-outline-variant/10 text-on-surface-variant">Intake Form Analysis</td>
+<td class="p-6 border-b border-outline-variant/10">—</td>
+<td class="p-6 border-b border-outline-variant/10"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-6 border-b border-outline-variant/10"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+<tr>
+<td class="p-6 border-b border-outline-variant/10 text-on-surface-variant">Thermal Adaptation Tips</td>
+<td class="p-6 border-b border-outline-variant/10">—</td>
+<td class="p-6 border-b border-outline-variant/10">Basic (Celsius)</td>
+<td class="p-6 border-b border-outline-variant/10">Dynamic (Celsius)</td>
+</tr>
+<tr>
+<td class="p-6 border-b border-outline-variant/10 text-on-surface-variant">Coach Direct Support</td>
+<td class="p-6 border-b border-outline-variant/10">—</td>
+<td class="p-6 border-b border-outline-variant/10">—</td>
+<td class="p-6 border-b border-outline-variant/10">Priority</td>
+</tr>
+<tr>
+<td class="p-6 border-b border-outline-variant/10 text-on-surface-variant">Plan Revisions</td>
+<td class="p-6 border-b border-outline-variant/10">—</td>
+<td class="p-6 border-b border-outline-variant/10">Once</td>
+<td class="p-6 border-b border-outline-variant/10">Monthly</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Assessment CTA Section -->
+<section class="relative bg-surface-container-low p-12 md:p-24 overflow-hidden group">
+<div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+<div class="max-w-xl">
+<h2 class="text-4xl md:text-5xl font-headline font-bold mb-6 tracking-tight">Not sure where to start?</h2>
+<p class="text-on-surface-variant text-lg font-light leading-relaxed">
+                        Our assessment engine analyzes your current performance metrics, historical training volume, and physiological thresholds to recommend the ideal path.
+                    </p>
+</div>
+<button class="bg-primary text-on-primary px-10 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:scale-105 transition-transform duration-300">
+                    Take Assessment
+                </button>
+</div>
+<!-- Decorative kinetic element -->
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] group-hover:bg-primary/10 transition-colors"></div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#E7E5E1]/10 bg-[#0E0E0D]">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 gap-8 max-w-7xl mx-auto">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-lg font-bold text-[#E7E5E1] font-headline tracking-tighter">Plan Metric</span>
+<p class="font-['Manrope'] text-xs tracking-wide text-[#D9C2B4]">© 2024 Plan Metric. The Kinetic Gallery.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Manrope'] text-xs tracking-wide text-[#E7E5E1]/40 hover:text-[#D9C2B4] transition-colors uppercase" href="#">Terms of Service</a>
+<a class="font-['Manrope'] text-xs tracking-wide text-[#E7E5E1]/40 hover:text-[#D9C2B4] transition-colors uppercase" href="#">Privacy Policy</a>
+<a class="font-['Manrope'] text-xs tracking-wide text-[#E7E5E1]/40 hover:text-[#D9C2B4] transition-colors uppercase" href="#">Contact</a>
+</div>
+<div class="flex gap-6">
+<a class="text-[#E7E5E1]/40 hover:text-[#D9C2B4] transition-colors text-xs font-['Manrope'] tracking-widest uppercase" href="#">Instagram</a>
+<a class="text-[#E7E5E1]/40 hover:text-[#D9C2B4] transition-colors text-xs font-['Manrope'] tracking-widest uppercase" href="#">Strava</a>
+</div>
+</div>
+</footer>
+</body></html>

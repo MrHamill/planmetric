@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PLAN METRIC | Precision Endurance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;800&amp;family=Manrope:wght@400;500;600&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "inverse-on-surface": "#565553",
+                "on-error": "#450900",
+                "primary-fixed": "#f6decf",
+                "on-secondary-fixed": "#403f3c",
+                "background": "#0e0e0d",
+                "surface-container-lowest": "#000000",
+                "secondary": "#9f9e99",
+                "on-secondary-container": "#c1bfba",
+                "surface-container": "#191a18",
+                "surface-bright": "#2b2c2a",
+                "error-dim": "#ba573f",
+                "surface-container-high": "#1f201e",
+                "primary-container": "#544439",
+                "error-container": "#7e2b17",
+                "on-background": "#e7e5e1",
+                "on-tertiary-fixed": "#513e1d",
+                "on-primary-fixed": "#4c3c32",
+                "inverse-surface": "#fcf9f6",
+                "tertiary-container": "#ffe1b3",
+                "tertiary-dim": "#f0d3a6",
+                "secondary-fixed": "#e5e2dd",
+                "on-secondary": "#20201d",
+                "outline-variant": "#484845",
+                "on-primary": "#4d3d33",
+                "surface-tint": "#d9c2b4",
+                "on-tertiary-fixed-variant": "#6f5a36",
+                "tertiary": "#fff2e1",
+                "primary": "#d9c2b4",
+                "primary-fixed-dim": "#e8d0c2",
+                "secondary-fixed-dim": "#d7d4cf",
+                "error": "#ed7f64",
+                "on-secondary-fixed-variant": "#5c5b58",
+                "on-error-container": "#ff9b82",
+                "inverse-primary": "#6d5c50",
+                "surface-container-highest": "#252624",
+                "on-surface-variant": "#acaba7",
+                "outline": "#767572",
+                "primary-dim": "#cbb4a7",
+                "secondary-dim": "#9f9e99",
+                "on-primary-fixed-variant": "#69584d",
+                "tertiary-fixed": "#ffe1b3",
+                "on-primary-container": "#e3ccbe",
+                "tertiary-fixed-dim": "#f0d3a6",
+                "on-surface": "#e7e5e1",
+                "on-tertiary-container": "#64502d",
+                "surface-container-low": "#131312",
+                "surface-dim": "#0e0e0d",
+                "secondary-container": "#3c3b38",
+                "surface": "#0e0e0d",
+                "surface-variant": "#252624",
+                "on-tertiary": "#6d5935"
+              },
+              fontFamily: {
+                "headline": ["Epilogue"],
+                "body": ["Manrope"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #0e0e0d;
+            color: #e7e5e1;
+            font-family: 'Manrope', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Shell -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-6 max-w-[1920px] mx-auto bg-[#0E0E0D]/60 backdrop-blur-md">
+<div class="text-xl font-bold tracking-tighter text-[#E7E5E1] font-headline uppercase">PLAN METRIC</div>
+<div class="hidden md:flex gap-10">
+<a class="font-headline tracking-tight text-sm font-bold border-b border-[#D9C2B4] pb-1 text-[#D9C2B4]" href="#">HOME</a>
+<a class="font-headline tracking-tight text-sm font-medium text-[#E7E5E1]/70 hover:text-[#E7E5E1] transition-colors" href="#">PROCESS</a>
+<a class="font-headline tracking-tight text-sm font-medium text-[#E7E5E1]/70 hover:text-[#E7E5E1] transition-colors" href="#">METHODOLOGY</a>
+<a class="font-headline tracking-tight text-sm font-medium text-[#E7E5E1]/70 hover:text-[#E7E5E1] transition-colors" href="#">PRICING</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:opacity-90 active:scale-95 transition-all duration-200 uppercase">GET STARTED</button>
+</nav>
+<main class="pt-24">
+<!-- Hero Section: The Kinetic Gallery Concept -->
+<section class="relative min-h-screen flex items-center px-8 md:px-24 overflow-hidden">
+<div class="absolute right-0 top-0 w-full md:w-[60%] h-full z-0 opacity-40 md:opacity-100">
+<img alt="Elite runner training on a mountain trail" class="w-full h-full object-cover grayscale brightness-75" data-alt="Close up of a professional runner on a mountain trail at dawn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcXuBysWr7D1IKM0eq2lMEbw7tWigmwBdJmHmFsuuZMO1qaf6LRfj6rH2hbsmb-s6Es5s_RXYVATBZam4BaVJgIl1DnBj6Wh2AzjszHiRrtXQSW_UTYSsaI-MKYRc2t3wx1dHRNhsF4_egg83Y0xTMFttqqPPjcFeV7n7k3nr6AEN2gGvT9drX3iRPWcOzcl3XRbkdQvgFCUMsAhRyDrSJYCNVGi7LGOICqAXidoJccBUFVDzkd9QnHrHo2KAwKS588bIYl2XAyF8"/>
+</div>
+<div class="relative z-10 max-w-2xl">
+<span class="font-label text-primary tracking-[0.3em] text-xs uppercase mb-6 block">Precision Endurance</span>
+<h1 class="font-headline text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-8">
+                    Not a template.<br/>
+<span class="text-primary-dim">Your plan.</span>
+</h1>
+<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-lg mb-12 leading-relaxed">
+                    We strip away the digital noise. High-performance training methodologies for triathletes, cyclists, and runners who demand scientific accuracy.
+                </p>
+<div class="flex flex-col sm:flex-row gap-6">
+<button class="bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:opacity-90 transition-all uppercase">Take the Assessment</button>
+<button class="bg-surface-container-high text-on-surface px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-surface-variant transition-all uppercase">View Plans</button>
+</div>
+</div>
+</section>
+<!-- Metric Focus: Bento Grid Style -->
+<section class="py-32 px-8 md:px-24 bg-surface-container-low">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-end">
+<div class="md:col-span-7">
+<h2 class="font-headline text-4xl font-bold tracking-tight mb-6">Metrics that matter.</h2>
+<p class="font-body text-on-surface-variant mb-12 max-w-xl">Every kilometer is calculated against your current physiological capacity. We don't guess; we measure.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface p-8 rounded-sm">
+<span class="font-label text-[10px] tracking-widest text-primary uppercase block mb-2">Distance Target</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-5xl font-bold">180.4</span>
+<span class="font-label text-sm text-on-surface-variant uppercase">KM</span>
+</div>
+</div>
+<div class="bg-surface p-8 rounded-sm">
+<span class="font-label text-[10px] tracking-widest text-primary uppercase block mb-2">Training Temp</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-5xl font-bold">22</span>
+<span class="font-label text-sm text-on-surface-variant uppercase">CELSIUS</span>
+</div>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 h-[400px]">
+<img alt="Cyclist climbing a steep road" class="w-full h-full object-cover grayscale opacity-80 rounded-sm" data-alt="Minimalist shot of a cyclist climbing a mountain pass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfqR7iMxT0WzfiPuVgl3kQWuow_xAseavo3Zin-A1OE6FGDNGgXt6P4TSvlaHEgyOdFhJSMHM1C5p-Qauvfy29xNae11vYEXEfzpkdpdaj1MfQFwoCYlri5pa5UEtFqlQoTzBeXQG9ZXiFKn0WZ_ZX3e02HvXfX9TAXY94JoDkaTBakn_EFn4MT9S1c2TOfFpKZlEhNpp9YSXI35y2_yHlbO6TiVPc291HL-I0mJ4jNZY0Qt3lNPSI7kNLg4KnS_j7AKRcgFlmCYA"/>
+</div>
+</div>
+</section>
+<!-- Plans/Tiers Section: The "No-Line" Hierarchy -->
+<section class="py-32 px-8 md:px-24">
+<div class="text-center mb-20">
+<h2 class="font-headline text-5xl font-bold tracking-tight mb-4">Select your intensity.</h2>
+<div class="w-12 h-[1px] bg-primary mx-auto"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-1px bg-outline-variant/10 overflow-hidden">
+<!-- STARTER -->
+<div class="bg-surface p-12 hover:bg-surface-container-low transition-colors duration-500">
+<span class="font-label text-xs tracking-widest text-on-surface-variant uppercase mb-2 block">Level 01</span>
+<h3 class="font-headline text-3xl font-bold mb-8">STARTER</h3>
+<p class="font-body text-on-surface-variant mb-10 min-h-[80px]">Pre-built plans optimized for common performance milestones. Built on verified data structures.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Standardized Volume Scales</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Static Training Peaks Access</span>
+</li>
+</ul>
+<div class="text-3xl font-headline font-bold mb-10">$49 <span class="text-sm font-label text-on-surface-variant">/ ONE-TIME</span></div>
+<button class="w-full bg-surface-container-high py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all">SELECT STARTER</button>
+</div>
+<!-- PREMIUM -->
+<div class="bg-surface-container-low p-12 border-x border-outline-variant/5">
+<span class="font-label text-xs tracking-widest text-primary uppercase mb-2 block">Level 02</span>
+<h3 class="font-headline text-3xl font-bold mb-8">PREMIUM</h3>
+<p class="font-body text-on-surface-variant mb-10 min-h-[80px]">Tailored architecture built from your specific intake form data. Audited by our head coach.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span>Physiological Profiling</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Manual Review Session</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Custom Intensity Zones</span>
+</li>
+</ul>
+<div class="text-3xl font-headline font-bold mb-10">$189 <span class="text-sm font-label text-on-surface-variant">/ ONE-TIME</span></div>
+<button class="w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:opacity-90 transition-all">SELECT PREMIUM</button>
+</div>
+<!-- ELITE -->
+<div class="bg-surface p-12 hover:bg-surface-container-low transition-colors duration-500">
+<span class="font-label text-xs tracking-widest text-on-surface-variant uppercase mb-2 block">Level 03</span>
+<h3 class="font-headline text-3xl font-bold mb-8">ELITE</h3>
+<p class="font-body text-on-surface-variant mb-10 min-h-[80px]">Continuous performance adjustment. Monthly calls and weekly data deep-dives.</p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Bi-Weekly Syncs</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check</span>
+<span>Ongoing Data Adjustments</span>
+</li>
+</ul>
+<div class="text-3xl font-headline font-bold mb-10">$240 <span class="text-sm font-label text-on-surface-variant">/ MONTHLY</span></div>
+<button class="w-full bg-surface-container-high py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all">JOIN ELITE</button>
+</div>
+</div>
+</section>
+<!-- Founding Story: Tonal Layering -->
+<section class="py-32 px-8 md:px-24 bg-surface-container-lowest">
+<div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-16">
+<div class="w-full md:w-1/2">
+<div class="aspect-square bg-surface-container-high p-1">
+<img alt="Founder Pete Hamill in the mountains" class="w-full h-full object-cover grayscale opacity-60" data-alt="Black and white portrait of a triathlete founder in nature" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANTw7XoqiYrU3t86YmgvxhwUkZORgXPn-d2aG_DkygT6pckooffLBS3M-zEbR88sZnQNmpZmYyQYUPuY61x1jZOuxgr7vbp1mCJ7ddSSL8OIYakGhHVQiOs4ckBlfJCj8LS8rMPZOttrI-4qNqoHrAX_9NuapHgT21e1DwuaFmulkYPVyMtbD1MnVUDRCwdAPhLHNkIVQ4BTCychsqOt5jjN3G0jCB9Z_kjtLDMs2H8GE2FmMCf3Kut60f3j8iXCPoFIyeA6EmEmM"/>
+</div>
+</div>
+<div class="w-full md:w-1/2">
+<h2 class="font-headline text-3xl font-bold mb-8">The Founding Story</h2>
+<p class="font-body text-on-surface-variant leading-loose mb-8">
+                        Plan Metric was born from a frustration with "template culture." Founder Pete Hamill, an endurance veteran, saw athletes burning out on plans that didn't understand their life, their terrain, or their physiological ceiling. 
+                    </p>
+<p class="font-body text-on-surface-variant leading-loose">
+                        We built a system that prioritizes human nuance over algorithm-only logic. Every ELITE and PREMIUM plan is touched by human hands before it hits your dashboard.
+                    </p>
+<div class="mt-12 flex items-center gap-4">
+<div class="w-8 h-[1px] bg-primary"></div>
+<span class="font-label text-xs tracking-widest uppercase">Built by Pete Hamill</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-32 text-center px-8">
+<h2 class="font-headline text-4xl md:text-6xl font-bold tracking-tighter mb-12">Ready to evolve?</h2>
+<button class="bg-primary text-on-primary px-12 py-6 text-sm font-bold tracking-[0.2em] rounded-sm hover:scale-105 active:scale-95 transition-all uppercase">Start Your Assessment</button>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center border-t border-[#E7E5E1]/5 bg-[#0E0E0D]">
+<div class="text-lg font-bold text-[#E7E5E1] font-headline tracking-tighter uppercase mb-6 md:mb-0">PLAN METRIC</div>
+<div class="flex gap-8 mb-6 md:mb-0">
+<a class="font-label text-[10px] tracking-widest uppercase text-[#E7E5E1]/40 hover:text-[#E7E5E1] transition-colors" href="#">TERMS</a>
+<a class="font-label text-[10px] tracking-widest uppercase text-[#E7E5E1]/40 hover:text-[#E7E5E1] transition-colors" href="#">PRIVACY</a>
+<a class="font-label text-[10px] tracking-widest uppercase text-[#E7E5E1]/40 hover:text-[#E7E5E1] transition-colors" href="#">INSTAGRAM</a>
+<a class="font-label text-[10px] tracking-widest uppercase text-[#E7E5E1]/40 hover:text-[#E7E5E1] transition-colors" href="#">STRAVA</a>
+</div>
+<div class="font-label text-[10px] tracking-widest uppercase text-[#D9C2B4]">
+            © 2024 PLAN METRIC. PRECISION ENDURANCE.
+        </div>
+</footer>
+</body></html>

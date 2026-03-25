@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Fonts ─────────────────────────────────────────── */
+  --font-headline: var(--font-epilogue), sans-serif;
+  --font-body:     var(--font-manrope),  sans-serif;
+  --font-label:    var(--font-inter),    sans-serif;
+
+  /* ── Border radius ──────────────────────────────────── */
+  --radius-sm: 0.125rem;   /* 2px  — buttons, cards */
+  --radius-lg: 0.25rem;    /* 4px */
+  --radius-xl: 0.5rem;     /* 8px */
+  --radius-2xl: 0.75rem;   /* 12px — badges, pills */
+
+  /* ── Primary palette ────────────────────────────────── */
+  --color-primary:           #d9c2b4;
+  --color-primary-dim:       #cbb4a7;
+  --color-primary-container: #544439;
+  --color-on-primary:        #4d3d33;
+  --color-on-primary-container: #e3ccbe;
+  --color-primary-fixed:     #f6decf;
+  --color-primary-fixed-dim: #e8d0c2;
+  --color-on-primary-fixed:  #4c3c32;
+  --color-on-primary-fixed-variant: #69584d;
+  --color-inverse-primary:   #6d5c50;
+  --color-surface-tint:      #d9c2b4;
+
+  /* ── Surface palette ────────────────────────────────── */
+  --color-background:              #0e0e0d;
+  --color-surface:                 #0e0e0d;
+  --color-surface-dim:             #0e0e0d;
+  --color-surface-bright:          #2b2c2a;
+  --color-surface-variant:         #252624;
+  --color-surface-container-lowest:  #000000;
+  --color-surface-container-low:     #131312;
+  --color-surface-container:         #191a18;
+  --color-surface-container-high:    #1f201e;
+  --color-surface-container-highest: #252624;
+  --color-inverse-surface:         #fcf9f6;
+  --color-inverse-on-surface:      #565553;
+
+  /* ── Text palette ───────────────────────────────────── */
+  --color-on-surface:         #e7e5e1;
+  --color-on-background:      #e7e5e1;
+  --color-on-surface-variant: #acaba7;
+
+  /* ── Secondary ──────────────────────────────────────── */
+  --color-secondary:               #9f9e99;
+  --color-secondary-dim:           #9f9e99;
+  --color-secondary-container:     #3c3b38;
+  --color-on-secondary:            #20201d;
+  --color-on-secondary-container:  #c1bfba;
+  --color-secondary-fixed:         #e5e2dd;
+  --color-secondary-fixed-dim:     #d7d4cf;
+  --color-on-secondary-fixed:      #403f3c;
+  --color-on-secondary-fixed-variant: #5c5b58;
+
+  /* ── Tertiary ───────────────────────────────────────── */
+  --color-tertiary:                #fff2e1;
+  --color-tertiary-dim:            #f0d3a6;
+  --color-tertiary-container:      #ffe1b3;
+  --color-tertiary-fixed:          #ffe1b3;
+  --color-tertiary-fixed-dim:      #f0d3a6;
+  --color-on-tertiary:             #6d5935;
+  --color-on-tertiary-container:   #64502d;
+  --color-on-tertiary-fixed:       #513e1d;
+  --color-on-tertiary-fixed-variant: #6f5a36;
+
+  /* ── Outline ────────────────────────────────────────── */
+  --color-outline:         #767572;
+  --color-outline-variant: #484845;
+
+  /* ── Error ──────────────────────────────────────────── */
+  --color-error:           #ed7f64;
+  --color-error-dim:       #ba573f;
+  --color-error-container: #7e2b17;
+  --color-on-error:        #450900;
+  --color-on-error-container: #ff9b82;
+
+  /* ── Discipline colours ─────────────────────────────── */
+  --color-swim:  #0ea5e9;
+  --color-bike:  #22c55e;
+  --color-run:   #f97316;
+  --color-brick: #a855f7;
+  --color-rest:  #6b7280;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0e0e0d;
+  color: #e7e5e1;
+  font-family: var(--font-manrope), sans-serif;
+}
+
+::selection {
+  background-color: #d9c2b4;
+  color: #4d3d33;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
