@@ -91,7 +91,7 @@ export default function HomePage() {
           </motion.span>
 
           {/* Clip-path reveal headline */}
-          <h1 className="font-serif text-5xl md:text-8xl font-extrabold tracking-tighter leading-tight mb-6 text-on-surface">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-tight mb-6 text-on-surface">
             <span className="block animate-reveal">
               Personalised
             </span>
@@ -153,7 +153,7 @@ export default function HomePage() {
 
         {/* Social links — bottom left */}
         <motion.div
-          className="absolute bottom-8 left-8 z-10 flex gap-4"
+          className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 z-10 hidden sm:flex gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 0.6, ease: "easeOut" as const }}
@@ -187,7 +187,7 @@ export default function HomePage() {
 
         {/* Scroll indicator — bottom center */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
+          className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 0.6, ease: "easeOut" as const }}

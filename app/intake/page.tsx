@@ -274,7 +274,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               <TextInput value={form.email} onChange={v => upd("email", v)} type="email" placeholder="you@email.com" />
             </F>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <F label="Age *" note="Exact — used for zone calculations">
               <TextInput value={form.age} onChange={v => upd("age", v)} type="number" placeholder="32" />
             </F>

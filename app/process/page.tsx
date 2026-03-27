@@ -200,7 +200,7 @@ export default function ProcessPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="max-w-4xl mx-auto p-12 md:p-24 text-center rounded-sm relative overflow-hidden">
+        <div className="max-w-4xl mx-auto p-6 sm:p-12 md:p-24 text-center rounded-sm relative overflow-hidden">
           <div className="absolute inset-0 -z-10">
             <img
               src="/images/start-line.png"

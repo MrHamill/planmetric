@@ -57,7 +57,7 @@ export default function PricingPage() {
           <img src="/images/cyclist.png" alt="Cyclist on road bike in aero position" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
         </div>
-        <h1 className="font-serif text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-on-surface">
+        <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-on-surface">
           Invest in <br />
           <span className="text-primary">Performance.</span>
         </h1>
@@ -287,16 +287,16 @@ export default function PricingPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container">
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface-variant border-b border-outline/10">
+                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface-variant border-b border-outline/10">
                   Feature
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
+                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
                   Starter
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-primary border-b border-outline/10 bg-primary/5">
+                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-primary border-b border-outline/10 bg-primary/5">
                   Premium <span className="text-[9px] ml-1 bg-primary text-on-primary px-2 py-0.5 rounded-sm">MOST POPULAR</span>
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
+                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
                   Elite
                 </th>
               </tr>
@@ -304,20 +304,20 @@ export default function PricingPage() {
             <tbody className="text-sm">
               {comparisonRows.map((row) => (
                 <tr key={row.feature} className="hover:bg-surface-container-low transition-colors">
-                  <td className="p-6 border-b border-outline/10 text-on-surface-variant font-medium">
+                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant font-medium">
                     {row.feature}
                   </td>
-                  <td className="p-6 border-b border-outline/10 text-on-surface-variant">
+                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant">
                     {row.starter === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.starter}
                   </td>
-                  <td className="p-6 border-b border-outline/10 text-on-surface-variant bg-primary/5">
+                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant bg-primary/5">
                     {row.premium === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.premium}
                   </td>
-                  <td className="p-6 border-b border-outline/10 text-on-surface-variant">
+                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant">
                     {row.elite === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.elite}
@@ -331,7 +331,7 @@ export default function PricingPage() {
 
       {/* ── Assessment CTA ────────────────────────────────── */}
       <motion.section
-        className="relative bg-surface-container p-12 md:p-24 overflow-hidden group rounded-sm"
+        className="relative bg-surface-container p-6 sm:p-12 md:p-24 overflow-hidden group rounded-sm"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}

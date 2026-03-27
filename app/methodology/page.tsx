@@ -29,7 +29,7 @@ export default function MethodologyPage() {
             <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
               Precision Engineering
             </span>
-            <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none mb-8 text-on-surface">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none mb-8 text-on-surface">
               METHODOLOGY
               <span className="text-primary">.</span>
             </h1>
@@ -92,7 +92,7 @@ export default function MethodologyPage() {
         {/* Pillar 1 */}
         <motion.div
           variants={pillarItem}
-          className="bg-surface-container-low p-10 flex flex-col justify-between min-h-[400px]"
+          className="bg-surface-container-low p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
         >
           <div>
             <span className="material-symbols-outlined text-primary mb-8 text-3xl">monitoring</span>
@@ -116,7 +116,7 @@ export default function MethodologyPage() {
         {/* Pillar 2 */}
         <motion.div
           variants={pillarItem}
-          className="bg-surface-container-high p-10 flex flex-col justify-between min-h-[400px]"
+          className="bg-surface-container-high p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
         >
           <div>
             <span className="material-symbols-outlined text-primary mb-8 text-3xl">psychology</span>
@@ -142,7 +142,7 @@ export default function MethodologyPage() {
         {/* Pillar 3 */}
         <motion.div
           variants={pillarItem}
-          className="bg-surface-container-low p-10 flex flex-col justify-between min-h-[400px]"
+          className="bg-surface-container-low p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
         >
           <div>
             <span className="material-symbols-outlined text-primary mb-8 text-3xl">settings_input_component</span>
@@ -327,7 +327,7 @@ export default function MethodologyPage() {
               and accessible on any device.
             </p>
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8"
             variants={pillarsVariants}
             initial="hidden"
             whileInView="show"
@@ -350,7 +350,7 @@ export default function MethodologyPage() {
 
       {/* ── Final CTA ─────────────────────────────────────── */}
       <motion.section
-        className="relative px-8 md:px-16 lg:px-24 py-32 mx-8 md:mx-16 lg:mx-24 flex flex-col items-center text-center overflow-hidden"
+        className="relative px-6 sm:px-8 md:px-16 lg:px-24 py-20 sm:py-32 mx-4 sm:mx-8 md:mx-16 lg:mx-24 flex flex-col items-center text-center overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
