@@ -9,6 +9,7 @@ const links = [
   { href: "/process", label: "PROCESS" },
   { href: "/methodology", label: "METHODOLOGY" },
   { href: "/pricing", label: "PRICING" },
+  { href: "/blog", label: "BLOG" },
 ];
 
 export default function Navbar() {
@@ -25,13 +26,15 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 w-full z-50 flex justify-between items-center px-8 py-6 max-w-[1920px] mx-auto transition-all duration-300 ${
         scrolled
-          ? "bg-[#0E0E0D]/60 backdrop-blur-md"
+          ? "bg-[#1C1614]/95 backdrop-blur-md"
           : "bg-transparent"
       }`}
     >
       <Link
         href="/"
-        className="font-headline text-xl font-bold tracking-tighter text-on-surface uppercase"
+        className={`font-headline text-xl font-bold tracking-tighter uppercase transition-colors duration-300 ${
+          scrolled ? "text-[#E8DCC8]" : "text-primary"
+        }`}
       >
         PLAN METRIC
       </Link>
@@ -43,11 +46,15 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className={
+              className={`font-headline tracking-tight text-sm transition-colors duration-300 ${
                 active
-                  ? "font-headline tracking-tight text-sm font-bold text-primary border-b border-primary pb-1"
-                  : "font-headline tracking-tight text-sm font-medium text-on-surface/70 hover:text-on-surface transition-colors"
-              }
+                  ? scrolled
+                    ? "font-bold text-[#E8DCC8] border-b border-[#E8DCC8] pb-1"
+                    : "font-bold text-primary border-b border-primary pb-1"
+                  : scrolled
+                    ? "font-medium text-[#E8DCC8]/70 hover:text-[#E8DCC8]"
+                    : "font-medium text-on-surface hover:text-primary"
+              }`}
             >
               {label}
             </Link>
@@ -57,7 +64,7 @@ export default function Navbar() {
 
       <Link
         href="/assessment"
-        className="bg-primary text-on-primary px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:opacity-90 active:scale-95 transition-all duration-200 uppercase"
+        className="bg-primary text-on-primary px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:bg-primary-dim transition-all duration-200 uppercase"
       >
         GET STARTED
       </Link>

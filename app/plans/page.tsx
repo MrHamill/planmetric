@@ -248,7 +248,7 @@ export default function PlansPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/cyclist.png" alt="Cyclist on road bike" className="w-full h-full object-cover" />
+          <img src="/images/runner.png" alt="Runner mid-stride on track with race number" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
         </div>
         <span className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-4 block">

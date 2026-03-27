@@ -68,16 +68,8 @@ export default function PricingPage() {
         </p>
       </motion.header>
 
-      {/* ── Pricing cards (with subtle background image) ─── */}
+      {/* ── Pricing cards ─────────────────────────────────── */}
       <div className="relative mb-8">
-        <div className="absolute inset-0 overflow-hidden rounded-xl -z-10">
-          <img
-            src="/images/start-line.png"
-            alt="Triathlete standing on road at sunrise"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.88)" }} />
-        </div>
       <motion.div
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
@@ -282,16 +274,12 @@ export default function PricingPage() {
 
       {/* ── Compare Tiers ────────────────────────────────── */}
       <motion.section
-        className="relative mb-32 overflow-hidden"
+        className="mb-32"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/transition-overhead.png" alt="Triathlon transition area" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.9)" }} />
-        </div>
         <h3 className="font-serif text-3xl font-bold mb-12 text-center text-on-surface">
           Compare Tiers
         </h3>

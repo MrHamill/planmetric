@@ -73,8 +73,8 @@ export default function MethodologyPage() {
       >
         <div className="overflow-hidden rounded-xl relative">
           <img
-            src="/images/transition-overhead.png"
-            alt="Triathlon transition area overhead view"
+            src="/images/track-stretch.png"
+            alt="Athlete stretching on track at golden hour"
             className="w-full max-h-[350px] object-cover hover:scale-[1.02] transition-transform duration-300"
           />
           <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(240,230,212,0.25)" }} />
@@ -314,8 +314,7 @@ export default function MethodologyPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="max-w-5xl flex flex-col md:flex-row gap-12 items-start">
-          <div className="flex-1">
+        <div className="max-w-4xl">
             <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
               The Output
             </span>
@@ -346,14 +345,6 @@ export default function MethodologyPage() {
               </motion.div>
             ))}
           </motion.div>
-          </div>
-          <div className="hidden md:block overflow-hidden rounded-xl max-w-[300px] shrink-0">
-            <img
-              src="/images/athlete-phone.png"
-              alt="Athlete checking phone after workout"
-              className="w-full h-[240px] object-cover hover:scale-[1.02] transition-transform duration-300"
-            />
-          </div>
         </div>
       </motion.section>
 
@@ -366,7 +357,7 @@ export default function MethodologyPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/swimmer.png" alt="Swimmer in open water" className="w-full h-full object-cover" />
+          <img src="/images/ocean-exit.png" alt="Triathlete running out of ocean, full body visible" className="w-full h-full object-cover object-top" />
           <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
         </div>
         <h2 className="font-serif text-4xl md:text-6xl font-extrabold mb-10 tracking-tight text-on-surface">

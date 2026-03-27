@@ -50,8 +50,8 @@ export default function HomePage() {
           transition={{ duration: 1.2, ease: "easeOut" as const }}
         >
           <img
-            src="/images/start-line.png"
-            alt="Triathlete standing on road at sunrise"
+            src="/images/transition-overhead.png"
+            alt="Aerial view of bikes racked in transition zone"
             className="w-full h-full object-cover object-center"
           />
           {/* Warm gradient overlay for text readability */}

@@ -65,15 +65,11 @@ export default function BlogPage() {
 
       {/* ── Hero (with background image) ─────────────────── */}
       <motion.header
-        className="relative mb-16 max-w-3xl overflow-hidden"
+        className="mb-16 max-w-3xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/transition-overhead.png" alt="Triathlon transition area overhead" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.8)" }} />
-        </div>
         <span className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-4 block">
           The Journal
         </span>

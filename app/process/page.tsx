@@ -10,7 +10,7 @@ const steps = [
     title: "CHOOSE YOUR PATH",
     body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. Complete our deep-dive questionnaire covering fitness, goals, schedule, and injury history. This isn't just a form; it's the architectural blueprint of your next season.",
     badge: null,
-    image: "/images/pool-ready.png",
+    image: "/images/swimmer.png",
     phase: "Phase: Assessment",
     cta: null,
   },
@@ -19,7 +19,7 @@ const steps = [
     title: "8\u201310 MIN INTAKE",
     body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
     badge: null,
-    image: "/images/vo2-testing.png",
+    image: "/images/intake-form.png",
     phase: "Phase: Data Integration",
     cta: null,
   },
@@ -156,16 +156,12 @@ export default function ProcessPage() {
 
       {/* ── Hero ──────────────────────────────────────────── */}
       <motion.section
-        className="relative px-8 max-w-7xl mx-auto mb-32"
+        className="px-8 max-w-7xl mx-auto mb-32"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/runner.png" alt="Runner mid-stride on track" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.8)" }} />
-        </div>
-        <div className="flex flex-col md:flex-row items-baseline gap-8">
+        <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="w-full md:w-3/5">
             <span className="font-label text-primary tracking-[0.3em] uppercase text-[10px] mb-4 block">
               Engineered Performance
