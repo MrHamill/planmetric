@@ -10,11 +10,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0f1a;--bg-card:#111827;--bg-hover:#1a2236;
-  --text:#f0f0f0;--text-sec:#c8ccd4;--text-ter:#8891a0;
-  --accent:#4fc3f7;--accent-dim:rgba(79,195,247,0.12);
-  --border:rgba(255,255,255,0.06);
-  --green:#66bb6a;--orange:#ffa726;--red:#ef5350;
+  --bg:#F0E6D4;--bg-card:#E4DAC8;--bg-hover:#DBD0BC;
+  --text:#1C1614;--text-sec:#3A2E28;--text-ter:#6B5E54;
+  --accent:#A0522D;--accent-dim:rgba(160,82,45,0.12);
+  --border:rgba(28,22,20,0.08);
+  --green:#2E7D32;--orange:#E65100;--red:#C62828;
   --radius:10px;
 }
 html{scroll-behavior:smooth}
@@ -26,14 +26,14 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
 .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
 .badge{display:inline-flex;align-items:center;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:4px 10px;border-radius:20px;text-transform:uppercase}
 .badge-accent{background:var(--accent-dim);color:var(--accent)}
-.badge-green{background:rgba(102,187,106,0.12);color:var(--green)}
-.badge-orange{background:rgba(255,167,38,0.12);color:var(--orange)}
-.badge-red{background:rgba(239,83,80,0.12);color:var(--red)}
-.badge-rest{background:rgba(136,145,160,0.12);color:var(--text-ter)}
+.badge-green{background:rgba(46,125,50,0.1);color:var(--green)}
+.badge-orange{background:rgba(230,81,0,0.1);color:var(--orange)}
+.badge-red{background:rgba(198,40,40,0.1);color:var(--red)}
+.badge-rest{background:rgba(107,94,84,0.1);color:var(--text-ter)}
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;font-size:20px}
 
 /* Header */
-.sticky-header{position:sticky;top:0;z-index:100;background:rgba(10,15,26,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.sticky-header{position:sticky;top:0;z-index:100;background:rgba(228,218,200,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
 .sticky-header .logo{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text)}
 .sticky-header .plan-badge{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:var(--accent-dim);color:var(--accent)}
 
@@ -51,7 +51,7 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
 .overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:48px}
 @media(max-width:600px){.overview-grid{grid-template-columns:repeat(2,1fr)}}
 .overview-cell{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s}
-.overview-cell:hover{background:var(--bg-hover);border-color:var(--accent);transform:translateY(-2px)}
+.overview-cell:hover{background:var(--bg-hover);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(160,82,45,0.15)}
 .overview-cell .week-num{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
 .overview-cell .week-focus{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:6px}
 .overview-cell .week-km{font-size:12px;color:var(--text-ter)}
@@ -74,26 +74,26 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
 .week-overview{color:var(--text-sec);font-size:14px;font-weight:300;margin-bottom:24px;line-height:1.7}
 
 /* Day Card */
-.day-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px}
+.day-card{background:#EDE3D0;border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px}
 .day-card.rest{opacity:0.6}
 .day-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
 .day-label{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);min-width:90px}
 .day-session{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text)}
 .day-badges{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
 .day-structure{font-size:13px;color:var(--text-sec);font-weight:300;margin-bottom:8px;line-height:1.6}
-.coach-note{background:rgba(79,195,247,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-top:10px}
+.coach-note{background:rgba(160,82,45,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-top:10px}
 .coach-note strong{color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;display:block;margin-bottom:4px}
 
 /* Key Workout Callout */
-.key-callout{background:rgba(239,83,80,0.06);border:1px solid rgba(239,83,80,0.2);border-radius:var(--radius);padding:20px;margin:20px 0}
+.key-callout{background:rgba(198,40,40,0.05);border:1px solid rgba(198,40,40,0.15);border-radius:var(--radius);padding:20px;margin:20px 0}
 .key-callout h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
 .key-callout p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7}
 
 /* Recovery & Check-in */
-.recovery-box{background:rgba(102,187,106,0.06);border:1px solid rgba(102,187,106,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
+.recovery-box{background:rgba(46,125,50,0.05);border:1px solid rgba(46,125,50,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
 .recovery-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
 .recovery-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7}
-.checkin-box{background:rgba(255,167,38,0.06);border:1px solid rgba(255,167,38,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
+.checkin-box{background:rgba(230,81,0,0.05);border:1px solid rgba(230,81,0,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
 .checkin-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
 .checkin-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7;font-style:italic}
 
@@ -265,7 +265,7 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
     <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
     <div class="day-card rest"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Rest or Easy Walk</span><div class="day-badges"><span class="badge badge-rest">RPE 1</span><span class="badge badge-rest">20 min</span></div></div><p class="day-structure">Walk only if desired.</p></div>
     <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Easy Walk-Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">25 min</span></div></div><p class="day-structure">Walk 1 min / Run 3 min &times; 6, plus 1 min walk. Easy long session. Nothing ambitious.</p></div>
-    <div class="key-callout" style="border-color:rgba(102,187,106,0.3);background:rgba(102,187,106,0.06)"><h4 style="color:var(--green)"><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">spa</span> No Key Workout This Week</h4><p>There is no key workout this week. The key action is resting. "Active recovery week every 4th week at ~50% of normal load — physical and mental reset."</p></div>
+    <div class="key-callout" style="border-color:rgba(46,125,50,0.2);background:rgba(46,125,50,0.05)"><h4 style="color:var(--green)"><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">spa</span> No Key Workout This Week</h4><p>There is no key workout this week. The key action is resting. "Active recovery week every 4th week at ~50% of normal load — physical and mental reset."</p></div>
     <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep is the priority. 8-9 hours per night. Eat well — don't restrict calories during recovery weeks. Light stretching or foam rolling if you have access. This week is the foundation for the next four weeks of building.</p></div>
     <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Do I feel fresher than I did at the end of Week 3? If not, I may need an extra day of rest before starting Week 5."</p></div>
   </div>
@@ -354,7 +354,9 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
 
 <!-- Important Notes & Tips -->
 <section style="margin-top:48px;margin-bottom:48px">
-  <div class="section-label">Important Notes &amp; Tips</div>
+<details class="week-accordion">
+  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Important Notes &amp; Tips</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content">
   <div class="tips-grid">
     <div class="tip-card"><h4>The 10% Rule</h4><p>Never increase weekly running volume by more than 10%. This plan follows this rule strictly. If you repeat a week because life got in the way, that's fine — don't skip ahead to "catch up."</p></div>
     <div class="tip-card"><h4>Easy Means Easy</h4><p>Zone 2 is the most underused zone in amateur athletes. Most people train their easy days too hard and their hard days too easy. If you can't hold a full conversation during an easy run, slow down.</p></div>
@@ -367,11 +369,15 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
     <div class="tip-card"><h4>Prepare Kit the Night Before</h4><p>Lay out shoes, clothes, and watch the night before. The fewer decisions between waking up and getting out the door, the more likely you'll go.</p></div>
     <div class="tip-card"><h4>One Bad Session Is One Session</h4><p>If a run feels terrible, walk home. Come back next session. Consistency over perfection.</p></div>
   </div>
+  </div>
+</details>
 </section>
 
 <!-- Glossary -->
 <section style="margin-bottom:48px">
-  <div class="section-label">Glossary</div>
+<details class="week-accordion">
+  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Glossary</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content">
   <dl class="glossary-grid">
     <div class="glossary-item"><dt>RPE</dt><dd>Rate of Perceived Exertion — a 1–10 scale of how hard a session feels. The primary intensity measure in this plan.</dd></div>
     <div class="glossary-item"><dt>Zone 1 (T1)</dt><dd>Recovery effort. Very easy. Barely above walking. Used for warm-ups, cool-downs, and active recovery.</dd></div>
@@ -386,6 +392,8 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-he
     <div class="glossary-item"><dt>Negative Split</dt><dd>Running the second half of a distance faster than the first half. The ideal 5K pacing strategy.</dd></div>
     <div class="glossary-item"><dt>Progressive Overload</dt><dd>Gradually increasing training stress (duration, intensity) week over week. How fitness is built safely.</dd></div>
   </dl>
+  </div>
+</details>
 </section>
 
 <!-- Race Day Basics -->
