@@ -64,6 +64,21 @@ export async function GET(req: NextRequest) {
     console.error("Email error:", e);
   }
 
+  /* ── Auto-generate plan for Premium & Elite ───────────── */
+  if (submission.plan === "premium" || submission.plan === "elite") {
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      fetch(`${siteUrl}/api/generate-plan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submission_id: submissionId }),
+      }).catch(e => console.error("Plan generation trigger error:", e));
+      // Fire-and-forget — don't block the verify response
+    } catch (e) {
+      console.error("Plan generation trigger error:", e);
+    }
+  }
+
   return NextResponse.json({ ok: true, email: submission.email });
 }
 
