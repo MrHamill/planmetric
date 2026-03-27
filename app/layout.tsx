@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 
-const cascadia = localFont({
-  src: [
-    { path: "../public/fonts/CascadiaCode.woff2", weight: "400", style: "normal" },
-    { path: "../public/fonts/CascadiaCodeItalic.woff2", weight: "400", style: "italic" },
-  ],
-  variable: "--font-cascadia",
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -24,7 +22,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={cascadia.variable}>
+    <html lang="en" className={inter.variable}>
       <head>
         <link
           rel="stylesheet"
