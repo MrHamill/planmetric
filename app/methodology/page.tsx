@@ -71,12 +71,13 @@ export default function MethodologyPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" as const }}
       >
-        <div className="overflow-hidden rounded-xl">
+        <div className="overflow-hidden rounded-xl relative">
           <img
-            src="/images/triathlete.png"
-            alt="Triathlete crossing finish line"
-            className="w-full max-h-[400px] object-cover hover:scale-[1.02] transition-transform duration-300"
+            src="/images/transition-overhead.png"
+            alt="Triathlon transition area overhead view"
+            className="w-full max-h-[350px] object-cover hover:scale-[1.02] transition-transform duration-300"
           />
+          <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(240,230,212,0.3)" }} />
         </div>
       </motion.div>
 
@@ -250,16 +251,22 @@ export default function MethodologyPage() {
               </motion.div>
             </div>
 
-            {/* Data transformation panel */}
+            {/* VO2 testing image + data transformation */}
             <motion.div
-              className="md:w-1/2 relative min-h-[600px] flex items-center justify-center"
+              className="md:w-1/2 relative flex flex-col gap-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+              transition={{ duration: 0.6, ease: "easeOut" as const, delay: 0.2 }}
             >
-              <div className="absolute inset-0 bg-primary/5 rounded-full blur-[120px]" />
-              <div className="relative w-full aspect-square border border-outline-variant/20 p-12 overflow-hidden flex flex-col justify-center">
+              <div className="overflow-hidden rounded-xl max-w-[320px]">
+                <img
+                  src="/images/vo2-testing.png"
+                  alt="Athlete on treadmill with VO2 mask and data screens"
+                  className="w-full h-[240px] md:h-auto object-cover hover:scale-[1.02] transition-transform duration-300"
+                />
+              </div>
+              <div className="relative w-full border border-outline-variant/20 p-12 overflow-hidden flex flex-col justify-center">
                 <div className="mb-8">
                   <span className="font-label text-[10px] text-primary tracking-widest uppercase mb-2 block">
                     Data Transformation

@@ -10,7 +10,7 @@ const FEATURED = [
     readTime: "8 min read",
     category: "Training",
     categoryColor: "text-primary",
-    image: "/images/swimmer.png",
+    image: "/images/transition-overhead.png",
   },
   {
     title: "The science of polarised training",
@@ -18,7 +18,7 @@ const FEATURED = [
     readTime: "6 min read",
     category: "Training",
     categoryColor: "text-primary",
-    image: "/images/cyclist.png",
+    image: "/images/blog-intervals.png",
   },
   {
     title: "Race day nutrition: a complete guide",
@@ -26,7 +26,7 @@ const FEATURED = [
     readTime: "10 min read",
     category: "Nutrition",
     categoryColor: "text-run",
-    image: "/images/runner.png",
+    image: "/images/blog-nutrition.png",
   },
 ];
 
@@ -97,7 +97,7 @@ export default function BlogPage() {
             className="bg-surface-container rounded-sm border border-outline/18 overflow-hidden group hover:border-primary/40 transition-colors"
           >
             {/* Featured image */}
-            <div className="aspect-[16/10] bg-surface-container-high relative overflow-hidden">
+            <div className="h-[200px] bg-surface-container-high relative overflow-hidden rounded-t-sm">
               <img
                 src={article.image}
                 alt={article.title}

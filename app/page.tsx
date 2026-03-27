@@ -50,15 +50,15 @@ export default function HomePage() {
           transition={{ duration: 1.2, ease: "easeOut" as const }}
         >
           <img
-            src="/images/finish-line.png"
-            alt="Triathlete celebrating at finish line"
-            className="w-full h-full object-cover"
+            src="/images/start-line.png"
+            alt="Triathlete standing on road at sunrise"
+            className="w-full h-full object-cover object-center"
           />
           {/* Warm gradient overlay for text readability */}
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to right, rgba(240,230,212,0.92) 0%, rgba(240,230,212,0.7) 50%, rgba(240,230,212,0.3) 100%)",
+              background: "linear-gradient(to right, rgba(240,230,212,0.92) 0%, rgba(240,230,212,0.6) 60%, rgba(240,230,212,0.2) 100%)",
             }}
           />
           {/* Warm radial tint overlay */}
@@ -424,12 +424,21 @@ export default function HomePage() {
 
       {/* ── Final CTA (full-bleed) ────────────────────────── */}
       <motion.section
-        className="relative py-32 text-center px-8 bg-surface-container overflow-hidden"
+        className="relative py-32 text-center px-8 overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" as const }}
       >
+        {/* Background image */}
+        <div className="absolute inset-0 -z-10">
+          <img
+            src="/images/transition-overhead.png"
+            alt="Triathlon transition area overhead view"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.82)" }} />
+        </div>
         {/* Ambient glow behind CTA headline */}
         <div
           className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none"

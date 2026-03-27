@@ -11,8 +11,19 @@ function AssessmentContent() {
 
   return (
     <div>
+      {/* Decorative header image */}
+      <div className="pt-32 pb-4 px-8 md:px-24 max-w-4xl mx-auto">
+        <div className="overflow-hidden rounded-xl max-w-[300px]">
+          <img
+            src="/images/athlete-phone.png"
+            alt="Athlete checking phone after workout"
+            className="w-full h-[180px] md:h-[200px] object-cover hover:scale-[1.02] transition-transform duration-300"
+          />
+        </div>
+      </div>
+
       {/* Strava Connect Banner */}
-      <div className="pt-32 pb-8 px-8 md:px-24 max-w-4xl mx-auto">
+      <div className="pb-8 px-8 md:px-24 max-w-4xl mx-auto">
         <div className="bg-surface-container p-6 rounded-sm border border-outline/18 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-headline text-lg font-bold text-on-surface mb-1">

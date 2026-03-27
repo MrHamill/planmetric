@@ -68,8 +68,8 @@ export default function PricingPage() {
       <div className="relative mb-8">
         <div className="absolute inset-0 overflow-hidden rounded-xl -z-10">
           <img
-            src="/images/runner.png"
-            alt=""
+            src="/images/start-line.png"
+            alt="Triathlete standing on road at sunrise"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.88)" }} />

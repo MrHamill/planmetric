@@ -7,25 +7,25 @@ import { useRef } from "react";
 const steps = [
   {
     number: "01",
-    title: "ASSESS",
+    title: "CHOOSE YOUR PATH",
     body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. Complete our deep-dive questionnaire covering fitness, goals, schedule, and injury history. This isn't just a form; it's the architectural blueprint of your next season.",
     badge: null,
-    image: "/images/swimmer.png",
+    image: "/images/pool-ready.png",
     phase: "Phase: Assessment",
     cta: null,
   },
   {
     number: "02",
-    title: "BUILD",
+    title: "8\u201310 MIN INTAKE",
     body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
     badge: null,
-    image: "/images/cyclist.png",
-    phase: "Phase: Construction",
+    image: "/images/vo2-testing.png",
+    phase: "Phase: Data Integration",
     cta: null,
   },
   {
     number: "03",
-    title: "DELIVER",
+    title: "48H DELIVERY",
     body: "Within 48 hours, your personalised plan is built around everything about you — your fitness, your race, your schedule, your body. No generic templates. Your sessions are calibrated to your exact thresholds and delivered directly to your dashboard.",
     badge: null,
     image: "/images/athlete-phone.png",
@@ -200,11 +200,14 @@ export default function ProcessPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="max-w-4xl mx-auto bg-surface-container-low p-12 md:p-24 text-center rounded-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8">
-            <span className="material-symbols-outlined text-primary/10 text-9xl">
-              architecture
-            </span>
+        <div className="max-w-4xl mx-auto p-12 md:p-24 text-center rounded-sm relative overflow-hidden">
+          <div className="absolute inset-0 -z-10">
+            <img
+              src="/images/start-line.png"
+              alt="Triathlete standing on road at sunrise"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
           </div>
           <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
             Ready for <br />
