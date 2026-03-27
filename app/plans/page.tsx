@@ -153,6 +153,7 @@ function PreviewModal({
   onClose: () => void;
 }) {
   const week = PREVIEW_WEEKS[event] || PREVIEW_WEEKS["5K"];
+  const isFree = event === "5K";
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm"
@@ -181,7 +182,15 @@ function PreviewModal({
           {event} &mdash; {level}
         </h3>
         <p className="font-body text-sm text-on-surface-variant mb-6">
-          {DURATIONS[event]?.[level]} plan &middot; $29.99 one-time
+          {DURATIONS[event]?.[level]} plan &middot;{" "}
+          {isFree ? (
+            <>
+              <span className="line-through text-on-surface-variant/50">$29.99</span>{" "}
+              <span className="text-primary font-bold">FREE</span>
+            </>
+          ) : (
+            "$29.99 one-time"
+          )}
         </p>
         <ul className="space-y-3 mb-8">
           {week.map((day) => (
@@ -192,13 +201,13 @@ function PreviewModal({
           ))}
         </ul>
         <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-6">
-          Full plan unlocked after purchase
+          {isFree ? "Full plan available for free download" : "Full plan unlocked after purchase"}
         </p>
         <Link
-          href="/assessment"
+          href={isFree ? "#" : "/assessment"}
           className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary-dim transition-all text-center rounded-sm"
         >
-          Purchase &mdash; $29.99
+          {isFree ? "Download Free Plan" : "Purchase \u2014 $29.99"}
         </Link>
       </motion.div>
     </motion.div>
@@ -249,6 +258,7 @@ export default function PlansPage() {
         <p className="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">
           Choose your event and difficulty level. Each plan is built on verified
           training methodologies &mdash; instant download, $29.99 one-time.
+          <span className="text-primary font-bold"> 5K plans are free.</span>
         </p>
       </motion.header>
 
@@ -270,66 +280,101 @@ export default function PlansPage() {
       </div>
 
       {/* ── Plan cards ────────────────────────────────────── */}
-      {filteredEvents.map((event) => (
-        <div key={event.name} className="mb-16">
-          <h2 className="font-headline text-2xl font-bold mb-6 text-on-surface flex items-center gap-3">
-            {event.name}
-            <span className="font-label text-[10px] text-secondary uppercase tracking-widest">
-              {event.category}
-            </span>
-          </h2>
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {LEVELS.map((level) => (
-              <motion.div
-                key={level}
-                variants={cardItem}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.2 }}
-                className="bg-surface-container p-8 rounded-sm border border-outline/18 hover:border-primary/40 transition-colors flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm ${levelBadgeClass(level)}`}>
-                      {level}
-                    </span>
-                    <span className="font-label text-xs text-on-surface-variant">
-                      {DURATIONS[event.name]?.[level]}
-                    </span>
+      {filteredEvents.map((event) => {
+        const isFree = event.name === "5K";
+        return (
+          <div key={event.name} className="mb-16">
+            <h2 className="font-headline text-2xl font-bold mb-6 text-on-surface flex items-center gap-3">
+              {event.name}
+              <span className="font-label text-[10px] text-secondary uppercase tracking-widest">
+                {event.category}
+              </span>
+              {isFree && (
+                <span className="font-label text-[10px] font-bold uppercase tracking-widest bg-primary text-on-primary px-3 py-1 rounded-sm">
+                  FREE
+                </span>
+              )}
+            </h2>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              variants={container}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-50px" }}
+            >
+              {LEVELS.map((level) => (
+                <motion.div
+                  key={level}
+                  variants={cardItem}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative bg-surface-container p-8 rounded-sm border border-outline/18 hover:border-primary/40 transition-colors flex flex-col justify-between overflow-hidden"
+                >
+                  {/* FREE ribbon for 5K */}
+                  {isFree && (
+                    <div className="absolute top-4 right-4 bg-primary text-on-primary text-[10px] font-label font-bold tracking-widest uppercase px-3 py-1 rounded-sm">
+                      FREE
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm ${levelBadgeClass(level)}`}>
+                        {level}
+                      </span>
+                      <span className="font-label text-xs text-on-surface-variant">
+                        {DURATIONS[event.name]?.[level]}
+                      </span>
+                    </div>
+                    <p className="font-body text-sm text-on-surface-variant mb-6 min-h-[60px]">
+                      {DESCRIPTIONS[event.name]?.[level]}
+                    </p>
                   </div>
-                  <p className="font-body text-sm text-on-surface-variant mb-6 min-h-[60px]">
-                    {DESCRIPTIONS[event.name]?.[level]}
-                  </p>
-                </div>
-                <div>
-                  <div className="font-headline text-2xl font-bold text-primary mb-6">
-                    $29.99
+                  <div>
+                    <div className="font-headline text-2xl font-bold text-primary mb-6">
+                      {isFree ? (
+                        <span className="flex items-center gap-3">
+                          <span className="line-through text-on-surface-variant/40 text-lg font-normal">$29.99</span>
+                          <span className="text-primary">FREE</span>
+                        </span>
+                      ) : (
+                        "$29.99"
+                      )}
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setPreview({ event: event.name, level })}
+                        className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-all text-center rounded-sm"
+                      >
+                        Preview
+                      </button>
+                      {isFree ? (
+                        <Link
+                          href="#"
+                          className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-primary text-on-primary hover:bg-primary-dim transition-all text-center rounded-sm"
+                        >
+                          Download Free
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/assessment"
+                          className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-primary text-on-primary hover:bg-primary-dim transition-all text-center rounded-sm"
+                        >
+                          Purchase
+                        </Link>
+                      )}
+                    </div>
+                    {isFree && (
+                      <p className="font-label text-[10px] text-on-surface-variant/60 text-center mt-3 tracking-wide">
+                        See what a Plan Metric plan looks like
+                      </p>
+                    )}
                   </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setPreview({ event: event.name, level })}
-                      className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-all text-center rounded-sm"
-                    >
-                      Preview
-                    </button>
-                    <Link
-                      href="/assessment"
-                      className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-primary text-on-primary hover:bg-primary-dim transition-all text-center rounded-sm"
-                    >
-                      Purchase
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      ))}
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        );
+      })}
 
       {/* Preview modal */}
       <AnimatePresence>

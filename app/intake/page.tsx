@@ -184,16 +184,8 @@ const META: Record<number, { num: string; title: string; sub: string }> = {
   11: { num: "11", title: "Motivation & Preferences",sub: "Your voice shapes your coach notes and plan tone." },
 };
 
-/* ─── Plan config ────────────────────────────────────────────── */
+/* ─── Plan config (only Premium & Elite — Starter goes to /plans) ── */
 const PLANS = [
-  {
-    id: "starter",
-    level: "Level 01",
-    name: "STARTER",
-    price: "$29.99",
-    billing: "one-time",
-    features: ["Pre-built goal paths", "Instant digital download", "Standard metric tracking"],
-  },
   {
     id: "premium",
     level: "Level 02",
@@ -214,8 +206,8 @@ const PLANS = [
 ];
 
 /* ─── Main component ─────────────────────────────────────────── */
-export default function IntakePage() {
-  const [plan, setPlan]           = useState("");
+export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: string } = {}) {
+  const [plan, setPlan]           = useState(preSelectedPlan || "");
   const [step, setStep]           = useState(0);
   const [form, setForm]           = useState<FD>(INIT);
   const [submitting, setSubmitting] = useState(false);
@@ -642,7 +634,7 @@ export default function IntakePage() {
               Select the plan you want. You will fill out the form first, then pay at the end.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px max-w-3xl mx-auto">
             {PLANS.map(p => (
               <div key={p.id} className="relative bg-surface-container-low p-10 flex flex-col justify-between hover:bg-surface-container transition-colors duration-300">
                 {p.badge && (

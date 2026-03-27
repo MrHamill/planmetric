@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { CountUp } from "@/components/CountUp";
 
 /* ─── Full comparison table data ─────────────────────────── */
@@ -28,6 +30,19 @@ const cardVariants = {
 
 /* ─── Page ────────────────────────────────────────────────── */
 export default function PricingPage() {
+  const [selected, setSelected] = useState<"premium" | "elite" | null>(null);
+  const router = useRouter();
+
+  const planNames: Record<string, string> = { premium: "Premium", elite: "Elite" };
+
+  function handleCardClick(plan: "starter" | "premium" | "elite") {
+    if (plan === "starter") {
+      router.push("/plans");
+      return;
+    }
+    setSelected(plan);
+  }
+
   return (
     <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
 
@@ -51,7 +66,7 @@ export default function PricingPage() {
 
       {/* ── Pricing cards ─────────────────────────────────── */}
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         initial="hidden"
         animate="show"
@@ -62,7 +77,10 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface-container p-10 flex flex-col justify-between border border-outline/18 hover:border-primary/40 transition-colors duration-500 rounded-sm"
+          onClick={() => handleCardClick("starter")}
+          className={`bg-surface-container p-10 flex flex-col justify-between border rounded-sm cursor-pointer transition-all duration-300 ${
+            selected ? "opacity-70 border-outline/18" : "border-outline/18 hover:border-primary/40"
+          }`}
         >
           <div>
             <div className="mb-12">
@@ -97,9 +115,9 @@ export default function PricingPage() {
                 One-Time
               </span>
             </div>
-            <Link href="/plans" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
+            <span className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
               Browse Plans
-            </Link>
+            </span>
           </div>
         </motion.div>
 
@@ -108,7 +126,14 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface-container p-10 flex flex-col justify-between border border-primary/30 relative rounded-sm"
+          onClick={() => handleCardClick("premium")}
+          className={`bg-surface-container p-10 flex flex-col justify-between relative rounded-sm cursor-pointer transition-all duration-300 ${
+            selected === "premium"
+              ? "border-2 border-primary scale-[1.02] shadow-[0_0_30px_rgba(160,82,45,0.12)]"
+              : selected === "elite"
+                ? "opacity-70 border border-primary/30"
+                : "border border-primary/30"
+          }`}
         >
           <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1 rounded-sm">
             MOST SELECTED
@@ -150,9 +175,13 @@ export default function PricingPage() {
                 One-Time
               </span>
             </div>
-            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-primary text-on-primary hover:bg-primary-dim transition-all duration-300 text-center rounded-sm">
-              Select Premium
-            </Link>
+            <span className={`block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest transition-all duration-300 text-center rounded-sm ${
+              selected === "premium"
+                ? "bg-primary text-on-primary"
+                : "bg-primary text-on-primary hover:bg-primary-dim"
+            }`}>
+              {selected === "premium" ? "✓ Selected" : "Select Premium"}
+            </span>
           </div>
         </motion.div>
 
@@ -161,7 +190,14 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface-container p-10 flex flex-col justify-between border border-outline/18 hover:border-primary/40 transition-colors duration-500 rounded-sm"
+          onClick={() => handleCardClick("elite")}
+          className={`bg-surface-container p-10 flex flex-col justify-between rounded-sm cursor-pointer transition-all duration-300 ${
+            selected === "elite"
+              ? "border-2 border-primary scale-[1.02] shadow-[0_0_30px_rgba(160,82,45,0.12)]"
+              : selected === "premium"
+                ? "opacity-70 border border-outline/18"
+                : "border border-outline/18 hover:border-primary/40"
+          }`}
         >
           <div>
             <div className="mb-12">
@@ -196,13 +232,39 @@ export default function PricingPage() {
                 / Month
               </span>
             </div>
-            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
-              Join Elite
-            </Link>
+            <span className={`block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest transition-all duration-300 text-center rounded-sm ${
+              selected === "elite"
+                ? "bg-primary text-on-primary"
+                : "bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface"
+            }`}>
+              {selected === "elite" ? "✓ Selected" : "Join Elite"}
+            </span>
           </div>
         </motion.div>
 
       </motion.div>
+
+      {/* ── Confirm & Continue button ───────────────────────── */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            className="flex justify-center mb-32"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.4, ease: "easeOut" as const }}
+          >
+            <Link
+              href={`/assessment?plan=${selected}`}
+              className="bg-primary text-on-primary px-12 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:bg-primary-dim hover:scale-105 transition-all duration-300 rounded-sm"
+            >
+              Continue with {planNames[selected]} &rarr;
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!selected && <div className="mb-32" />}
 
       {/* ── Compare Tiers ────────────────────────────────── */}
       <motion.section
