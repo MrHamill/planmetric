@@ -37,11 +37,11 @@ export default function TermsPage() {
           <ul className="mt-4 space-y-2 list-none">
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>
-              <span><strong className="text-on-surface">Starter ($49, one-time)</strong> — Pre-built training plans for common endurance goals.</span>
+              <span><strong className="text-on-surface">Starter ($29.99, one-time)</strong> — Pre-built training plans for common endurance goals.</span>
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>
-              <span><strong className="text-on-surface">Premium ($149, one-time)</strong> — Personalised plan built from your intake data, reviewed by our head coach.</span>
+              <span><strong className="text-on-surface">Premium ($99.99, one-time)</strong> — Personalised plan built from your intake data, reviewed by our head coach.</span>
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>

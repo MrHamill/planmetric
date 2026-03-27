@@ -5,8 +5,8 @@ import { createClient } from "@supabase/supabase-js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const PRICE_IDS: Record<string, string> = {
-  starter: "price_1TEQtsIvKrc1hDGjoQgyaUQN",
-  premium: "price_1TEQtpIvKrc1hDGjxyMoZ1FT",
+  starter: "price_1TFP7aEt0xoOVcMAjQJQHEfl",
+  premium: "price_1TFP8eEt0xoOVcMAJWL3g0IF",
   elite:   "price_1TEQtrIvKrc1hDGjPQjhulVk",
 };
 

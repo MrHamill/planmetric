@@ -86,7 +86,7 @@ export default function HomePage() {
           </motion.span>
 
           {/* Clip-path reveal headline */}
-          <h1 className="font-serif text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-6 text-on-surface">
+          <h1 className="font-serif text-5xl md:text-8xl font-extrabold tracking-tighter leading-tight mb-6 text-on-surface">
             <span className="block animate-reveal">
               Personalised
             </span>
@@ -111,7 +111,7 @@ export default function HomePage() {
               All Levels
             </span>
             <span className="font-label text-xs tracking-widest uppercase bg-surface-container text-on-surface px-4 py-2 rounded-sm font-bold border border-outline/18">
-              From $39
+              From $29.99
             </span>
           </motion.div>
 
@@ -357,7 +357,7 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="font-headline text-3xl font-bold mb-10 text-primary">
-              $39{" "}
+              $29.99{" "}
               <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
             </div>
             <Link href="/plans" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center rounded-sm">
@@ -402,7 +402,7 @@ export default function HomePage() {
               </li>
             </ul>
             <div className="font-headline text-3xl font-bold mb-10 text-primary">
-              $149{" "}
+              $99.99{" "}
               <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
             </div>
             <Link href="/assessment" className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary-dim transition-all text-center rounded-sm">

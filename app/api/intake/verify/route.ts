@@ -83,7 +83,7 @@ function section(title: string, rows: string) {
 }
 
 function buildEmail(d: Record<string, unknown>, plan: string): string {
-  const planLabels: Record<string, string> = { starter: "Starter — $49", premium: "Premium — $149", elite: "Elite — $99/month" };
+  const planLabels: Record<string, string> = { starter: "Starter — $29.99", premium: "Premium — $99.99", elite: "Elite — $99/month" };
   return `
   <!DOCTYPE html>
   <html>

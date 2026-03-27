@@ -4,38 +4,21 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { CountUp } from "@/components/CountUp";
 
-/* ─── Comparison table data ───────────────────────────────── */
+/* ─── Full comparison table data ─────────────────────────── */
 const comparisonRows = [
-  {
-    feature: "Training Metrics",
-    starter: "Standard (KM)",
-    premium: "Advanced (KM/Watts)",
-    elite: "Bio-Sync (KM/HRV)",
-  },
-  {
-    feature: "Intake Form Analysis",
-    starter: "—",
-    premium: "check",
-    elite: "check",
-  },
-  {
-    feature: "Thermal Adaptation Tips",
-    starter: "—",
-    premium: "Basic (Celsius)",
-    elite: "Dynamic (Celsius)",
-  },
-  {
-    feature: "Coach Direct Support",
-    starter: "—",
-    premium: "—",
-    elite: "Priority",
-  },
-  {
-    feature: "Plan Revisions",
-    starter: "—",
-    premium: "Once",
-    elite: "Monthly",
-  },
+  { feature: "Plan Type", starter: "Template", premium: "Personalised", elite: "Personalised + Coached" },
+  { feature: "Price", starter: "$29.99 one-time", premium: "$99.99 one-time", elite: "$99/month" },
+  { feature: "Personalisation Level", starter: "Pre-built template", premium: "Fully customised from intake data", elite: "Fully customised + ongoing adjustments" },
+  { feature: "Delivery Time", starter: "Instant download", premium: "Within 48 hours", elite: "Within 48 hours + monthly updates" },
+  { feature: "Intake Form", starter: "\u2014", premium: "Yes \u2014 8\u201310 min detailed intake", elite: "Yes \u2014 8\u201310 min detailed intake" },
+  { feature: "Strava Integration", starter: "\u2014", premium: "Yes \u2014 we analyse your last 30 days", elite: "Yes \u2014 ongoing data monitoring" },
+  { feature: "Coach Review", starter: "\u2014", premium: "Yes \u2014 reviewed by head coach", elite: "Yes \u2014 reviewed by head coach" },
+  { feature: "Monthly Check-ins", starter: "\u2014", premium: "\u2014", elite: "Yes \u2014 monthly video call" },
+  { feature: "Plan Adjustments", starter: "\u2014", premium: "\u2014", elite: "Yes \u2014 unlimited adjustments" },
+  { feature: "Race Execution Plan", starter: "Basic", premium: "Detailed with pacing strategy", elite: "Detailed + race week protocol" },
+  { feature: "Direct Coach Support", starter: "\u2014", premium: "Email support", elite: "Priority email + monthly call" },
+  { feature: "Brick Sessions", starter: "\u2014", premium: "check", elite: "Yes + race simulation sessions" },
+  { feature: "Nutrition Guidance", starter: "\u2014", premium: "Basic guidelines", elite: "Personalised nutrition plan" },
 ];
 
 const cardVariants = {
@@ -55,7 +38,7 @@ export default function PricingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <h1 className="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-none">
+        <h1 className="font-serif text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-on-surface">
           Invest in <br />
           <span className="text-primary">Performance.</span>
         </h1>
@@ -79,15 +62,15 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface p-10 flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-500 border border-transparent hover:border-primary/20"
+          className="bg-surface-container p-10 flex flex-col justify-between border border-outline/18 hover:border-primary/40 transition-colors duration-500 rounded-sm"
         >
           <div>
             <div className="mb-12">
-              <span className="text-primary font-headline font-bold tracking-widest text-xs uppercase">
+              <span className="text-secondary font-headline font-bold tracking-widest text-xs uppercase">
                 Level 01
               </span>
             </div>
-            <h2 className="font-headline text-4xl font-bold mb-4">STARTER</h2>
+            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">STARTER</h2>
             <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
               Fundamental blueprints for common endurance goals. Immediate
               access to proven methodologies.
@@ -98,7 +81,7 @@ export default function PricingPage() {
                 "Instant digital download",
                 "Standard metric tracking",
               ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface/80">
+                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
                   <span className="material-symbols-outlined text-xs text-primary">check</span>
                   {f}
                 </li>
@@ -107,15 +90,15 @@ export default function PricingPage() {
           </div>
           <div>
             <div className="mb-8">
-              <span className="font-headline text-5xl font-bold">
-                $<CountUp end={49} decimals={0} duration={1500} />
+              <span className="font-headline text-5xl font-bold text-primary">
+                $<CountUp end={29.99} decimals={2} duration={1500} />
               </span>
               <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
                 One-Time
               </span>
             </div>
-            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300 text-center">
-              Pick Plan
+            <Link href="/plans" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
+              Browse Plans
             </Link>
           </div>
         </motion.div>
@@ -125,7 +108,7 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface-container-low p-10 flex flex-col justify-between border border-primary/20 relative"
+          className="bg-surface-container p-10 flex flex-col justify-between border border-primary/30 relative rounded-sm"
         >
           <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1 rounded-sm">
             MOST SELECTED
@@ -139,7 +122,7 @@ export default function PricingPage() {
                 verified
               </span>
             </div>
-            <h2 className="font-headline text-4xl font-bold mb-4">PREMIUM</h2>
+            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">PREMIUM</h2>
             <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
               Bespoke construction based on your physiological intake. A
               tactical roadmap for serious results.
@@ -151,7 +134,7 @@ export default function PricingPage() {
                 "Weekly schedule & Coach notes",
                 "Final Review by Lead Coach",
               ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface">
+                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
                   <span className="material-symbols-outlined text-xs text-primary">check</span>
                   {f}
                 </li>
@@ -160,14 +143,14 @@ export default function PricingPage() {
           </div>
           <div>
             <div className="mb-8">
-              <span className="font-headline text-5xl font-bold">
-                $<CountUp end={149} decimals={0} duration={1500} />
+              <span className="font-headline text-5xl font-bold text-primary">
+                $<CountUp end={99.99} decimals={2} duration={1500} />
               </span>
               <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
                 One-Time
               </span>
             </div>
-            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-primary text-on-primary hover:opacity-90 transition-all duration-300 text-center">
+            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-primary text-on-primary hover:bg-primary-dim transition-all duration-300 text-center rounded-sm">
               Select Premium
             </Link>
           </div>
@@ -178,15 +161,15 @@ export default function PricingPage() {
           variants={cardVariants}
           whileHover={{ y: -4 }}
           transition={{ duration: 0.2 }}
-          className="bg-surface p-10 flex flex-col justify-between hover:bg-surface-container-low transition-colors duration-500 border border-transparent hover:border-primary/20"
+          className="bg-surface-container p-10 flex flex-col justify-between border border-outline/18 hover:border-primary/40 transition-colors duration-500 rounded-sm"
         >
           <div>
             <div className="mb-12">
-              <span className="text-primary font-headline font-bold tracking-widest text-xs uppercase">
+              <span className="text-secondary font-headline font-bold tracking-widest text-xs uppercase">
                 Level 03
               </span>
             </div>
-            <h2 className="font-headline text-4xl font-bold mb-4">ELITE</h2>
+            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">ELITE</h2>
             <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
               Full concierge performance management. Adaptive training that
               evolves with your biometric data.
@@ -197,7 +180,7 @@ export default function PricingPage() {
                 "Monthly 1:1 check-ins",
                 "Unlimited email support",
               ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface/80">
+                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
                   <span className="material-symbols-outlined text-xs text-primary">check</span>
                   {f}
                 </li>
@@ -206,14 +189,14 @@ export default function PricingPage() {
           </div>
           <div>
             <div className="mb-8">
-              <span className="font-headline text-5xl font-bold">
+              <span className="font-headline text-5xl font-bold text-primary">
                 $<CountUp end={99} decimals={0} duration={1500} />
               </span>
               <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
                 / Month
               </span>
             </div>
-            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-highest hover:bg-primary hover:text-on-primary transition-all duration-300 text-center">
+            <Link href="/assessment" className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
               Join Elite
             </Link>
           </div>
@@ -221,7 +204,7 @@ export default function PricingPage() {
 
       </motion.div>
 
-      {/* ── Comparison table ──────────────────────────────── */}
+      {/* ── Compare Tiers ────────────────────────────────── */}
       <motion.section
         className="mb-32"
         initial={{ opacity: 0, y: 20 }}
@@ -229,44 +212,44 @@ export default function PricingPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <h3 className="font-headline text-2xl font-bold mb-12 text-center">
+        <h3 className="font-serif text-3xl font-bold mb-12 text-center text-on-surface">
           Compare Tiers
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-surface-container-low">
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface-variant border-b border-outline-variant/10">
+              <tr className="bg-surface-container">
+                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface-variant border-b border-outline/10">
                   Feature
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline-variant/10">
+                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
                   Starter
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-primary border-b border-outline-variant/10">
-                  Premium
+                <th className="p-6 font-label text-xs uppercase tracking-widest text-primary border-b border-outline/10 bg-primary/5">
+                  Premium <span className="text-[9px] ml-1 bg-primary text-on-primary px-2 py-0.5 rounded-sm">MOST POPULAR</span>
                 </th>
-                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline-variant/10">
+                <th className="p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
                   Elite
                 </th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {comparisonRows.map((row) => (
-                <tr key={row.feature}>
-                  <td className="p-6 border-b border-outline-variant/10 text-on-surface-variant">
+                <tr key={row.feature} className="hover:bg-surface-container-low transition-colors">
+                  <td className="p-6 border-b border-outline/10 text-on-surface-variant font-medium">
                     {row.feature}
                   </td>
-                  <td className="p-6 border-b border-outline-variant/10">
+                  <td className="p-6 border-b border-outline/10 text-on-surface-variant">
                     {row.starter === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.starter}
                   </td>
-                  <td className="p-6 border-b border-outline-variant/10">
+                  <td className="p-6 border-b border-outline/10 text-on-surface-variant bg-primary/5">
                     {row.premium === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.premium}
                   </td>
-                  <td className="p-6 border-b border-outline-variant/10">
+                  <td className="p-6 border-b border-outline/10 text-on-surface-variant">
                     {row.elite === "check" ? (
                       <span className="material-symbols-outlined text-primary">check</span>
                     ) : row.elite}
@@ -280,7 +263,7 @@ export default function PricingPage() {
 
       {/* ── Assessment CTA ────────────────────────────────── */}
       <motion.section
-        className="relative bg-surface-container-low p-12 md:p-24 overflow-hidden group"
+        className="relative bg-surface-container p-12 md:p-24 overflow-hidden group rounded-sm"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
@@ -288,7 +271,7 @@ export default function PricingPage() {
       >
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
           <div className="max-w-xl">
-            <h2 className="font-headline text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 tracking-tight text-on-surface">
               Not sure where to start?
             </h2>
             <p className="text-on-surface-variant text-lg font-light leading-relaxed">
@@ -299,7 +282,7 @@ export default function PricingPage() {
           </div>
           <Link
             href="/assessment"
-            className="bg-primary text-on-primary px-10 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:scale-105 transition-transform duration-300 whitespace-nowrap"
+            className="bg-primary text-on-primary px-10 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:bg-primary-dim hover:scale-105 transition-all duration-300 whitespace-nowrap rounded-sm"
           >
             TAKE ASSESSMENT
           </Link>
