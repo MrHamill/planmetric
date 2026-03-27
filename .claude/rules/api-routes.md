@@ -8,6 +8,7 @@ paths:
 ## Route Files
 
 All API routes are under `app/api/`:
+- `app/api/generate-plan/route.ts` — POST: generates personalised HTML plan via Claude API + emails it
 - `app/api/checkout/route.ts` — POST: creates Stripe session + saves draft to Supabase
 - `app/api/intake/route.ts` — POST: saves intake form + sends admin email
 - `app/api/intake/verify/route.ts` — GET: verifies Stripe payment, marks submission "paid"
