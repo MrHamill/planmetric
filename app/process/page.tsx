@@ -106,11 +106,11 @@ function StepRow({ step, index }: { step: (typeof steps)[0]; index: number }) {
 
       {/* Image — left on even rows (mobile: always first) */}
       <div className={`md:col-span-5 ${isEven ? "md:order-first" : "md:order-last"} order-first`}>
-        <div className="overflow-hidden rounded-xl max-w-[360px] mx-auto md:mx-0">
+        <div className="overflow-hidden rounded-xl max-w-[400px] mx-auto md:mx-0">
           <img
             src={step.image}
             alt={step.title}
-            className="w-full h-[240px] md:h-[280px] object-cover hover:scale-[1.02] transition-transform duration-300"
+            className="w-full h-[240px] md:h-[300px] object-cover hover:scale-[1.02] transition-transform duration-300"
           />
         </div>
       </div>
@@ -156,11 +156,15 @@ export default function ProcessPage() {
 
       {/* ── Hero ──────────────────────────────────────────── */}
       <motion.section
-        className="px-8 max-w-7xl mx-auto mb-32"
+        className="relative px-8 max-w-7xl mx-auto mb-32"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/runner.png" alt="Runner mid-stride on track" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.8)" }} />
+        </div>
         <div className="flex flex-col md:flex-row items-baseline gap-8">
           <div className="w-full md:w-3/5">
             <span className="font-label text-primary tracking-[0.3em] uppercase text-[10px] mb-4 block">
@@ -207,7 +211,7 @@ export default function ProcessPage() {
               alt="Triathlete standing on road at sunrise"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
+            <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.7)" }} />
           </div>
           <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
             Ready for <br />

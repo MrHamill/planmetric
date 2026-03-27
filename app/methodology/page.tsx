@@ -77,7 +77,7 @@ export default function MethodologyPage() {
             alt="Triathlon transition area overhead view"
             className="w-full max-h-[350px] object-cover hover:scale-[1.02] transition-transform duration-300"
           />
-          <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(240,230,212,0.3)" }} />
+          <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(240,230,212,0.25)" }} />
         </div>
       </motion.div>
 
@@ -263,7 +263,7 @@ export default function MethodologyPage() {
                 <img
                   src="/images/vo2-testing.png"
                   alt="Athlete on treadmill with VO2 mask and data screens"
-                  className="w-full h-[240px] md:h-auto object-cover hover:scale-[1.02] transition-transform duration-300"
+                  className="w-full h-[240px] object-cover hover:scale-[1.02] transition-transform duration-300"
                 />
               </div>
               <div className="relative w-full border border-outline-variant/20 p-12 overflow-hidden flex flex-col justify-center">
@@ -314,18 +314,19 @@ export default function MethodologyPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="max-w-4xl">
-          <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
-            The Output
-          </span>
-          <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
-            THE HTML PLAN INTERFACE.
-          </h2>
-          <p className="font-body text-lg text-on-surface-variant leading-relaxed mb-12 max-w-2xl">
-            No PDFs. No messy spreadsheets. Your training plan is delivered as
-            a bespoke HTML interface—beautifully designed, fully collapsible,
-            and accessible on any device.
-          </p>
+        <div className="max-w-5xl flex flex-col md:flex-row gap-12 items-start">
+          <div className="flex-1">
+            <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
+              The Output
+            </span>
+            <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
+              THE HTML PLAN INTERFACE.
+            </h2>
+            <p className="font-body text-lg text-on-surface-variant leading-relaxed mb-12 max-w-2xl">
+              No PDFs. No messy spreadsheets. Your training plan is delivered as
+              a bespoke HTML interface—beautifully designed, fully collapsible,
+              and accessible on any device.
+            </p>
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
             variants={pillarsVariants}
@@ -345,17 +346,29 @@ export default function MethodologyPage() {
               </motion.div>
             ))}
           </motion.div>
+          </div>
+          <div className="hidden md:block overflow-hidden rounded-xl max-w-[300px] shrink-0">
+            <img
+              src="/images/athlete-phone.png"
+              alt="Athlete checking phone after workout"
+              className="w-full h-[240px] object-cover hover:scale-[1.02] transition-transform duration-300"
+            />
+          </div>
         </div>
       </motion.section>
 
       {/* ── Final CTA ─────────────────────────────────────── */}
       <motion.section
-        className="px-8 md:px-16 lg:px-24 py-32 bg-surface-container-low mx-8 md:mx-16 lg:mx-24 flex flex-col items-center text-center"
+        className="relative px-8 md:px-16 lg:px-24 py-32 mx-8 md:mx-16 lg:mx-24 flex flex-col items-center text-center overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/swimmer.png" alt="Swimmer in open water" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
+        </div>
         <h2 className="font-serif text-4xl md:text-6xl font-extrabold mb-10 tracking-tight text-on-surface">
           READY TO BUILD YOUR PLAN?
         </h2>

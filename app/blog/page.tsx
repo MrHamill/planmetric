@@ -10,7 +10,7 @@ const FEATURED = [
     readTime: "8 min read",
     category: "Training",
     categoryColor: "text-primary",
-    image: "/images/transition-overhead.png",
+    image: "/images/blog-training.png",
   },
   {
     title: "The science of polarised training",
@@ -63,13 +63,17 @@ export default function BlogPage() {
   return (
     <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
+      {/* ── Hero (with background image) ─────────────────── */}
       <motion.header
-        className="mb-16 max-w-3xl"
+        className="relative mb-16 max-w-3xl overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/transition-overhead.png" alt="Triathlon transition area overhead" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.8)" }} />
+        </div>
         <span className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-4 block">
           The Journal
         </span>
@@ -97,7 +101,7 @@ export default function BlogPage() {
             className="bg-surface-container rounded-sm border border-outline/18 overflow-hidden group hover:border-primary/40 transition-colors"
           >
             {/* Featured image */}
-            <div className="h-[200px] bg-surface-container-high relative overflow-hidden rounded-t-sm">
+            <div className="h-[220px] bg-surface-container-high relative overflow-hidden rounded-t-sm">
               <img
                 src={article.image}
                 alt={article.title}

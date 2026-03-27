@@ -58,7 +58,7 @@ export default function HomePage() {
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to right, rgba(240,230,212,0.92) 0%, rgba(240,230,212,0.6) 60%, rgba(240,230,212,0.2) 100%)",
+              background: "linear-gradient(to right, rgba(240,230,212,0.95) 0%, rgba(240,230,212,0.7) 50%, rgba(240,230,212,0.2) 100%)",
             }}
           />
           {/* Warm radial tint overlay */}
@@ -209,12 +209,17 @@ export default function HomePage() {
 
       {/* ── Metrics That Matter (full-bleed) ─────────────── */}
       <motion.section
-        className="py-32 px-8 md:px-24 bg-surface-container-lowest"
+        className="relative py-32 px-8 md:px-24"
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
       >
+        {/* Background image */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/metrics-watch.png" alt="Sports watch displaying training metrics" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
+        </div>
         <div className="max-w-5xl mx-auto">
           <Divider />
           <motion.h2
@@ -433,11 +438,11 @@ export default function HomePage() {
         {/* Background image */}
         <div className="absolute inset-0 -z-10">
           <img
-            src="/images/transition-overhead.png"
-            alt="Triathlon transition area overhead view"
+            src="/images/finish-line.png"
+            alt="Triathlete celebrating at finish line"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.82)" }} />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
         </div>
         {/* Ambient glow behind CTA headline */}
         <div

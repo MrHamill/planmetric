@@ -48,11 +48,15 @@ export default function PricingPage() {
 
       {/* ── Hero ──────────────────────────────────────────── */}
       <motion.header
-        className="mb-20 max-w-3xl"
+        className="relative mb-20 max-w-3xl overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/cyclist.png" alt="Cyclist on road bike in aero position" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
+        </div>
         <h1 className="font-serif text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-on-surface">
           Invest in <br />
           <span className="text-primary">Performance.</span>
@@ -278,12 +282,16 @@ export default function PricingPage() {
 
       {/* ── Compare Tiers ────────────────────────────────── */}
       <motion.section
-        className="mb-32"
+        className="relative mb-32 overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <img src="/images/transition-overhead.png" alt="Triathlon transition area" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.9)" }} />
+        </div>
         <h3 className="font-serif text-3xl font-bold mb-12 text-center text-on-surface">
           Compare Tiers
         </h3>
