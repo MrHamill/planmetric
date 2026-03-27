@@ -5,6 +5,7 @@
   --font-headline: var(--font-epilogue), sans-serif;
   --font-body:     var(--font-manrope),  sans-serif;
   --font-label:    var(--font-inter),    sans-serif;
+  --font-serif:    var(--font-playfair), serif;
 
   /* ── Border radius ──────────────────────────────────── */
   --radius-sm: 0.125rem;   /* 2px  — buttons, cards */
@@ -13,62 +14,62 @@
   --radius-2xl: 0.75rem;   /* 12px — badges, pills */
 
   /* ── Primary palette ────────────────────────────────── */
-  --color-primary:           #d9c2b4;
-  --color-primary-dim:       #cbb4a7;
-  --color-primary-container: #544439;
-  --color-on-primary:        #4d3d33;
-  --color-on-primary-container: #e3ccbe;
-  --color-primary-fixed:     #f6decf;
-  --color-primary-fixed-dim: #e8d0c2;
-  --color-on-primary-fixed:  #4c3c32;
-  --color-on-primary-fixed-variant: #69584d;
-  --color-inverse-primary:   #6d5c50;
-  --color-surface-tint:      #d9c2b4;
+  --color-primary:           #A0522D;  /* Chestnut brown — buttons, accents */
+  --color-primary-dim:       #6B3A2A;  /* Darker chestnut — hover on primary */
+  --color-primary-container: #C4734F;  /* Burnt sienna */
+  --color-on-primary:        #F0E6D4;  /* Cream — text on primary buttons */
+  --color-on-primary-container: #F5EDE0;
+  --color-primary-fixed:     #F5EDE0;
+  --color-primary-fixed-dim: #EDE3D0;
+  --color-on-primary-fixed:  #1C1614;
+  --color-on-primary-fixed-variant: #3A2E28;
+  --color-inverse-primary:   #D8CDB8;
+  --color-surface-tint:      #A0522D;
 
   /* ── Surface palette ────────────────────────────────── */
-  --color-background:              #0e0e0d;
-  --color-surface:                 #0e0e0d;
-  --color-surface-dim:             #0e0e0d;
-  --color-surface-bright:          #2b2c2a;
-  --color-surface-variant:         #252624;
-  --color-surface-container-lowest:  #000000;
-  --color-surface-container-low:     #131312;
-  --color-surface-container:         #191a18;
-  --color-surface-container-high:    #1f201e;
-  --color-surface-container-highest: #252624;
-  --color-inverse-surface:         #fcf9f6;
-  --color-inverse-on-surface:      #565553;
+  --color-background:              #F0E6D4;  /* Main page background — warm cream */
+  --color-surface:                 #F0E6D4;  /* Same as background */
+  --color-surface-dim:             #EDE3D0;
+  --color-surface-bright:          #F5EDE0;
+  --color-surface-variant:         #E4DAC8;
+  --color-surface-container-lowest:  #F5EDE0;  /* Lightest surface */
+  --color-surface-container-low:     #EDE3D0;  /* Light surface */
+  --color-surface-container:         #E4DAC8;  /* Cards, nav background */
+  --color-surface-container-high:    #DBD0BC;  /* Hover states, active cards */
+  --color-surface-container-highest: #D8CDB8;  /* Footer, deepest cream */
+  --color-inverse-surface:         #1C1614;
+  --color-inverse-on-surface:      #F0E6D4;
 
   /* ── Text palette ───────────────────────────────────── */
-  --color-on-surface:         #e7e5e1;
-  --color-on-background:      #e7e5e1;
-  --color-on-surface-variant: #acaba7;
+  --color-on-surface:         #1C1614;  /* Headings, strong text — near black */
+  --color-on-background:      #1C1614;
+  --color-on-surface-variant: #3A2E28;  /* Body text — dark brown */
 
   /* ── Secondary ──────────────────────────────────────── */
-  --color-secondary:               #9f9e99;
-  --color-secondary-dim:           #9f9e99;
-  --color-secondary-container:     #3c3b38;
-  --color-on-secondary:            #20201d;
-  --color-on-secondary-container:  #c1bfba;
-  --color-secondary-fixed:         #e5e2dd;
-  --color-secondary-fixed-dim:     #d7d4cf;
-  --color-on-secondary-fixed:      #403f3c;
-  --color-on-secondary-fixed-variant: #5c5b58;
+  --color-secondary:               #C4734F;  /* Burnt sienna — eyebrow, labels */
+  --color-secondary-dim:           #A0522D;
+  --color-secondary-container:     #EDE3D0;
+  --color-on-secondary:            #1C1614;
+  --color-on-secondary-container:  #3A2E28;
+  --color-secondary-fixed:         #F5EDE0;
+  --color-secondary-fixed-dim:     #EDE3D0;
+  --color-on-secondary-fixed:      #1C1614;
+  --color-on-secondary-fixed-variant: #3A2E28;
 
   /* ── Tertiary ───────────────────────────────────────── */
-  --color-tertiary:                #fff2e1;
-  --color-tertiary-dim:            #f0d3a6;
-  --color-tertiary-container:      #ffe1b3;
-  --color-tertiary-fixed:          #ffe1b3;
-  --color-tertiary-fixed-dim:      #f0d3a6;
-  --color-on-tertiary:             #6d5935;
-  --color-on-tertiary-container:   #64502d;
-  --color-on-tertiary-fixed:       #513e1d;
-  --color-on-tertiary-fixed-variant: #6f5a36;
+  --color-tertiary:                #8B4513;
+  --color-tertiary-dim:            #6B3A2A;
+  --color-tertiary-container:      #EDE3D0;
+  --color-tertiary-fixed:          #EDE3D0;
+  --color-tertiary-fixed-dim:      #DBD0BC;
+  --color-on-tertiary:             #F0E6D4;
+  --color-on-tertiary-container:   #1C1614;
+  --color-on-tertiary-fixed:       #1C1614;
+  --color-on-tertiary-fixed-variant: #3A2E28;
 
   /* ── Outline ────────────────────────────────────────── */
-  --color-outline:         #767572;
-  --color-outline-variant: #484845;
+  --color-outline:         #A0522D;  /* Use with opacity modifiers e.g. /18 */
+  --color-outline-variant: #A0522D;  /* Use with opacity modifiers e.g. /10 */
 
   /* ── Error ──────────────────────────────────────────── */
   --color-error:           #ed7f64;
@@ -87,21 +88,44 @@
 
 /* ── Base ───────────────────────────────────────────────── */
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background-color: #0e0e0d;
-  color: #e7e5e1;
+  background-color: #F0E6D4;
+  color: #1C1614;
   font-family: var(--font-manrope), sans-serif;
 }
 
 ::selection {
-  background-color: #d9c2b4;
-  color: #4d3d33;
+  background-color: #A0522D;
+  color: #F0E6D4;
 }
 
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;
+}
+
+/* ── Scroll indicator bounce ─────────────────────────────── */
+@keyframes bounce-scroll {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.animate-bounce-scroll {
+  animation: bounce-scroll 1.5s ease-in-out infinite;
+}
+
+/* ── Clip-path text reveal ───────────────────────────────── */
+@keyframes reveal-ltr {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.animate-reveal {
+  animation: reveal-ltr 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  clip-path: inset(0 100% 0 0);
+}
+.animate-reveal-delay {
+  animation: reveal-ltr 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
+  clip-path: inset(0 100% 0 0);
 }
