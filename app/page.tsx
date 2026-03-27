@@ -50,12 +50,17 @@ export default function HomePage() {
           transition={{ duration: 1.2, ease: "easeOut" as const }}
         >
           <img
-            src="/images/hero.jpg"
-            alt="Endurance athlete training"
-            className="w-full h-full object-cover brightness-90 opacity-40 md:opacity-70"
+            src="/images/finish-line.png"
+            alt="Triathlete celebrating at finish line"
+            className="w-full h-full object-cover"
           />
-          {/* Base gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/30" />
+          {/* Warm gradient overlay for text readability */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(to right, rgba(240,230,212,0.92) 0%, rgba(240,230,212,0.7) 50%, rgba(240,230,212,0.3) 100%)",
+            }}
+          />
           {/* Warm radial tint overlay */}
           <div
             className="absolute inset-0"
@@ -275,39 +280,8 @@ export default function HomePage() {
         </div>
       </motion.section>
 
-      {/* ── Transition: metrics → illustration ────────────── */}
-      <SectionFade from="#F5EDE0" to="#EDE3D0" />
-
-      {/* ── Illustration strip ───────────────────────────── */}
-      <motion.section
-        className="py-20 px-8 md:px-24 bg-surface-container-low"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" as const }}
-      >
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { label: "Runner", icon: "directions_run" },
-            { label: "Cyclist", icon: "directions_bike" },
-            { label: "Swimmer", icon: "pool" },
-            { label: "Triathlete", icon: "emoji_events" },
-          ].map(({ label, icon }) => (
-            <div
-              key={label}
-              className="aspect-square bg-surface-container rounded-sm flex flex-col items-center justify-center border border-outline/10 hover:border-primary/30 transition-colors"
-            >
-              <span className="material-symbols-outlined text-primary/40 text-6xl mb-4">{icon}</span>
-              <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">
-                [{label} illustration]
-              </span>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* ── Transition: illustration → pricing ────────────── */}
-      <SectionFade from="#EDE3D0" to="#F0E6D4" />
+      {/* ── Transition: metrics → pricing ─────────────────── */}
+      <SectionFade from="#F5EDE0" to="#F0E6D4" />
 
       {/* ── Pricing tiers ─────────────────────────────────── */}
       <section className="py-32 bg-background">

@@ -7,28 +7,28 @@ import { useRef } from "react";
 const steps = [
   {
     number: "01",
-    title: "CHOOSE YOUR PATH",
-    body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. From pre-built templates to fully personalised coaching, every path starts with understanding where you are.",
+    title: "ASSESS",
+    body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. Complete our deep-dive questionnaire covering fitness, goals, schedule, and injury history. This isn't just a form; it's the architectural blueprint of your next season.",
     badge: null,
-    image: "/images/process-step1.jpg",
-    phase: "Phase: Initialization",
+    image: "/images/swimmer.png",
+    phase: "Phase: Assessment",
     cta: null,
   },
   {
     number: "02",
-    title: "8–10 MIN INTAKE",
-    body: "Precision starts with data. Connect your Strava history and complete our deep-dive questionnaire. We analyse your injury history, specific heart rate zones (BPM), and your current weekly volume in KM. This isn't just a form; it's the architectural blueprint of your next season.",
+    title: "BUILD",
+    body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
     badge: null,
-    image: "/images/process-step2.jpg",
-    phase: "Phase: Data Integration",
+    image: "/images/cyclist.png",
+    phase: "Phase: Construction",
     cta: null,
   },
   {
     number: "03",
-    title: "48H DELIVERY",
+    title: "DELIVER",
     body: "Within 48 hours, your personalised plan is built around everything about you — your fitness, your race, your schedule, your body. No generic templates. Your sessions are calibrated to your exact thresholds and delivered directly to your dashboard.",
     badge: null,
-    image: "/images/process-step3.jpg",
+    image: "/images/athlete-phone.png",
     phase: "Phase: Deployment",
     cta: "START YOUR INTAKE",
   },
@@ -72,7 +72,7 @@ function TimelineLine() {
         <motion.path
           ref={ref}
           d="M1 0 V 100"
-          stroke="rgba(255,255,255,0.12)"
+          stroke="rgba(160,82,45,0.2)"
           strokeWidth="0.6"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -89,22 +89,37 @@ function StepRow({ step, index }: { step: (typeof steps)[0]; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const delay = index * 0.15;
+  const isEven = index % 2 === 0;
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: "easeOut", delay }}
-      className="md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start relative"
+      transition={{ duration: 0.6, ease: "easeOut" as const, delay }}
+      className="md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative"
     >
       {/* Step circle */}
       <div className="md:col-span-1 flex items-center justify-center md:justify-start">
         <StepCircle number={step.number} />
       </div>
 
+      {/* Image — left on even rows (mobile: always first) */}
+      <div className={`md:col-span-5 ${isEven ? "md:order-first" : "md:order-last"} order-first`}>
+        <div className="overflow-hidden rounded-xl max-w-[360px] mx-auto md:mx-0">
+          <img
+            src={step.image}
+            alt={step.title}
+            className="w-full h-[240px] md:h-[280px] object-cover hover:scale-[1.02] transition-transform duration-300"
+          />
+        </div>
+      </div>
+
       {/* Text */}
-      <div className="md:col-span-5">
+      <div className={`md:col-span-6 ${isEven ? "" : "md:order-first"}`}>
+        <span className="font-label text-[10px] text-primary uppercase tracking-widest mb-3 block">
+          {step.phase}
+        </span>
         <h3 className="font-headline text-3xl font-bold mb-6 tracking-tight">
           {step.title}
         </h3>
@@ -129,23 +144,6 @@ function StepRow({ step, index }: { step: (typeof steps)[0]; index: number }) {
             {step.cta}
           </Link>
         )}
-      </div>
-
-      {/* Image */}
-      <div className="md:col-span-6 md:pl-12">
-        <div className="aspect-[16/9] bg-surface-container-low rounded-sm overflow-hidden relative group">
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
-          <img
-            src={step.image}
-            alt={step.title}
-            className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
-          />
-          <div className="absolute bottom-6 left-6 z-20">
-            <span className="font-label text-xs text-primary-dim uppercase tracking-widest">
-              {step.phase}
-            </span>
-          </div>
-        </div>
       </div>
     </motion.div>
   );
@@ -216,20 +214,12 @@ export default function ProcessPage() {
             Join a community of disciplined athletes who value data as much as
             effort.
           </p>
-          <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-            <Link
-              href="/assessment"
-              className="px-10 py-5 bg-primary text-on-primary font-bold tracking-widest uppercase rounded-sm text-sm hover:scale-105 transition-transform duration-300"
-            >
-              BEGIN ONBOARDING
-            </Link>
-            <Link
-              href="/pricing"
-              className="font-label text-xs tracking-widest uppercase border-b border-primary/30 pb-1 hover:border-primary transition-colors"
-            >
-              View Pricing Structure
-            </Link>
-          </div>
+          <Link
+            href="/assessment"
+            className="px-10 py-5 bg-primary text-on-primary font-bold tracking-widest uppercase rounded-sm text-sm hover:bg-primary-dim hover:scale-105 transition-all duration-300"
+          >
+            START YOUR ASSESSMENT
+          </Link>
         </div>
       </motion.section>
 

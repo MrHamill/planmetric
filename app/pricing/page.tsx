@@ -64,9 +64,18 @@ export default function PricingPage() {
         </p>
       </motion.header>
 
-      {/* ── Pricing cards ─────────────────────────────────── */}
+      {/* ── Pricing cards (with subtle background image) ─── */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 overflow-hidden rounded-xl -z-10">
+          <img
+            src="/images/runner.png"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.88)" }} />
+        </div>
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         initial="hidden"
         animate="show"
@@ -243,6 +252,7 @@ export default function PricingPage() {
         </motion.div>
 
       </motion.div>
+      </div>
 
       {/* ── Confirm & Continue button ───────────────────────── */}
       <AnimatePresence>

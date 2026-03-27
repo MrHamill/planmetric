@@ -29,7 +29,7 @@ export default function MethodologyPage() {
             <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
               Precision Engineering
             </span>
-            <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none mb-8">
+            <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none mb-8 text-on-surface">
               METHODOLOGY
               <span className="text-primary">.</span>
             </h1>
@@ -62,6 +62,23 @@ export default function MethodologyPage() {
           </div>
         </div>
       </motion.section>
+
+      {/* ── Banner image ───────────────────────────────────── */}
+      <motion.div
+        className="px-8 md:px-16 lg:px-24 mb-32 max-w-7xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, ease: "easeOut" as const }}
+      >
+        <div className="overflow-hidden rounded-xl">
+          <img
+            src="/images/triathlete.png"
+            alt="Triathlete crossing finish line"
+            className="w-full max-h-[400px] object-cover hover:scale-[1.02] transition-transform duration-300"
+          />
+        </div>
+      </motion.div>
 
       {/* ── Pillars ───────────────────────────────────────── */}
       <motion.section
@@ -332,7 +349,7 @@ export default function MethodologyPage() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <h2 className="font-headline text-4xl md:text-6xl font-extrabold mb-10 tracking-tight">
+        <h2 className="font-serif text-4xl md:text-6xl font-extrabold mb-10 tracking-tight text-on-surface">
           READY TO BUILD YOUR PLAN?
         </h2>
         <Link
