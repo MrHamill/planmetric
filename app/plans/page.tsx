@@ -4,7 +4,37 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
-/* ─── Plan data ──────────────────────────────────────────── */
+/* ─── Palette ────────────────────────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+const RULE = "rgba(245,245,240,0.15)";
+
+/* ─── Animations ─────────────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+const heroIn = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+/* ─── Level badge colours ────────────────────────────────────── */
+const LEVEL_COLORS: Record<string, { text: string; bg: string }> = {
+  Beginner:     { text: "#22c55e", bg: "rgba(34,197,94,0.12)" },
+  Intermediate: { text: "#f97316", bg: "rgba(249,115,22,0.12)" },
+  Elite:        { text: "#a855f7", bg: "rgba(168,85,247,0.12)" },
+};
+
+/* ─── Plan data ──────────────────────────────────────────────── */
 const EVENTS = [
   { name: "5K", category: "Running" },
   { name: "10K", category: "Running" },
@@ -70,7 +100,7 @@ const PREVIEW_WEEKS: Record<string, string[]> = {
     "Mon: Rest",
     "Tue: Easy run 20min (walk breaks OK)",
     "Wed: Cross-training 30min",
-    "Thu: Intervals — 6x1min fast / 2min walk",
+    "Thu: Intervals \u2014 6x1min fast / 2min walk",
     "Fri: Rest",
     "Sat: Easy run 25min",
     "Sun: Long walk/run 35min",
@@ -81,7 +111,7 @@ const PREVIEW_WEEKS: Record<string, string[]> = {
     "Wed: Tempo run 20min at moderate effort",
     "Thu: Easy run 25min + 4 strides",
     "Fri: Rest",
-    "Sat: Intervals — 5x3min at 10K effort",
+    "Sat: Intervals \u2014 5x3min at 10K effort",
     "Sun: Long run 45min easy",
   ],
   "Half Marathon": [
@@ -131,18 +161,7 @@ const PREVIEW_WEEKS: Record<string, string[]> = {
   ],
 };
 
-/* ─── Card variants ──────────────────────────────────────── */
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05 } },
-};
-
-const cardItem = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
-};
-
-/* ─── Preview Modal ──────────────────────────────────────── */
+/* ─── Preview Modal ──────────────────────────────────────────── */
 function PreviewModal({
   event,
   level,
@@ -154,16 +173,19 @@ function PreviewModal({
 }) {
   const week = PREVIEW_WEEKS[event] || PREVIEW_WEEKS["5K"];
   const isFree = event === "5K";
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.70)", backdropFilter: "blur(8px)" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
-        className="bg-surface-container-low p-8 md:p-12 max-w-lg w-full rounded-sm border border-outline/18 relative"
+        className="max-w-lg w-full p-8 md:p-12 rounded-sm relative"
+        style={{ background: "#161616", border: `1px solid ${CARD_BORDER}` }}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
@@ -171,41 +193,44 @@ function PreviewModal({
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors"
+          className="absolute top-4 right-4 transition-colors hover:text-white"
+          style={{ color: DIM }}
         >
-          <span className="material-symbols-outlined">close</span>
+          &#10005;
         </button>
-        <span className="font-label text-[10px] text-secondary uppercase tracking-widest block mb-2">
+
+        <span className="font-label text-[10px] uppercase tracking-widest block mb-2" style={{ color: ACCENT }}>
           Week 1 Preview
         </span>
-        <h3 className="font-serif text-2xl font-bold mb-2 text-on-surface">
+        <h3 className="font-headline text-2xl font-bold mb-2">
           {event} &mdash; {level}
         </h3>
-        <p className="font-body text-sm text-on-surface-variant mb-6">
+        <p className="font-body text-sm mb-6" style={{ color: DIM }}>
           {DURATIONS[event]?.[level]} plan &middot;{" "}
           {isFree ? (
-            <>
-              <span className="line-through text-on-surface-variant/50">$29.99</span>{" "}
-              <span className="text-primary font-bold">FREE</span>
-            </>
+            <span style={{ color: ACCENT, fontWeight: 700 }}>FREE</span>
           ) : (
             "$29.99 one-time"
           )}
         </p>
+
         <ul className="space-y-3 mb-8">
           {week.map((day) => (
             <li key={day} className="flex items-start gap-3 text-sm">
-              <span className="material-symbols-outlined text-primary text-base mt-0.5">event</span>
-              <span className="text-on-surface-variant">{day}</span>
+              <span style={{ color: ACCENT }} className="mt-0.5">&#9654;</span>
+              <span style={{ color: DIM }}>{day}</span>
             </li>
           ))}
         </ul>
-        <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-6">
+
+        <p className="font-label text-[10px] uppercase tracking-widest mb-6" style={{ color: DIM }}>
           {isFree ? "Full plan available for free download" : "Full plan unlocked after purchase"}
         </p>
+
         <Link
           href={isFree ? "#" : "/assessment"}
-          className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary-dim transition-all text-center rounded-sm"
+          className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+          style={{ background: ACCENT, color: TEXT }}
         >
           {isFree ? "Download Free Plan" : "Purchase \u2014 $29.99"}
         </Link>
@@ -214,21 +239,7 @@ function PreviewModal({
   );
 }
 
-/* ─── Level badge colour ─────────────────────────────────── */
-function levelBadgeClass(level: string) {
-  switch (level) {
-    case "Beginner":
-      return "bg-bike/15 text-bike";
-    case "Intermediate":
-      return "bg-run/15 text-run";
-    case "Elite":
-      return "bg-brick/15 text-brick";
-    default:
-      return "bg-primary/15 text-primary";
-  }
-}
-
-/* ─── Page ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function PlansPage() {
   const [preview, setPreview] = useState<{ event: string; level: string } | null>(null);
   const [filter, setFilter] = useState<"All" | "Running" | "Triathlon">("All");
@@ -238,147 +249,218 @@ export default function PlansPage() {
     : EVENTS.filter((e) => e.category === filter);
 
   return (
-    <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <motion.header
-        className="relative mb-16 max-w-3xl overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/runner.png" alt="Runner mid-stride on track with race number" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
-        </div>
-        <span className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-4 block">
-          Starter Plans
-        </span>
-        <h1 className="font-serif text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 leading-none text-on-surface">
-          Pre-built plans.
-          <br />
-          <span className="text-primary">Proven results.</span>
-        </h1>
-        <p className="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">
-          Choose your event and difficulty level. Each plan is built on verified
-          training methodologies &mdash; instant download, $29.99 one-time.
-          <span className="text-primary font-bold"> 5K plans are free.</span>
-        </p>
-      </motion.header>
+      {/* Grain */}
+      <div
+        className="pointer-events-none fixed inset-0 z-50"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "256px 256px",
+        }}
+      />
 
-      {/* ── Filter tabs ───────────────────────────────────── */}
-      <div className="flex gap-4 mb-12">
-        {(["All", "Running", "Triathlon"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setFilter(tab)}
-            className={`font-label text-xs tracking-widest uppercase px-4 py-2 rounded-sm transition-all ${
-              filter === tab
-                ? "bg-primary text-on-primary font-bold"
-                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
-            }`}
+      {/* ═══════════════ HERO ═══════════════════════════════ */}
+      <section className="min-h-[55vh] flex flex-col justify-end px-8 md:px-24 pt-40 pb-24 relative overflow-hidden">
+        {/* Ghost word */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          <span
+            className="font-headline font-extrabold text-[22vw] leading-none whitespace-nowrap uppercase"
+            style={{ WebkitTextStroke: "1px rgba(245,245,240,0.05)", color: "transparent" }}
           >
-            {tab}
-          </button>
-        ))}
-      </div>
+            PLANS.
+          </span>
+        </div>
 
-      {/* ── Plan cards ────────────────────────────────────── */}
-      {filteredEvents.map((event) => {
-        const isFree = event.name === "5K";
-        return (
-          <div key={event.name} className="mb-16">
-            <h2 className="font-headline text-2xl font-bold mb-6 text-on-surface flex items-center gap-3">
-              {event.name}
-              <span className="font-label text-[10px] text-secondary uppercase tracking-widest">
-                {event.category}
-              </span>
-              {isFree && (
-                <span className="font-label text-[10px] font-bold uppercase tracking-widest bg-primary text-on-primary px-3 py-1 rounded-sm">
-                  FREE
-                </span>
-              )}
-            </h2>
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {LEVELS.map((level) => (
-                <motion.div
-                  key={level}
-                  variants={cardItem}
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative bg-surface-container p-8 rounded-sm border border-outline/18 hover:border-primary/40 transition-colors flex flex-col justify-between overflow-hidden"
-                >
-                  {/* FREE ribbon for 5K */}
-                  {isFree && (
-                    <div className="absolute top-4 right-4 bg-primary text-on-primary text-[10px] font-label font-bold tracking-widest uppercase px-3 py-1 rounded-sm">
-                      FREE
-                    </div>
-                  )}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm ${levelBadgeClass(level)}`}>
-                        {level}
-                      </span>
-                      <span className="font-label text-xs text-on-surface-variant">
-                        {DURATIONS[event.name]?.[level]}
-                      </span>
-                    </div>
-                    <p className="font-body text-sm text-on-surface-variant mb-6 min-h-[60px]">
-                      {DESCRIPTIONS[event.name]?.[level]}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="font-headline text-2xl font-bold text-primary mb-6">
-                      {isFree ? (
-                        <span className="flex items-center gap-3">
-                          <span className="line-through text-on-surface-variant/40 text-lg font-normal">$29.99</span>
-                          <span className="text-primary">FREE</span>
-                        </span>
-                      ) : (
-                        "$29.99"
-                      )}
-                    </div>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setPreview({ event: event.name, level })}
-                        className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-all text-center rounded-sm"
-                      >
-                        Preview
-                      </button>
-                      {isFree ? (
-                        <Link
-                          href="#"
-                          className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-primary text-on-primary hover:bg-primary-dim transition-all text-center rounded-sm"
-                        >
-                          Download Free
-                        </Link>
-                      ) : (
-                        <Link
-                          href="/assessment"
-                          className="flex-1 py-3 text-xs font-bold tracking-widest uppercase bg-primary text-on-primary hover:bg-primary-dim transition-all text-center rounded-sm"
-                        >
-                          Purchase
-                        </Link>
-                      )}
-                    </div>
+        <div className="relative z-10 max-w-3xl">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: ACCENT }}
+            {...heroIn(0.1)}
+          >
+            Starter Plans
+          </motion.span>
+
+          <motion.h1
+            className="font-headline text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.05] tracking-tight mb-6"
+            {...heroIn(0.2)}
+          >
+            Pre-built plans.{" "}
+            <br className="hidden md:block" />
+            Proven <span style={{ color: ACCENT }}>results</span>.
+          </motion.h1>
+
+          <motion.p
+            className="font-body text-lg md:text-xl leading-relaxed max-w-xl mb-4"
+            style={{ color: DIM }}
+            {...heroIn(0.35)}
+          >
+            Choose your event and difficulty level. Each plan is built on
+            verified training methodologies &mdash; instant download.
+          </motion.p>
+
+          <motion.p
+            className="font-label text-xs tracking-wider"
+            style={{ color: DIM }}
+            {...heroIn(0.45)}
+          >
+            5K plans are free. All other plans $29.99 one-time.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ FILTER + PLANS ═════════════════════ */}
+      <section className="py-24 md:py-32 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Filter pills */}
+          <div className="flex gap-4 mb-20">
+            {(["All", "Running", "Triathlon"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setFilter(tab)}
+                className="font-label text-sm tracking-widest uppercase px-7 py-2.5 rounded-full transition-all duration-200 cursor-pointer"
+                style={
+                  filter === tab
+                    ? { background: ACCENT, color: TEXT, fontWeight: 700 }
+                    : { border: `1px solid ${CARD_BORDER}`, color: DIM }
+                }
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Event groups */}
+          {filteredEvents.map((event) => {
+            const isFree = event.name === "5K";
+            return (
+              <div key={event.name} className="mb-24">
+                {/* Group header with orange hairline */}
+                <motion.div className="mb-10" {...fadeUp()}>
+                  <div className="flex items-center gap-4 mb-3">
+                    <h2 className="font-headline text-3xl md:text-4xl font-bold">
+                      {event.name}
+                    </h2>
+                    <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                      {event.category}
+                    </span>
                     {isFree && (
-                      <p className="font-label text-[10px] text-on-surface-variant/60 text-center mt-3 tracking-wide">
-                        See what a Plan Metric plan looks like
-                      </p>
+                      <span
+                        className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                        style={{ background: ACCENT, color: TEXT }}
+                      >
+                        FREE
+                      </span>
                     )}
                   </div>
+                  <div className="w-16 h-px" style={{ background: ACCENT }} />
                 </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        );
-      })}
+
+                {/* Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {LEVELS.map((level, i) => {
+                    const lc = LEVEL_COLORS[level];
+                    return (
+                      <motion.div
+                        key={level}
+                        className="relative rounded-sm flex flex-col group"
+                        style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+                        {...fadeUp(i * 0.1)}
+                        whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {/* FREE badge */}
+                        {isFree && (
+                          <div
+                            className="absolute top-3 right-3 font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full z-10"
+                            style={{ background: ACCENT, color: TEXT }}
+                          >
+                            FREE
+                          </div>
+                        )}
+
+                        <div className="p-8 flex-1 flex flex-col">
+                          {/* Distance — large at top */}
+                          <span className="font-headline text-2xl font-bold tracking-tight mb-1">
+                            {event.name}
+                          </span>
+
+                          {/* Level tag — small */}
+                          <span
+                            className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full self-start mb-6"
+                            style={{ color: lc.text, background: lc.bg }}
+                          >
+                            {level}
+                          </span>
+
+                          {/* Description — muted */}
+                          <p className="font-body text-sm leading-relaxed mb-4 min-h-[48px]" style={{ color: DIM }}>
+                            {DESCRIPTIONS[event.name]?.[level]}
+                          </p>
+
+                          {/* Duration */}
+                          <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                            {DURATIONS[event.name]?.[level]}
+                          </span>
+                        </div>
+
+                        <div className="px-8 pb-8">
+                          {/* Price — bold and clear */}
+                          <div className="font-headline text-3xl font-extrabold mb-6" style={{ color: isFree ? ACCENT : TEXT }}>
+                            {isFree ? "FREE" : "$29.99"}
+                          </div>
+
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => setPreview({ event: event.name, level })}
+                              className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] cursor-pointer text-center"
+                              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+                            >
+                              Preview
+                            </button>
+                            {isFree ? (
+                              <Link
+                                href="#"
+                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
+                                style={{ background: ACCENT, color: TEXT }}
+                              >
+                                Download
+                              </Link>
+                            ) : (
+                              <Link
+                                href="/assessment"
+                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
+                                style={{ background: ACCENT, color: TEXT }}
+                              >
+                                Purchase
+                              </Link>
+                            )}
+                          </div>
+
+                          {isFree && (
+                            <p className="font-label text-[10px] text-center mt-3 tracking-wide" style={{ color: DIM }}>
+                              See what a Plan Metric plan looks like
+                            </p>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Preview modal */}
       <AnimatePresence>
@@ -391,6 +473,25 @@ export default function PlansPage() {
         )}
       </AnimatePresence>
 
+      {/* ═══════════════ FOOTER ═════════════════════════════ */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">Plan Metric</span>
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <a key={label} href={href} className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white" style={{ color: DIM }}>
+              {label}
+            </a>
+          ))}
+        </div>
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>&copy; 2026 Plan Metric. Precision Endurance.</span>
+      </footer>
     </main>
   );
 }

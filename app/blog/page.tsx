@@ -2,31 +2,57 @@
 
 import { motion } from "framer-motion";
 
-/* ─── Article data ───────────────────────────────────────── */
+/* ─── Palette ────────────────────────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+const RULE = "rgba(245,245,240,0.15)";
+
+/* ─── Animations ─────────────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+const heroIn = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+/* ─── Category colours (dark theme) ──────────────────────────── */
+const catColor: Record<string, { text: string; bg: string }> = {
+  Training:  { text: ACCENT, bg: "rgba(184,92,44,0.10)" },
+  Swim:      { text: "#0ea5e9", bg: "rgba(14,165,233,0.10)" },
+  Bike:      { text: "#22c55e", bg: "rgba(34,197,94,0.10)" },
+  Run:       { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
+  Nutrition: { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
+};
+
+/* ─── Article data ───────────────────────────────────────────── */
 const FEATURED = [
   {
     title: "How to structure a triathlon training plan",
     excerpt: "Breaking down the swim-bike-run balance across a 16-week block. Periodisation, brick sessions, and taper strategy explained.",
     readTime: "8 min read",
     category: "Training",
-    categoryColor: "text-primary",
-    image: "/images/blog-training.png",
   },
   {
     title: "The science of polarised training",
     excerpt: "Why 80/20 intensity distribution produces faster endurance athletes. The research behind spending more time going slow.",
     readTime: "6 min read",
     category: "Training",
-    categoryColor: "text-primary",
-    image: "/images/blog-intervals.png",
   },
   {
     title: "Race day nutrition: a complete guide",
     excerpt: "From carb loading to on-course fuelling. How to dial in your nutrition strategy for distances from 10K to Ironman.",
     readTime: "10 min read",
     category: "Nutrition",
-    categoryColor: "text-run",
-    image: "/images/blog-nutrition.png",
   },
 ];
 
@@ -39,131 +65,197 @@ const TOPICS = [
   { title: "Strength training for endurance athletes", category: "Training", readTime: "7 min" },
 ];
 
-const categoryColorMap: Record<string, string> = {
-  Training: "text-primary bg-primary/10",
-  Swim: "text-swim bg-swim/10",
-  Bike: "text-bike bg-bike/10",
-  Run: "text-run bg-run/10",
-  Nutrition: "text-run bg-run/10",
-};
-
-/* ─── Variants ───────────────────────────────────────────── */
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
-
-/* ─── Page ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function BlogPage() {
   return (
-    <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
 
-      {/* ── Hero (with background image) ─────────────────── */}
-      <motion.header
-        className="mb-16 max-w-3xl"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <span className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-4 block">
-          The Journal
-        </span>
-        <h1 className="font-serif text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 leading-none text-on-surface">
-          Insights &amp;<br />
-          <span className="text-primary">Methodology.</span>
-        </h1>
-        <p className="font-body text-lg text-on-surface-variant max-w-2xl leading-relaxed">
-          Evidence-based articles on endurance training, nutrition, and
-          race preparation. Written by coaches, backed by science.
-        </p>
-      </motion.header>
+      {/* Grain */}
+      <div
+        className="pointer-events-none fixed inset-0 z-50"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "256px 256px",
+        }}
+      />
 
-      {/* ── Featured articles ─────────────────────────────── */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20"
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
-        {FEATURED.map((article) => (
-          <motion.article
-            key={article.title}
-            variants={item}
-            className="bg-surface-container rounded-sm border border-outline/18 overflow-hidden group hover:border-primary/40 transition-colors"
+      {/* ═══════════════ HERO ═══════════════════════════════ */}
+      <section className="min-h-[55vh] flex flex-col justify-end px-8 md:px-24 pt-40 pb-24 relative overflow-hidden">
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          <span
+            className="font-headline font-extrabold text-[22vw] leading-none whitespace-nowrap uppercase"
+            style={{ WebkitTextStroke: "1px rgba(245,245,240,0.05)", color: "transparent" }}
           >
-            {/* Featured image */}
-            <div className="h-[220px] bg-surface-container-high relative overflow-hidden rounded-t-sm">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-              />
-            </div>
+            JOURNAL
+          </span>
+        </div>
 
-            {/* Content */}
-            <div className="p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <span className={`font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm ${categoryColorMap[article.category] || "text-primary bg-primary/10"}`}>
-                  {article.category}
-                </span>
-                <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">
-                  {article.readTime}
-                </span>
-              </div>
-              <h2 className="font-serif text-xl font-bold mb-3 text-on-surface leading-snug">
-                {article.title}
-              </h2>
-              <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-                {article.excerpt}
-              </p>
-            </div>
-          </motion.article>
-        ))}
-      </motion.div>
+        <div className="relative z-10 max-w-3xl">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: ACCENT }}
+            {...heroIn(0.1)}
+          >
+            The Journal
+          </motion.span>
 
-      {/* ── More articles list ────────────────────────────── */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <h3 className="font-headline text-xl font-bold mb-8 text-on-surface">
-          More Articles
-        </h3>
-        <div className="space-y-4 mb-12">
-          {TOPICS.map((topic) => (
-            <div
-              key={topic.title}
-              className="bg-surface-container p-6 rounded-sm border border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/30 transition-colors"
+          <motion.h1
+            className="font-headline text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.05] tracking-tight mb-6"
+            {...heroIn(0.2)}
+          >
+            Insights &amp;{" "}
+            <span style={{ color: ACCENT }}>methodology</span>.
+          </motion.h1>
+
+          <motion.p
+            className="font-body text-lg md:text-xl leading-relaxed max-w-xl"
+            style={{ color: DIM }}
+            {...heroIn(0.35)}
+          >
+            Evidence-based articles on endurance training, nutrition, and
+            race preparation. Written by coaches, backed by science.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ FEATURED ARTICLES ══════════════════ */}
+      <section className="py-24 md:py-32 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            Featured
+          </motion.span>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {FEATURED.map((article, i) => {
+              const cat = catColor[article.category] || catColor.Training;
+              return (
+                <motion.article
+                  key={article.title}
+                  className="rounded-sm overflow-hidden group cursor-pointer flex flex-col"
+                  style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+                  {...fadeUp(i * 0.15)}
+                  whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span
+                        className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
+                        style={{ color: cat.text, background: cat.bg }}
+                      >
+                        {article.category}
+                      </span>
+                      <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                        {article.readTime}
+                      </span>
+                    </div>
+                    <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
+                      {article.title}
+                    </h2>
+                    <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
+                      {article.excerpt}
+                    </p>
+                    <span
+                      className="font-label text-xs tracking-wider mt-6 inline-block"
+                      style={{ color: ACCENT }}
+                    >
+                      Read article &rarr;
+                    </span>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ MORE ARTICLES ══════════════════════ */}
+      <section className="py-24 md:py-32 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-12"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            More Articles
+          </motion.span>
+
+          <div className="space-y-4">
+            {TOPICS.map((topic, i) => {
+              const cat = catColor[topic.category] || catColor.Training;
+              return (
+                <motion.div
+                  key={topic.title}
+                  className="p-6 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
+                  style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+                  {...fadeUp(i * 0.08)}
+                  whileHover={{ borderColor: ACCENT, x: 4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center gap-4">
+                    <span
+                      className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm whitespace-nowrap"
+                      style={{ color: cat.text, background: cat.bg }}
+                    >
+                      {topic.category}
+                    </span>
+                    <span className="font-body text-sm font-medium">
+                      {topic.title}
+                    </span>
+                  </div>
+                  <span className="font-label text-[10px] uppercase tracking-widest whitespace-nowrap" style={{ color: DIM }}>
+                    {topic.readTime}
+                  </span>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div className="text-center mt-12" {...fadeUp(0.3)}>
+            <button
+              className="font-label text-xs font-bold tracking-widest uppercase px-10 py-3 rounded-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
             >
-              <div className="flex items-center gap-4">
-                <span className={`font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm whitespace-nowrap ${categoryColorMap[topic.category] || "text-primary bg-primary/10"}`}>
-                  {topic.category}
-                </span>
-                <span className="font-body text-sm text-on-surface font-medium">
-                  {topic.title}
-                </span>
-              </div>
-              <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest whitespace-nowrap">
-                {topic.readTime}
-              </span>
-            </div>
+              Find More Articles
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════ FOOTER ═════════════════════════════ */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">Plan Metric</span>
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <a key={label} href={href} className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white" style={{ color: DIM }}>
+              {label}
+            </a>
           ))}
         </div>
-
-        <div className="text-center">
-          <button className="bg-surface-container-high text-on-surface px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-primary hover:text-on-primary transition-all uppercase">
-            Find More Articles
-          </button>
-        </div>
-      </motion.section>
-
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>&copy; 2026 Plan Metric. Precision Endurance.</span>
+      </footer>
     </main>
   );
 }

@@ -3,469 +3,526 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-/* ─── Stagger variants ────────────────────────────────────── */
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+/* ─── Palette ────────────────────────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+
+/* ─── B&W image style ────────────────────────────────────────── */
+const bwImg: React.CSSProperties = {
+  filter: "grayscale(100%)",
+  objectFit: "cover" as const,
+  width: "100%",
+  height: "100%",
+  position: "absolute" as const,
+  inset: 0,
 };
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
+/* ─── Reusable animation presets ─────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
 
-/* ─── Decorative divider ─────────────────────────────────── */
-function Divider() {
-  return (
-    <div className="flex items-center gap-4 justify-center my-2">
-      <div className="h-px w-12 bg-primary/30" />
-      <span className="text-primary text-xs">&#9830;</span>
-      <div className="h-px w-12 bg-primary/30" />
-    </div>
-  );
-}
+const heroIn = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
 
-/* ─── Section transition gradient ─────────────────────────── */
-function SectionFade({ from, to }: { from: string; to: string }) {
-  return (
-    <div
-      className="h-[60px] w-full"
-      style={{ background: `linear-gradient(to bottom, ${from}, ${to})` }}
-    />
-  );
-}
+/* ─── Hero headline data ─────────────────────────────────────── */
+const HERO_LINES: { word: string; accent?: boolean }[][] = [
+  [{ word: "Train" }, { word: "with" }],
+  [{ word: "data.", accent: true }, { word: "Race" }, { word: "with" }],
+  [{ word: "confidence." }],
+];
 
-/* ─── Page ────────────────────────────────────────────────── */
+/* ─── Steps data ──────────────────────────────────────────────── */
+const STEPS = [
+  {
+    num: "01",
+    title: "Pick Your Plan",
+    body: "Choose your discipline and level \u2014 Running, Triathlon, or Cycling.",
+  },
+  {
+    num: "02",
+    title: "Complete Your Intake",
+    body: "An 8\u201310 minute deep-dive into your fitness, goals, schedule, and injury history.",
+  },
+  {
+    num: "03",
+    title: "Receive Your Plan",
+    body: "Within 48 hours, your personalised HTML plan lands in your inbox. No PDFs. No spreadsheets.",
+  },
+  {
+    num: "04",
+    title: "Execute the Race",
+    body: "Show up to race day with a plan built for exactly you \u2014 and nothing left to chance.",
+  },
+];
+
+/* ─── Plan cards data ─────────────────────────────────────────── */
+const PLANS = [
+  {
+    name: "STARTER",
+    price: "$29.99",
+    freq: "one-time",
+    body: "Pre-built plans for proven milestones.",
+    cta: "Browse Plans",
+    featured: false,
+  },
+  {
+    name: "PREMIUM",
+    price: "$99.99",
+    freq: "one-time",
+    body: "Fully personalised to your exact data and race.",
+    cta: "Select Premium",
+    featured: true,
+  },
+  {
+    name: "ELITE",
+    price: "$99",
+    freq: "/month",
+    body: "Dynamic monthly adjustments with 1:1 coaching.",
+    cta: "Join Elite",
+    featured: false,
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════ */
+/*  PAGE                                                          */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function HomePage() {
+  let wordIdx = 0;
+
+  const scrollToProcess = () =>
+    document.getElementById("process")?.scrollIntoView({ behavior: "smooth" });
+
   return (
-    <main className="pt-0">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px]">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center px-8 md:px-24">
-        {/* Full-viewport background image */}
-        <motion.div
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" as const }}
-        >
-          <img
-            src="/images/transition-overhead.png"
-            alt="Aerial view of bikes racked in transition zone"
-            className="w-full h-full object-cover object-center"
-          />
-          {/* Warm gradient overlay for text readability */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(to right, rgba(240,230,212,0.95) 0%, rgba(240,230,212,0.7) 50%, rgba(240,230,212,0.2) 100%)",
-            }}
-          />
-          {/* Warm radial tint overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "radial-gradient(ellipse at center, rgba(160,82,45,0.05) 0%, transparent 70%)",
-            }}
-          />
-        </motion.div>
-
-        {/* Ambient glow behind headline */}
+      {/* ───────────────── SECTION 1 — HERO ───────────────── */}
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+        {/* BG image */}
+        <img
+          src="/images/bike-motion-blur.jpeg"
+          alt=""
+          aria-hidden="true"
+          style={bwImg}
+        />
+        {/* Dark overlay */}
         <div
-          className="absolute left-1/4 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] z-[1] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(160,82,45,0.04) 0%, transparent 70%)",
-            filter: "blur(80px)",
-          }}
+          className="absolute inset-0"
+          style={{ background: "rgba(0,0,0,0.65)" }}
         />
 
-        {/* Text — left */}
-        <div className="relative z-10 max-w-2xl">
+        {/* Content */}
+        <div className="relative z-10 px-8 md:px-24 max-w-4xl pt-28">
+          {/* Eyebrow */}
           <motion.span
-            className="font-label text-secondary tracking-[0.3em] text-[10px] uppercase mb-6 block"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" as const, delay: 0.1 }}
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-8"
+            style={{ color: ACCENT }}
+            {...heroIn(0.1)}
           >
             Precision Endurance
           </motion.span>
 
-          {/* Clip-path reveal headline */}
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-tight mb-6 text-on-surface">
-            <span className="block animate-reveal">
-              Personalised
-            </span>
-            <span className="block animate-reveal">
-              endurance
-            </span>
-            <span className="block animate-reveal-delay text-primary">
-              training plans.
-            </span>
+          {/* Headline — word-by-word stagger */}
+          <h1 className="font-headline text-[clamp(2.8rem,8vw,6rem)] font-extrabold leading-[1.05] tracking-tight mb-8">
+            {HERO_LINES.map((line, li) => (
+              <span key={li} className="block">
+                {line.map(({ word, accent }) => {
+                  const i = wordIdx++;
+                  return (
+                    <motion.span
+                      key={i}
+                      className="inline-block mr-[0.25em]"
+                      style={accent ? { color: ACCENT } : undefined}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        ease: "easeOut" as const,
+                        delay: 0.25 + i * 0.08,
+                      }}
+                    >
+                      {word}
+                    </motion.span>
+                  );
+                })}
+              </span>
+            ))}
           </h1>
 
-          <motion.div
-            className="flex flex-wrap gap-4 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.6, ease: "easeOut" as const }}
-          >
-            <span className="font-label text-xs tracking-widest uppercase bg-primary text-on-primary px-4 py-2 rounded-sm font-bold">
-              Affordable
-            </span>
-            <span className="font-label text-xs tracking-widest uppercase bg-primary text-on-primary px-4 py-2 rounded-sm font-bold">
-              All Levels
-            </span>
-            <span className="font-label text-xs tracking-widest uppercase bg-surface-container text-on-surface px-4 py-2 rounded-sm font-bold border border-outline/18">
-              From $29.99
-            </span>
-          </motion.div>
-
+          {/* Subheadline */}
           <motion.p
-            className="font-body text-lg md:text-xl text-on-surface-variant max-w-lg mb-12 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.6, ease: "easeOut" as const }}
+            className="font-body text-lg md:text-xl leading-relaxed max-w-xl mb-5"
+            style={{ color: "rgba(245,245,240,0.75)" }}
+            {...heroIn(0.95)}
           >
-            High-performance training methodologies for triathletes,
-            cyclists, and runners who demand scientific accuracy.
+            Personalised endurance training plans for triathletes, cyclists and
+            runners. Built from your biology&nbsp;&mdash; not a template.
           </motion.p>
 
-          <motion.div
-            className="flex flex-col sm:flex-row gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, duration: 0.6, ease: "easeOut" as const }}
+          {/* Small line */}
+          <motion.p
+            className="font-label text-xs tracking-wider mb-12"
+            style={{ color: DIM }}
+            {...heroIn(1.15)}
           >
-            <Link
-              href="/assessment"
-              className="bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-primary-dim transition-all uppercase text-center"
-            >
-              Start Your Plan
-            </Link>
+            All levels. All disciplines. From $29.99.
+          </motion.p>
+
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" as const, delay: 1.3 }}
+          >
             <Link
               href="/pricing"
-              className="bg-surface-container-high text-on-surface px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-surface-container-highest transition-all uppercase text-center"
+              className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+              style={{ background: ACCENT, color: TEXT }}
             >
-              View Pricing
+              Start Your Plan &rarr;
             </Link>
           </motion.div>
         </div>
 
-        {/* Social links — bottom left */}
-        <motion.div
-          className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 z-10 hidden sm:flex gap-4"
+        {/* Scroll arrow */}
+        <motion.button
+          onClick={scrollToProcess}
+          aria-label="Scroll to next section"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+          style={{ color: DIM }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 0.6, ease: "easeOut" as const }}
-        >
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-on-surface-variant/40 hover:text-on-surface transition-colors"
-            aria-label="Instagram"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" />
-              <circle cx="12" cy="12" r="5" />
-              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
-            </svg>
-          </a>
-          <a
-            href="https://strava.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-on-surface-variant/40 hover:text-on-surface transition-colors"
-            aria-label="Strava"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066l-2.084 4.116z" opacity="0.6" />
-              <path d="M10.233 13.828L15.387 3 7.3 13.828h2.933zm0 0" />
-            </svg>
-          </a>
-        </motion.div>
-
-        {/* Scroll indicator — bottom center */}
-        <motion.div
-          className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.2, duration: 0.6, ease: "easeOut" as const }}
-        >
-          <div className="animate-bounce-scroll">
-            <svg width="20" height="30" viewBox="0 0 20 30" fill="none" className="text-on-surface-variant/40">
-              <rect x="1" y="1" width="18" height="28" rx="9" stroke="currentColor" strokeWidth="1.5" />
-              <circle cx="10" cy="9" r="2" fill="currentColor" />
-            </svg>
-          </div>
-          <span className="font-label text-[10px] tracking-widest text-on-surface-variant/40 uppercase">
-            Scroll to explore
-          </span>
-        </motion.div>
-      </section>
-
-      {/* ── Transition: hero → metrics ────────────────────── */}
-      <SectionFade from="#F0E6D4" to="#F5EDE0" />
-
-      {/* ── Metrics That Matter (full-bleed) ─────────────── */}
-      <motion.section
-        className="relative py-32 px-8 md:px-24"
-        variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-80px" }}
-      >
-        {/* Background image */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/metrics-watch.png" alt="Sports watch displaying training metrics" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
-        </div>
-        <div className="max-w-5xl mx-auto">
-          <Divider />
-          <motion.h2
-            variants={item}
-            className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-6 text-center text-on-surface"
-          >
-            Metrics that matter.
-          </motion.h2>
-          <Divider />
-
-          <motion.p
-            variants={item}
-            className="font-body text-lg text-on-surface-variant mb-8 max-w-2xl mx-auto text-center leading-relaxed mt-8"
-          >
-            We take your current level, set your goal, and build the path &mdash;
-            using your style, ability, preferences and availability.
-          </motion.p>
-
-          <motion.div
-            variants={item}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16"
-          >
-            <div className="bg-surface-container-low p-8 rounded-sm text-center">
-              <span className="material-symbols-outlined text-primary text-3xl mb-4 block">query_stats</span>
-              <h3 className="font-headline text-lg font-bold mb-2 text-on-surface">Assess</h3>
-              <p className="font-body text-sm text-on-surface-variant">
-                Deep-dive questionnaire covering fitness, goals, schedule, and injury history.
-              </p>
-            </div>
-            <div className="bg-surface-container-low p-8 rounded-sm text-center">
-              <span className="material-symbols-outlined text-primary text-3xl mb-4 block">architecture</span>
-              <h3 className="font-headline text-lg font-bold mb-2 text-on-surface">Build</h3>
-              <p className="font-body text-sm text-on-surface-variant">
-                Your plan is engineered around your exact thresholds, availability, and race date.
-              </p>
-            </div>
-            <div className="bg-surface-container-low p-8 rounded-sm text-center">
-              <span className="material-symbols-outlined text-primary text-3xl mb-4 block">rocket_launch</span>
-              <h3 className="font-headline text-lg font-bold mb-2 text-on-surface">Deliver</h3>
-              <p className="font-body text-sm text-on-surface-variant">
-                Receive a beautifully designed HTML plan within 48 hours. No PDFs, no spreadsheets.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={item}
-            className="flex flex-col sm:flex-row gap-6 justify-center mt-12"
-          >
-            <Link
-              href="/process"
-              className="bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-primary-dim transition-all uppercase text-center"
-            >
-              See the Process
-            </Link>
-            <Link
-              href="/plans"
-              className="bg-surface-container-high text-on-surface px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:bg-surface-container-highest transition-all uppercase text-center"
-            >
-              View Plans
-            </Link>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* ── Transition: metrics → pricing ─────────────────── */}
-      <SectionFade from="#F5EDE0" to="#F0E6D4" />
-
-      {/* ── Pricing tiers ─────────────────────────────────── */}
-      <section className="py-32 bg-background">
-        <motion.div
-          className="text-center mb-20 px-8"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" as const }}
-        >
-          <Divider />
-          <h2 className="font-serif text-5xl font-bold tracking-tight mb-4 text-on-surface">
-            Select your intensity.
-          </h2>
-          <Divider />
-        </motion.div>
-
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl mx-auto px-8 md:px-24"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-
-          {/* STARTER */}
-          <motion.div
-            variants={item}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="bg-surface-container p-12 hover:bg-surface-container-high transition-colors duration-500 border border-outline/18 hover:border-primary/40 rounded-sm"
-          >
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-secondary">
-              Level 01
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8 text-on-surface">STARTER</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Pre-built plans optimised for common performance milestones.
-              Built on verified data structures.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {["Pre-built goal paths", "Instant digital download", "Standard metric tracking"].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined text-primary text-lg">check</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10 text-primary">
-              $29.99{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
-            </div>
-            <Link href="/plans" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center rounded-sm">
-              BROWSE PLANS
-            </Link>
-          </motion.div>
-
-          {/* PREMIUM — featured */}
-          <motion.div
-            variants={item}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="bg-surface-container p-12 border border-primary/30 relative rounded-sm"
-          >
-            <span className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1">
-              MOST SELECTED
-            </span>
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-primary">
-              Level 02
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8 text-on-surface">PREMIUM</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Tailored architecture built from your specific intake form data.
-              Audited by our head coach.
-            </p>
-            <ul className="space-y-4 mb-12">
-              <li className="flex items-center gap-3 text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-primary text-lg">star</span>
-                <span>Physiological Profiling</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Pace &amp; HR zones (KM based)</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Weekly schedule &amp; Coach notes</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-primary text-lg">check</span>
-                <span>Final Review by Lead Coach</span>
-              </li>
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10 text-primary">
-              $99.99{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ ONE-TIME</span>
-            </div>
-            <Link href="/assessment" className="block w-full bg-primary text-on-primary py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary-dim transition-all text-center rounded-sm">
-              SELECT PREMIUM
-            </Link>
-          </motion.div>
-
-          {/* ELITE */}
-          <motion.div
-            variants={item}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="bg-surface-container p-12 hover:bg-surface-container-high transition-colors duration-500 border border-outline/18 hover:border-primary/40 rounded-sm"
-          >
-            <span className="font-label text-xs tracking-widest uppercase mb-2 block text-secondary">
-              Level 03
-            </span>
-            <h3 className="font-headline text-3xl font-bold mb-8 text-on-surface">ELITE</h3>
-            <p className="font-body text-on-surface-variant mb-10 min-h-[80px]">
-              Continuous performance adjustment. Monthly calls and weekly
-              data deep-dives.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited Email support"].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined text-primary text-lg">check</span>
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="font-headline text-3xl font-bold mb-10 text-primary">
-              $99{" "}
-              <span className="text-sm font-label text-on-surface-variant">/ MONTH</span>
-            </div>
-            <Link href="/assessment" className="block w-full bg-surface-container-high text-on-surface py-4 text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-on-primary transition-all text-center rounded-sm">
-              JOIN ELITE
-            </Link>
-          </motion.div>
-
-        </motion.div>
-      </section>
-
-      {/* ── Transition: pricing → CTA ─────────────────────── */}
-      <SectionFade from="#F0E6D4" to="#E4DAC8" />
-
-      {/* ── Final CTA (full-bleed) ────────────────────────── */}
-      <motion.section
-        className="relative py-32 text-center px-8 overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" as const }}
-      >
-        {/* Background image */}
-        <div className="absolute inset-0 -z-10">
-          <img
-            src="/images/finish-line.png"
-            alt="Triathlete celebrating at finish line"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
-        </div>
-        {/* Ambient glow behind CTA headline */}
-        <div
-          className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(160,82,45,0.05) 0%, transparent 70%)",
-            filter: "blur(60px)",
+          animate={{ opacity: 1, y: [0, 8, 0] }}
+          transition={{
+            opacity: { duration: 0.5, delay: 1.8 },
+            y: { duration: 2, repeat: Infinity, ease: "easeInOut" as const },
           }}
-        />
-        <div className="relative z-10">
-          <Divider />
-          <h2 className="font-serif text-4xl md:text-6xl font-bold tracking-tighter mb-12 text-on-surface">
-            Ready to evolve?
-          </h2>
-          <Link
-            href="/pricing"
-            className="inline-block bg-primary text-on-primary px-12 py-6 text-sm font-bold tracking-[0.2em] rounded-sm hover:bg-primary-dim hover:scale-105 active:scale-95 transition-all uppercase"
-          >
-            Start Your Assessment
-          </Link>
-        </div>
-      </motion.section>
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </motion.button>
+      </section>
 
+      {/* ───────────── SECTION 2 — HOW IT WORKS ───────────── */}
+      <section id="process" className="relative py-32 md:py-44 overflow-hidden">
+        {/* BG image */}
+        <img
+          src="/images/run-motion-blur.jpeg"
+          alt=""
+          aria-hidden="true"
+          style={bwImg}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgba(0,0,0,0.80)" }}
+        />
+
+        <div className="relative z-10 px-8 md:px-24 max-w-6xl mx-auto">
+          {/* Label */}
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
+            style={{ color: ACCENT }}
+            {...fadeUp()}
+          >
+            How It Works
+          </motion.span>
+
+          {/* Steps grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-14 lg:gap-10">
+            {STEPS.map((step, i) => (
+              <motion.div key={step.num} {...fadeUp(i * 0.15)}>
+                <span
+                  className="font-headline text-5xl font-extrabold block mb-4"
+                  style={{ color: "rgba(245,245,240,0.06)" }}
+                >
+                  {step.num}
+                </span>
+                <h3 className="font-headline text-lg font-bold mb-3">
+                  {step.title}
+                </h3>
+                <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                  {step.body}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Tagline */}
+          <motion.p
+            className="font-body text-sm italic mt-20 max-w-2xl mx-auto text-center leading-relaxed"
+            style={{ color: DIM }}
+            {...fadeUp(0.3)}
+          >
+            &ldquo;Built from your data, your lifestyle, your schedule, your
+            goals. This plan is made for you&nbsp;&mdash; not anyone else.&rdquo;
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ──────────── SECTION 3 — METHODOLOGY TEASER ──────── */}
+      <section className="relative py-32 md:py-44 overflow-hidden" style={{ background: BG }}>
+        <div className="relative z-10 px-8 md:px-24 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+
+          {/* Text — left */}
+          <div className="flex-1 max-w-xl">
+            <motion.span
+              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-10"
+              style={{ color: DIM }}
+              {...fadeUp()}
+            >
+              Our Methodology
+            </motion.span>
+
+            <motion.h2
+              className="font-headline text-3xl md:text-4xl font-bold leading-snug mb-8"
+              {...fadeUp(0.05)}
+            >
+              No templates.{"\n"}No guesswork.{"\n"}Built from your{" "}
+              <span style={{ color: ACCENT }}>biology</span>.
+            </motion.h2>
+
+            <motion.p
+              className="font-body text-base leading-relaxed mb-8"
+              style={{ color: DIM }}
+              {...fadeUp(0.1)}
+            >
+              We analyse your heart rate zones, training history, injury data,
+              and race date to engineer a plan that adapts to your
+              life&nbsp;&mdash; not the other way around. Every block is
+              reviewed by a human coach before delivery.
+            </motion.p>
+
+            <motion.div {...fadeUp(0.15)}>
+              <Link
+                href="/methodology"
+                className="font-label text-sm tracking-wider underline underline-offset-4 transition-colors duration-200"
+                style={{ color: ACCENT }}
+              >
+                Read more &rarr;
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Image — right (desktop only) */}
+          <motion.div
+            className="hidden md:block flex-1 relative h-[500px] max-w-[45%]"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.7, ease: "easeOut" as const }}
+          >
+            <img
+              src="/images/ocean-exit.png"
+              alt="Swimmer exiting the ocean"
+              className="w-full h-full object-cover rounded-sm"
+              style={{ filter: "grayscale(100%)" }}
+            />
+            {/* Gradient mask fading left edge into BG */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to right, ${BG} 0%, transparent 40%)`,
+              }}
+            />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ──────────────── SECTION 4 — THE PLANS ───────────── */}
+      <section className="relative overflow-hidden">
+        {/* Top image band */}
+        <div className="relative h-[300px] md:h-[400px]">
+          <img
+            src="/images/transition-overhead.png"
+            alt=""
+            aria-hidden="true"
+            style={bwImg}
+          />
+          <div
+            className="absolute inset-0"
+            style={{ background: "rgba(0,0,0,0.75)" }}
+          />
+          {/* Fade to dark at bottom */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-40"
+            style={{ background: `linear-gradient(to bottom, transparent, ${BG})` }}
+          />
+
+          {/* Label + headline overlaid on image */}
+          <div className="absolute inset-0 z-10 flex flex-col justify-end px-8 md:px-24 pb-16 max-w-6xl mx-auto w-full">
+            <motion.span
+              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+              style={{ color: DIM }}
+              {...fadeUp()}
+            >
+              The Plans
+            </motion.span>
+            <motion.h2
+              className="font-headline text-3xl md:text-5xl font-bold"
+              {...fadeUp(0.05)}
+            >
+              Three levels. One{" "}
+              <span style={{ color: ACCENT }}>standard</span>.
+            </motion.h2>
+          </div>
+        </div>
+
+        {/* Cards on clean dark background */}
+        <div className="px-8 md:px-24 pb-32 md:pb-44 pt-12" style={{ background: BG }}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {PLANS.map((plan, i) => (
+              <motion.div
+                key={plan.name}
+                className="relative p-10 rounded-sm flex flex-col"
+                style={{
+                  background: CARD_BG,
+                  border: plan.featured
+                    ? `1px solid ${ACCENT}`
+                    : `1px solid ${CARD_BORDER}`,
+                }}
+                {...fadeUp(i * 0.2)}
+                whileHover={{
+                  y: -6,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {plan.featured && (
+                  <span
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 font-label text-[10px] tracking-widest uppercase px-4 py-1 rounded-sm"
+                    style={{ background: ACCENT, color: TEXT }}
+                  >
+                    Most Selected
+                  </span>
+                )}
+
+                <h3 className="font-headline text-xl font-bold tracking-wide mb-2">
+                  {plan.name}
+                </h3>
+                <div className="mb-6">
+                  <span className="font-headline text-3xl font-bold">
+                    {plan.price}
+                  </span>
+                  <span className="font-label text-xs ml-2" style={{ color: DIM }}>
+                    {plan.freq}
+                  </span>
+                </div>
+                <p
+                  className="font-body text-sm leading-relaxed mb-10 flex-1"
+                  style={{ color: DIM }}
+                >
+                  {plan.body}
+                </p>
+                <Link
+                  href="/pricing"
+                  className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm transition-all duration-200 hover:scale-[1.02]"
+                  style={
+                    plan.featured
+                      ? { background: ACCENT, color: TEXT }
+                      : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
+                  }
+                >
+                  {plan.cta}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Compare button */}
+          <motion.div className="text-center mt-14" {...fadeUp(0.3)}>
+            <Link
+              href="/pricing"
+              className="inline-block font-label text-xs font-bold tracking-widest uppercase px-10 py-3 rounded-sm transition-all duration-200 hover:scale-[1.02]"
+              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+            >
+              Compare All Plans &rarr;
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ──────────────── SECTION 5 — FINAL CTA ──────────── */}
+      <section className="relative py-32 md:py-44 overflow-hidden">
+        {/* BG image */}
+        <img
+          src="/images/swim-motion-blur.jpeg"
+          alt=""
+          aria-hidden="true"
+          style={bwImg}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgba(0,0,0,0.75)" }}
+        />
+
+        <div className="relative z-10 text-center px-8">
+          <motion.h2
+            className="font-headline text-4xl md:text-5xl font-bold mb-6"
+            {...fadeUp()}
+          >
+            Ready to{" "}
+            <span style={{ color: ACCENT }}>evolve</span>?
+          </motion.h2>
+          <motion.p
+            className="font-body text-base mb-12"
+            style={{ color: DIM }}
+            {...fadeUp(0.1)}
+          >
+            Your next race starts here. Initial assessment takes
+            8&ndash;10 minutes.
+          </motion.p>
+          <motion.div {...fadeUp(0.2)}>
+            <Link
+              href="/pricing"
+              className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+              style={{ background: ACCENT, color: TEXT }}
+            >
+              Start Your Assessment &rarr;
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ───────────────────── FOOTER ─────────────────────── */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">
+          Plan Metric
+        </span>
+
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <Link
+              key={label}
+              href={href}
+              className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white"
+              style={{ color: DIM }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>
+          &copy; 2026 Plan Metric. Precision Endurance.
+        </span>
+      </footer>
     </main>
   );
 }

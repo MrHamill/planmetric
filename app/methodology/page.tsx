@@ -1,382 +1,464 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
-const pillarsVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
-};
+/* ─── Palette (matches homepage) ─────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+const RULE = "rgba(245,245,240,0.15)";
 
-const pillarItem = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
+/* ─── Animation presets ──────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
 
+/* ─── Section divider ────────────────────────────────────────── */
+function Divider() {
+  return (
+    <div className="px-8 md:px-24">
+      <div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} />
+    </div>
+  );
+}
+
+/* ─── Scramble text component ────────────────────────────────── */
+function ScrambleText({ text, className, style, duration = 3000, delay = 0 }: {
+  text: string;
+  className?: string;
+  style?: React.CSSProperties;
+  duration?: number;
+  delay?: number;
+}) {
+  const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*<>{}[]=/\\|";
+  const DURATION = duration;
+  const [displayed, setDisplayed] = useState(text);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (!inView || hasRun.current) return;
+    hasRun.current = true;
+
+    const delayMs = delay;
+    const timeout = setTimeout(() => {
+      const start = performance.now();
+
+      const frame = () => {
+        const elapsed = performance.now() - start;
+        const progress = Math.min(elapsed / DURATION, 1);
+
+        const result = text
+          .split("")
+          .map((char, i) => {
+            if (char === " ") return " ";
+            const charThreshold = i / text.length;
+            if (progress > charThreshold + 0.35) return char;
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
+          })
+          .join("");
+
+        setDisplayed(result);
+
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          setDisplayed(text);
+        }
+      };
+
+      requestAnimationFrame(frame);
+    }, delayMs);
+
+    return () => clearTimeout(timeout);
+  }, [inView, text, delay]);
+
+  return (
+    <span ref={ref} className={className} style={style}>
+      {displayed}
+    </span>
+  );
+}
+
+/* ─── Data ───────────────────────────────────────────────────── */
+const PRINCIPLES = [
+  {
+    number: "01",
+    title: "Data Over Guesswork",
+    body: "Your data isn\u2019t just numbers; it\u2019s a physiological narrative. We integrate heart rate zones, training history, and injury data to build plans grounded in evidence \u2014 not assumptions.",
+  },
+  {
+    number: "02",
+    title: "Human Review, Not Just Algorithms",
+    body: "Algorithms provide the base, but humans provide the nuance. Every block is vetted by an endurance specialist to ensure safety, logic, and that the plan actually makes sense for your life.",
+  },
+  {
+    number: "03",
+    title: "Built Around Your Life",
+    body: "Work-life balance and past injuries are treated as hard data points. If your schedule only allows four sessions a week, we build four high-quality sessions \u2014 not six mediocre ones.",
+  },
+];
+
+const BUILD_STEPS = [
+  {
+    number: "01",
+    title: "Intake Form",
+    body: "An 8\u201310 minute deep-dive into your fitness, goals, schedule, and injury history.",
+  },
+  {
+    number: "02",
+    title: "Analyse Data",
+    body: "We process your heart rate zones, training history, race date, and weekly availability.",
+  },
+  {
+    number: "03",
+    title: "Coach Reviews",
+    body: "Every plan is reviewed by a human coach for safety, logic, and real-world applicability.",
+  },
+  {
+    number: "04",
+    title: "Plan Delivered",
+    body: "Your personalised HTML plan lands in your inbox within 48 hours. Ready to execute.",
+  },
+];
+
+const PLAN_FEATURES = [
+  {
+    title: "Collapsible Weekly Blocks",
+    body: "Expand and collapse each training week. Focus on what\u2019s ahead without being overwhelmed by the full programme.",
+  },
+  {
+    title: "Mobile Friendly",
+    body: "Your plan looks great on any device. Check your sessions at the gym, the pool, or on the trail.",
+  },
+  {
+    title: "Easy to Read",
+    body: "Clean typography, clear session structure, and logical layout. No deciphering spreadsheet cells.",
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════ */
+/*  PAGE                                                          */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function MethodologyPage() {
   return (
-    <main className="pt-32 pb-20">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <motion.section
-        className="px-8 md:px-16 lg:px-24 mb-32"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="grid md:grid-cols-12 gap-12 items-end max-w-7xl mx-auto">
-          <div className="md:col-span-8">
-            <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
-              Precision Engineering
-            </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none mb-8 text-on-surface">
-              METHODOLOGY
-              <span className="text-primary">.</span>
-            </h1>
-            <p className="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl font-light leading-relaxed">
-              Moving beyond automated templates. We transform raw biological
-              data into a structured path toward peak human performance.
-            </p>
-          </div>
-          <div className="md:col-span-4 hidden md:block border-l border-outline-variant/30 pl-8 pb-4">
-            <div className="space-y-4">
-              <div className="flex justify-between items-baseline border-b border-outline-variant/10 pb-2">
-                <span className="font-label text-[10px] text-on-surface-variant uppercase">
-                  Current Temp
-                </span>
-                <span className="font-label text-sm text-on-surface">
-                  18.5{" "}
-                  <span className="text-[10px] align-top text-primary">°C</span>
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline border-b border-outline-variant/10 pb-2">
-                <span className="font-label text-[10px] text-on-surface-variant uppercase">
-                  VO2 Max Goal
-                </span>
-                <span className="font-label text-sm text-on-surface">
-                  64.2{" "}
-                  <span className="text-[10px] align-top text-primary">METRIC</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.section>
+      {/* ─── Grain overlay (full page) ───────────────────── */}
+      <div
+        className="pointer-events-none fixed inset-0 z-50"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "256px 256px",
+        }}
+      />
 
-      {/* ── Banner image ───────────────────────────────────── */}
-      <motion.div
-        className="px-8 md:px-16 lg:px-24 mb-32 max-w-7xl mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" as const }}
-      >
-        <div className="overflow-hidden rounded-xl relative">
-          <img
-            src="/images/track-stretch.png"
-            alt="Athlete stretching on track at golden hour"
-            className="w-full max-h-[350px] object-cover hover:scale-[1.02] transition-transform duration-300"
-          />
-          <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(240,230,212,0.25)" }} />
-        </div>
-      </motion.div>
-
-      {/* ── Pillars ───────────────────────────────────────── */}
-      <motion.section
-        className="px-8 md:px-16 lg:px-24 grid grid-cols-1 md:grid-cols-3 gap-6 mb-32 max-w-7xl mx-auto"
-        variants={pillarsVariants}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-80px" }}
-      >
-        {/* Pillar 1 */}
-        <motion.div
-          variants={pillarItem}
-          className="bg-surface-container-low p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
+      {/* ───────── SECTION 1 — OPENING ────────────────────── */}
+      <section className="min-h-screen flex flex-col justify-center px-8 md:px-24 pt-40 pb-20 relative overflow-hidden">
+        {/* Giant outlined background word */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
+          aria-hidden="true"
         >
-          <div>
-            <span className="material-symbols-outlined text-primary mb-8 text-3xl">monitoring</span>
-            <h3 className="font-headline text-2xl font-bold mb-4">
-              Your Metrics, Your Life
-            </h3>
-            <p className="font-body text-on-surface-variant leading-relaxed">
-              Your data isn&apos;t just numbers; it&apos;s a physiological
-              narrative. We integrate sleep, HRV, and stress levels to adjust
-              load in real-time.
-            </p>
-          </div>
-          <div className="mt-8">
-            <div className="w-full bg-primary-container h-px mb-4 opacity-30" />
-            <span className="font-label text-[10px] text-primary tracking-widest uppercase">
-              Integration: Garmin, Whoop, Oura
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Pillar 2 */}
-        <motion.div
-          variants={pillarItem}
-          className="bg-surface-container-high p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
-        >
-          <div>
-            <span className="material-symbols-outlined text-primary mb-8 text-3xl">psychology</span>
-            <h3 className="font-headline text-2xl font-bold mb-4">
-              Human Review vs. Automated Templates
-            </h3>
-            <p className="font-body text-on-surface-variant leading-relaxed">
-              Algorithms provide the base, but humans provide the nuance.
-              Every block is vetted by an endurance specialist to ensure
-              safety and logic.
-            </p>
-          </div>
-          <div className="mt-8 flex gap-2">
-            <div className="px-3 py-1 bg-background text-[10px] font-label tracking-tighter uppercase border border-outline-variant/20 text-on-surface-variant">
-              No Black Boxes
-            </div>
-            <div className="px-3 py-1 bg-background text-[10px] font-label tracking-tighter uppercase border border-outline-variant/20 text-on-surface-variant">
-              Total Transparency
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Pillar 3 */}
-        <motion.div
-          variants={pillarItem}
-          className="bg-surface-container-low p-6 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[400px]"
-        >
-          <div>
-            <span className="material-symbols-outlined text-primary mb-8 text-3xl">settings_input_component</span>
-            <h3 className="font-headline text-2xl font-bold mb-4">
-              Precision Engineering for Endurance
-            </h3>
-            <p className="font-body text-on-surface-variant leading-relaxed">
-              We optimise for the long game. Micro-adjustments in volume and
-              intensity based on specific race-day environmental data.
-            </p>
-          </div>
-          <div className="mt-8">
-            <div className="flex items-end gap-1">
-              <span className="font-headline text-4xl font-bold">12.4</span>
-              <span className="font-label text-xs text-primary pb-1 uppercase tracking-widest">
-                KM Increment
-              </span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.section>
-
-      {/* ── Physiological Mapping ─────────────────────────── */}
-      <motion.section
-        className="bg-surface-container-lowest py-32 px-8 md:px-16 lg:px-24"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-20">
-            <div className="md:w-1/2">
-              <h2 className="font-headline text-4xl font-bold mb-12 tracking-tight">
-                Physiological Mapping
-              </h2>
-              <motion.div
-                className="space-y-16"
-                variants={pillarsVariants}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "-50px" }}
-              >
-                {/* HR Zones */}
-                <motion.div variants={pillarItem}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="material-symbols-outlined text-primary">favorite</span>
-                    <h4 className="font-headline text-lg font-bold uppercase tracking-tight">
-                      Heart Rate Zones
-                    </h4>
-                  </div>
-                  <p className="font-body text-on-surface-variant mb-6 text-sm">
-                    Zone 2 isn&apos;t just &ldquo;easy.&rdquo; We calculate
-                    your specific metabolic threshold to maximise fat
-                    oxidation without inducing CNS fatigue.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="w-full bg-surface-container h-1 overflow-hidden">
-                      <div className="bg-primary h-full w-[65%]" />
-                    </div>
-                    <div className="flex justify-between font-label text-[10px] text-on-surface-variant uppercase">
-                      <span>AeT Threshold</span>
-                      <span>142 BPM</span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* VO2 Max */}
-                <motion.div variants={pillarItem}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="material-symbols-outlined text-primary">air</span>
-                    <h4 className="font-headline text-lg font-bold uppercase tracking-tight">
-                      VO2 Max Metrics
-                    </h4>
-                  </div>
-                  <p className="font-body text-on-surface-variant mb-6 text-sm">
-                    Beyond the simple score. We track anaerobic capacity and
-                    power at VO2 Max to ensure your engine is prepared for
-                    varied terrain.
-                  </p>
-                  <div className="bg-surface-container p-6 border-l border-primary">
-                    <span className="font-label text-[10px] text-primary uppercase tracking-[0.2em] block mb-2">
-                      Current Efficiency
-                    </span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-headline text-3xl font-bold">58.5</span>
-                      <span className="font-label text-xs text-on-surface-variant">mL/kg/min</span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Dynamic Constraints */}
-                <motion.div variants={pillarItem}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <span className="material-symbols-outlined text-primary">event_busy</span>
-                    <h4 className="font-headline text-lg font-bold uppercase tracking-tight">
-                      Dynamic Constraints
-                    </h4>
-                  </div>
-                  <p className="font-body text-on-surface-variant text-sm">
-                    Work-life balance and past injuries are treated as hard
-                    data points. If your schedule shifts, the plan
-                    adapts—preserving the integrity of the block.
-                  </p>
-                </motion.div>
-              </motion.div>
-            </div>
-
-            {/* VO2 testing image + data transformation */}
-            <motion.div
-              className="md:w-1/2 relative flex flex-col gap-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, ease: "easeOut" as const, delay: 0.2 }}
-            >
-              <div className="overflow-hidden rounded-xl max-w-[320px]">
-                <img
-                  src="/images/vo2-testing.png"
-                  alt="Athlete on treadmill with VO2 mask and data screens"
-                  className="w-full h-[240px] object-cover hover:scale-[1.02] transition-transform duration-300"
-                />
-              </div>
-              <div className="relative w-full border border-outline-variant/20 p-12 overflow-hidden flex flex-col justify-center">
-                <div className="mb-8">
-                  <span className="font-label text-[10px] text-primary tracking-widest uppercase mb-2 block">
-                    Data Transformation
-                  </span>
-                  <h3 className="font-headline text-5xl font-extrabold leading-tight">
-                    FROM DATA
-                    <br />
-                    TO DESIGN.
-                  </h3>
-                </div>
-                <div className="space-y-6">
-                  {[
-                    { n: "01", text: "Raw .FIT file ingestion and error scrubbing.", active: false },
-                    { n: "02", text: "Correlation of HRV against historical workout load.", active: false },
-                    { n: "03", text: "Human verification of metabolic thresholds.", active: false },
-                    { n: "04", text: "Interactive HTML Plan delivery to your dashboard.", active: true },
-                  ].map(({ n, text, active }) => (
-                    <div key={n} className="flex items-center gap-4 text-on-surface-variant">
-                      <span
-                        className={`font-label text-xs border px-2 py-1 ${
-                          active
-                            ? "border-primary text-primary font-bold"
-                            : "border-outline-variant/40"
-                        }`}
-                      >
-                        {n}
-                      </span>
-                      <span className={`font-body text-sm ${active ? "text-on-surface" : ""}`}>
-                        {text}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ── HTML Plan Interface ───────────────────────────── */}
-      <motion.section
-        className="px-8 md:px-16 lg:px-24 py-32 max-w-7xl mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="max-w-4xl">
-            <span className="font-label text-primary uppercase tracking-[0.3em] text-[10px] mb-6 block">
-              The Output
-            </span>
-            <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
-              THE HTML PLAN INTERFACE.
-            </h2>
-            <p className="font-body text-lg text-on-surface-variant leading-relaxed mb-12 max-w-2xl">
-              No PDFs. No messy spreadsheets. Your training plan is delivered as
-              a bespoke HTML interface—beautifully designed, fully collapsible,
-              and accessible on any device.
-            </p>
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8"
-            variants={pillarsVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
+          <span
+            className="font-headline font-extrabold text-[18vw] leading-none whitespace-nowrap uppercase"
+            style={{
+              WebkitTextStroke: "1px rgba(245,245,240,0.06)",
+              color: "transparent",
+            }}
           >
-            {[
-              { icon: "unfold_less", label: "Collapsible Blocks" },
-              { icon: "devices", label: "Fully Responsive" },
-              { icon: "visibility", label: "High Legibility" },
-              { icon: "sync", label: "Live Updates" },
-            ].map(({ icon, label }) => (
-              <motion.div key={label} variants={pillarItem} className="space-y-2">
-                <span className="material-symbols-outlined text-primary">{icon}</span>
-                <p className="font-label text-[10px] uppercase tracking-widest">{label}</p>
+            METHODOLOGY
+          </span>
+        </div>
+
+        <div className="max-w-4xl relative z-10">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-8"
+            style={{ color: ACCENT }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Precision Engineering
+          </motion.span>
+
+          <h1 className="font-headline text-[clamp(3rem,9vw,7rem)] font-extrabold leading-[1] tracking-tight mb-10">
+            Methodology<span style={{ color: ACCENT }}>.</span>
+          </h1>
+
+          <h2 className="font-headline text-2xl md:text-3xl font-bold leading-snug mb-6">
+            The thinking behind the{" "}
+            <span style={{ color: ACCENT }}>plan</span>.
+          </h2>
+
+          <p
+            className="font-body text-lg md:text-xl leading-relaxed max-w-2xl"
+            style={{ color: DIM }}
+          >
+            Most training plans are built for an average athlete that doesn&apos;t exist. Yours is built for you.
+          </p>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ───────── SECTION 2 — 3 PRINCIPLES ───────────────── */}
+      <section className="py-32 md:py-44 px-8 md:px-24">
+        <div className="max-w-5xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            Core Principles
+          </motion.span>
+
+          <motion.h2
+            className="font-headline text-3xl md:text-4xl font-bold mb-24"
+            {...fadeUp(0.05)}
+          >
+            What we <span style={{ color: ACCENT }}>believe</span>.
+          </motion.h2>
+
+          <div className="space-y-28">
+            {PRINCIPLES.map((p) => (
+              <motion.div
+                key={p.number}
+                className="relative"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, ease: "easeOut" as const }}
+              >
+                {/* Large orange background number */}
+                <span
+                  className="absolute -top-8 -left-2 md:-top-12 md:-left-4 font-headline font-extrabold text-[120px] md:text-[150px] leading-none select-none pointer-events-none"
+                  style={{ color: "rgba(184,92,44,0.10)" }}
+                  aria-hidden="true"
+                >
+                  {p.number}
+                </span>
+
+                <div className="relative z-10 md:pl-28">
+                  <h3 className="font-headline text-2xl md:text-3xl font-bold mb-4">
+                    {p.title}
+                  </h3>
+                  <p
+                    className="font-body text-base leading-relaxed max-w-xl"
+                    style={{ color: DIM }}
+                  >
+                    {p.body}
+                  </p>
+                </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── Final CTA ─────────────────────────────────────── */}
-      <motion.section
-        className="relative px-6 sm:px-8 md:px-16 lg:px-24 py-20 sm:py-32 mx-4 sm:mx-8 md:mx-16 lg:mx-24 flex flex-col items-center text-center overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/ocean-exit.png" alt="Triathlete running out of ocean, full body visible" className="w-full h-full object-cover object-top" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.75)" }} />
+      <Divider />
+
+      {/* ───────── SECTION 3 — HOW WE BUILD YOUR PLAN ─────── */}
+      <section className="py-32 md:py-44 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            How We Build Your Plan
+          </motion.span>
+
+          <motion.h2
+            className="font-headline text-3xl md:text-4xl font-bold mb-24"
+            {...fadeUp(0.05)}
+          >
+            From data to <span style={{ color: ACCENT }}>design</span>.
+          </motion.h2>
+
+          {/* Timeline connector + cards */}
+          <div className="relative">
+            {/* Horizontal connecting line (desktop only) */}
+            <div
+              className="hidden md:block absolute top-[52px] left-[calc(12.5%+16px)] right-[calc(12.5%+16px)] h-px"
+              style={{ background: RULE }}
+              aria-hidden="true"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {BUILD_STEPS.map((step, i) => (
+                <motion.div
+                  key={step.number}
+                  className="relative pt-0"
+                  {...fadeUp(i * 0.15)}
+                >
+                  {/* Dot on the timeline */}
+                  <div className="flex justify-center mb-6">
+                    <div
+                      className="w-3 h-3 rounded-full relative z-10"
+                      style={{ background: ACCENT, boxShadow: `0 0 12px rgba(184,92,44,0.3)` }}
+                    />
+                  </div>
+
+                  {/* Card */}
+                  <motion.div
+                    className="p-8 rounded-sm text-center"
+                    style={{
+                      background: CARD_BG,
+                      border: `1px solid ${CARD_BORDER}`,
+                    }}
+                    whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <span
+                      className="font-headline text-3xl font-extrabold block mb-4"
+                      style={{ color: ACCENT }}
+                    >
+                      {step.number}
+                    </span>
+                    <h3 className="font-headline text-lg font-bold mb-3">
+                      {step.title}
+                    </h3>
+                    <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                      {step.body}
+                    </p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
-        <h2 className="font-serif text-4xl md:text-6xl font-extrabold mb-10 tracking-tight text-on-surface">
-          READY TO BUILD YOUR PLAN?
-        </h2>
-        <Link
-          href="/assessment"
-          className="bg-primary text-on-primary px-12 py-5 font-headline font-bold text-lg hover:bg-primary-dim transition-colors active:scale-95 inline-flex items-center gap-4 group"
+      </section>
+
+      <Divider />
+
+      {/* ───────── SECTION 4 — THE PLAN FORMAT ────────────── */}
+      <section className="py-32 md:py-44 px-8 md:px-24">
+        <div className="max-w-4xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            The Output
+          </motion.span>
+
+          <motion.h2
+            className="font-headline text-3xl md:text-4xl font-bold mb-6"
+            {...fadeUp(0.05)}
+          >
+            No PDFs. No <span style={{ color: ACCENT }}>spreadsheets</span>.
+          </motion.h2>
+
+          <motion.p
+            className="font-body text-base leading-relaxed mb-20 max-w-xl"
+            style={{ color: DIM }}
+            {...fadeUp(0.1)}
+          >
+            Your training plan is delivered as a bespoke HTML interface —
+            beautifully designed, fully collapsible, and accessible on any device.
+          </motion.p>
+
+          <div className="space-y-8">
+            {PLAN_FEATURES.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                className="flex gap-8 items-start p-8 rounded-sm"
+                style={{
+                  background: CARD_BG,
+                  border: `1px solid ${CARD_BORDER}`,
+                }}
+                {...fadeUp(i * 0.12)}
+                whileHover={{ y: -4, boxShadow: "0 8px 30px rgba(0,0,0,0.3)" }}
+              >
+                <span
+                  className="font-headline text-3xl font-extrabold shrink-0"
+                  style={{ color: "rgba(245,245,240,0.08)" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="font-headline text-lg font-bold mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                    {feature.body}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ───────── SECTION 5 — CTA ────────────────────────── */}
+      <section className="py-32 md:py-44 text-center px-8">
+        <motion.h2
+          className="font-headline text-4xl md:text-5xl font-bold mb-6"
+          {...fadeUp()}
         >
-          START THE ASSESSMENT
-          <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
-            arrow_forward
-          </span>
-        </Link>
-        <p className="mt-8 font-label text-[10px] text-on-surface-variant uppercase tracking-widest">
-          Initial assessment takes 8–10 minutes.
-        </p>
-      </motion.section>
+          Ready to build your{" "}
+          <span style={{ color: ACCENT }}>plan</span>?
+        </motion.h2>
+        <motion.p
+          className="font-body text-base mb-12 max-w-xl mx-auto"
+          style={{ color: DIM }}
+          {...fadeUp(0.1)}
+        >
+          Initial assessment takes 8&ndash;10 minutes.
+        </motion.p>
+        <motion.div {...fadeUp(0.2)}>
+          <Link
+            href="/assessment"
+            className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+            style={{ background: ACCENT, color: TEXT }}
+          >
+            Start Your Assessment &rarr;
+          </Link>
+        </motion.div>
+      </section>
 
+      {/* ───────────────────── FOOTER ─────────────────────── */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">
+          Plan Metric
+        </span>
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <Link
+              key={label}
+              href={href}
+              className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white"
+              style={{ color: DIM }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>
+          &copy; 2026 Plan Metric. Precision Endurance.
+        </span>
+      </footer>
     </main>
   );
 }

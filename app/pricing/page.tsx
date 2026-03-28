@@ -4,33 +4,89 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CountUp } from "@/components/CountUp";
 
-/* ─── Full comparison table data ─────────────────────────── */
-const comparisonRows = [
+/* ─── Palette ────────────────────────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+const RULE = "rgba(245,245,240,0.15)";
+const ACCENT_GLOW = "rgba(184,92,44,0.12)";
+const ROW_ALT = "rgba(245,245,240,0.02)";
+
+/* ─── Animations ─────────────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+const heroIn = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+/* ─── Comparison table (Strava removed) ──────────────────────── */
+const COMPARISON = [
   { feature: "Plan Type", starter: "Template", premium: "Personalised", elite: "Personalised + Coached" },
   { feature: "Price", starter: "$29.99 one-time", premium: "$99.99 one-time", elite: "$99/month" },
-  { feature: "Personalisation Level", starter: "Pre-built template", premium: "Fully customised from intake data", elite: "Fully customised + ongoing adjustments" },
+  { feature: "Personalisation", starter: "Pre-built template", premium: "Fully customised from intake data", elite: "Fully customised + ongoing adjustments" },
   { feature: "Delivery Time", starter: "Instant download", premium: "Within 48 hours", elite: "Within 48 hours + monthly updates" },
-  { feature: "Intake Form", starter: "\u2014", premium: "Yes \u2014 8\u201310 min detailed intake", elite: "Yes \u2014 8\u201310 min detailed intake" },
-  { feature: "Strava Integration", starter: "\u2014", premium: "Yes \u2014 we analyse your last 30 days", elite: "Yes \u2014 ongoing data monitoring" },
-  { feature: "Coach Review", starter: "\u2014", premium: "Yes \u2014 reviewed by head coach", elite: "Yes \u2014 reviewed by head coach" },
-  { feature: "Monthly Check-ins", starter: "\u2014", premium: "\u2014", elite: "Yes \u2014 monthly video call" },
-  { feature: "Plan Adjustments", starter: "\u2014", premium: "\u2014", elite: "Yes \u2014 unlimited adjustments" },
-  { feature: "Race Execution Plan", starter: "Basic", premium: "Detailed with pacing strategy", elite: "Detailed + race week protocol" },
-  { feature: "Direct Coach Support", starter: "\u2014", premium: "Email support", elite: "Priority email + monthly call" },
-  { feature: "Brick Sessions", starter: "\u2014", premium: "check", elite: "Yes + race simulation sessions" },
+  { feature: "Intake Form", starter: "\u2014", premium: "8\u201310 min detailed intake", elite: "8\u201310 min detailed intake" },
+  { feature: "Coach Review", starter: "\u2014", premium: "Reviewed by head coach", elite: "Reviewed by head coach" },
+  { feature: "Monthly Check-ins", starter: "\u2014", premium: "\u2014", elite: "Monthly video call" },
+  { feature: "Plan Adjustments", starter: "\u2014", premium: "\u2014", elite: "Unlimited adjustments" },
+  { feature: "Race Execution", starter: "Basic", premium: "Detailed + pacing strategy", elite: "Detailed + race week protocol" },
+  { feature: "Coach Support", starter: "\u2014", premium: "Email support", elite: "Priority email + monthly call" },
+  { feature: "Brick Sessions", starter: "\u2014", premium: "\u2713", elite: "Race simulation sessions" },
   { feature: "Nutrition Guidance", starter: "\u2014", premium: "Basic guidelines", elite: "Personalised nutrition plan" },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
+/* ─── Plan cards ─────────────────────────────────────────────── */
+const PLANS = [
+  {
+    key: "starter" as const,
+    level: "01",
+    name: "STARTER",
+    line: "Proven templates for common goals.",
+    features: ["Pre-built goal paths", "Instant digital download", "Standard metric tracking"],
+    price: "$29.99",
+    freq: "one-time",
+    cta: "Browse Plans",
+    featured: false,
+  },
+  {
+    key: "premium" as const,
+    level: "02",
+    name: "PREMIUM",
+    line: "Fully personalised to your exact data and race.",
+    features: ["Data-driven intake analysis", "Pace & HR zones (KM based)", "Weekly schedule & Coach notes", "Final review by lead coach"],
+    price: "$99.99",
+    freq: "one-time",
+    cta: "Select Premium",
+    featured: true,
+  },
+  {
+    key: "elite" as const,
+    level: "03",
+    name: "ELITE",
+    line: "Dynamic monthly adjustments with 1:1 coaching.",
+    features: ["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited email support"],
+    price: "$99",
+    freq: "/month",
+    cta: "Join Elite",
+    featured: false,
+  },
+];
 
-/* ─── Page ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function PricingPage() {
   const [selected, setSelected] = useState<"premium" | "elite" | null>(null);
+  const [showCompare, setShowCompare] = useState(false);
   const router = useRouter();
 
   const planNames: Record<string, string> = { premium: "Premium", elite: "Elite" };
@@ -44,320 +100,352 @@ export default function PricingPage() {
   }
 
   return (
-    <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <motion.header
-        className="relative mb-20 max-w-3xl overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img src="/images/cyclist.png" alt="Cyclist on road bike in aero position" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.85)" }} />
-        </div>
-        <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-on-surface">
-          Invest in <br />
-          <span className="text-primary">Performance.</span>
-        </h1>
-        <p className="font-body text-xl text-on-surface-variant max-w-2xl font-light leading-relaxed">
-          Precision-engineered training structures for the disciplined
-          athlete. Every plan is calibrated to your physiological profile,
-          focusing on KM benchmarks and thermal efficiency in Celsius.
-        </p>
-      </motion.header>
+      {/* Grain */}
+      <div
+        className="pointer-events-none fixed inset-0 z-50"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "256px 256px",
+        }}
+      />
 
-      {/* ── Pricing cards ─────────────────────────────────── */}
-      <div className="relative mb-8">
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
-        initial="hidden"
-        animate="show"
-      >
-
-        {/* STARTER */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={{ y: -4 }}
-          transition={{ duration: 0.2 }}
-          onClick={() => handleCardClick("starter")}
-          className={`bg-surface-container p-10 flex flex-col justify-between border rounded-sm cursor-pointer transition-all duration-300 ${
-            selected ? "opacity-70 border-outline/18" : "border-outline/18 hover:border-primary/40"
-          }`}
+      {/* ═══════════════ HERO ═══════════════════════════════ */}
+      <section className="min-h-[55vh] flex flex-col justify-end px-8 md:px-24 pt-40 pb-24 relative overflow-hidden">
+        {/* Ghost word */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          aria-hidden="true"
         >
-          <div>
-            <div className="mb-12">
-              <span className="text-secondary font-headline font-bold tracking-widest text-xs uppercase">
-                Level 01
-              </span>
-            </div>
-            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">STARTER</h2>
-            <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
-              Fundamental blueprints for common endurance goals. Immediate
-              access to proven methodologies.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {[
-                "Pre-built goal paths",
-                "Instant digital download",
-                "Standard metric tracking",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined text-xs text-primary">check</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="mb-8">
-              <span className="font-headline text-5xl font-bold text-primary">
-                $<CountUp end={29.99} decimals={2} duration={1500} />
-              </span>
-              <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
-                One-Time
-              </span>
-            </div>
-            <span className="block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest bg-surface-container-high hover:bg-primary hover:text-on-primary transition-all duration-300 text-center text-on-surface rounded-sm">
-              Browse Plans
-            </span>
-          </div>
-        </motion.div>
-
-        {/* PREMIUM — featured */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={{ y: -4 }}
-          transition={{ duration: 0.2 }}
-          onClick={() => handleCardClick("premium")}
-          className={`bg-surface-container p-10 flex flex-col justify-between relative rounded-sm cursor-pointer transition-all duration-300 ${
-            selected === "premium"
-              ? "border-2 border-primary scale-[1.02] shadow-[0_0_30px_rgba(160,82,45,0.12)]"
-              : selected === "elite"
-                ? "opacity-70 border border-primary/30"
-                : "border border-primary/30"
-          }`}
-        >
-          <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1 rounded-sm">
-            MOST SELECTED
-          </div>
-          <div>
-            <div className="flex justify-between items-start mb-12">
-              <span className="text-primary font-headline font-bold tracking-widest text-xs uppercase">
-                Level 02
-              </span>
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-                verified
-              </span>
-            </div>
-            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">PREMIUM</h2>
-            <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
-              Bespoke construction based on your physiological intake. A
-              tactical roadmap for serious results.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {[
-                "Data-driven intake analysis",
-                "Pace & HR zones (KM based)",
-                "Weekly schedule & Coach notes",
-                "Final Review by Lead Coach",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined text-xs text-primary">check</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="mb-8">
-              <span className="font-headline text-5xl font-bold text-primary">
-                $<CountUp end={99.99} decimals={2} duration={1500} />
-              </span>
-              <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
-                One-Time
-              </span>
-            </div>
-            <span className={`block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest transition-all duration-300 text-center rounded-sm ${
-              selected === "premium"
-                ? "bg-primary text-on-primary"
-                : "bg-primary text-on-primary hover:bg-primary-dim"
-            }`}>
-              {selected === "premium" ? "✓ Selected" : "Select Premium"}
-            </span>
-          </div>
-        </motion.div>
-
-        {/* ELITE */}
-        <motion.div
-          variants={cardVariants}
-          whileHover={{ y: -4 }}
-          transition={{ duration: 0.2 }}
-          onClick={() => handleCardClick("elite")}
-          className={`bg-surface-container p-10 flex flex-col justify-between rounded-sm cursor-pointer transition-all duration-300 ${
-            selected === "elite"
-              ? "border-2 border-primary scale-[1.02] shadow-[0_0_30px_rgba(160,82,45,0.12)]"
-              : selected === "premium"
-                ? "opacity-70 border border-outline/18"
-                : "border border-outline/18 hover:border-primary/40"
-          }`}
-        >
-          <div>
-            <div className="mb-12">
-              <span className="text-secondary font-headline font-bold tracking-widest text-xs uppercase">
-                Level 03
-              </span>
-            </div>
-            <h2 className="font-headline text-4xl font-bold mb-4 text-on-surface">ELITE</h2>
-            <p className="text-on-surface-variant mb-12 text-sm leading-relaxed">
-              Full concierge performance management. Adaptive training that
-              evolves with your biometric data.
-            </p>
-            <ul className="space-y-4 mb-12">
-              {[
-                "Dynamic plan adjustments",
-                "Monthly 1:1 check-ins",
-                "Unlimited email support",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined text-xs text-primary">check</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="mb-8">
-              <span className="font-headline text-5xl font-bold text-primary">
-                $<CountUp end={99} decimals={0} duration={1500} />
-              </span>
-              <span className="text-on-surface-variant text-xs font-label uppercase ml-2 tracking-widest">
-                / Month
-              </span>
-            </div>
-            <span className={`block w-full py-4 text-xs font-headline font-bold uppercase tracking-widest transition-all duration-300 text-center rounded-sm ${
-              selected === "elite"
-                ? "bg-primary text-on-primary"
-                : "bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface"
-            }`}>
-              {selected === "elite" ? "✓ Selected" : "Join Elite"}
-            </span>
-          </div>
-        </motion.div>
-
-      </motion.div>
-      </div>
-
-      {/* ── Confirm & Continue button ───────────────────────── */}
-      <AnimatePresence>
-        {selected && (
-          <motion.div
-            className="flex justify-center mb-32"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.4, ease: "easeOut" as const }}
+          <span
+            className="font-headline font-extrabold text-[20vw] leading-none whitespace-nowrap uppercase"
+            style={{ WebkitTextStroke: "1px rgba(245,245,240,0.05)", color: "transparent" }}
           >
-            <Link
-              href={`/assessment?plan=${selected}`}
-              className="bg-primary text-on-primary px-12 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:bg-primary-dim hover:scale-105 transition-all duration-300 rounded-sm"
+            INVEST.
+          </span>
+        </div>
+
+        <div className="relative z-10 max-w-3xl">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: ACCENT }}
+            {...heroIn(0.1)}
+          >
+            Pricing
+          </motion.span>
+
+          <motion.h1
+            className="font-headline text-[clamp(2.8rem,8vw,5.5rem)] font-extrabold leading-[1.05] tracking-tight mb-6"
+            {...heroIn(0.2)}
+          >
+            Choose your <span style={{ color: ACCENT }}>level</span>.
+          </motion.h1>
+
+          <motion.p
+            className="font-body text-lg md:text-xl leading-relaxed max-w-lg"
+            style={{ color: DIM }}
+            {...heroIn(0.35)}
+          >
+            Every plan is built around you. Pick the level that matches your commitment.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ CARDS ══════════════════════════════ */}
+      <section className="py-24 md:py-32 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+          {/* 3-col grid — Premium card is taller via extra py */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            {PLANS.map((plan, i) => {
+              const isSelected = selected === plan.key;
+              const otherSelected = selected !== null && !isSelected && plan.key !== "starter";
+
+              return (
+                <motion.div
+                  key={plan.key}
+                  className={`relative rounded-sm flex flex-col cursor-pointer group ${
+                    plan.featured ? "p-10 md:p-12 md:-my-4 z-10" : "p-10"
+                  }`}
+                  style={{
+                    background: CARD_BG,
+                    border: isSelected
+                      ? `2px solid ${ACCENT}`
+                      : plan.featured
+                        ? `1.5px solid ${ACCENT}`
+                        : `1px solid ${CARD_BORDER}`,
+                    opacity: otherSelected ? 0.45 : 1,
+                    boxShadow: plan.featured
+                      ? `0 0 40px ${ACCENT_GLOW}, 0 20px 60px rgba(0,0,0,0.4)`
+                      : "none",
+                  }}
+                  onClick={() => handleCardClick(plan.key)}
+                  {...fadeUp(i * 0.15)}
+                  whileHover={{
+                    y: -8,
+                    boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 35px ${ACCENT_GLOW}`,
+                    borderColor: ACCENT,
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Hover glow layer */}
+                  <div
+                    className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{ background: `radial-gradient(ellipse at 50% 40%, ${ACCENT_GLOW} 0%, transparent 70%)` }}
+                  />
+
+                  {/* Orange hairline above Premium label */}
+                  {plan.featured && (
+                    <>
+                      <div
+                        className="absolute top-0 left-6 right-6 h-px"
+                        style={{ background: ACCENT }}
+                      />
+                      <span
+                        className="absolute -top-3 left-1/2 -translate-x-1/2 font-label text-[10px] tracking-widest uppercase px-4 py-1 rounded-sm z-10"
+                        style={{ background: ACCENT, color: TEXT }}
+                      >
+                        Most Selected
+                      </span>
+                    </>
+                  )}
+
+                  {/* Content */}
+                  <div className="relative z-10 flex-1">
+                    <span
+                      className="font-label text-[10px] tracking-[0.35em] uppercase block mb-8"
+                      style={{ color: plan.featured ? ACCENT : DIM }}
+                    >
+                      Level {plan.level}
+                    </span>
+
+                    <h2 className="font-headline text-2xl font-bold mb-2 tracking-wide">
+                      {plan.name}
+                    </h2>
+
+                    <p className="font-body text-sm mb-8" style={{ color: DIM }}>
+                      {plan.line}
+                    </p>
+
+                    {/* Price — biggest element */}
+                    <div className="mb-8">
+                      <span className="font-headline text-5xl md:text-6xl font-extrabold tracking-tight">
+                        {plan.price}
+                      </span>
+                      <span className="font-label text-xs ml-2 align-bottom" style={{ color: DIM }}>
+                        {plan.freq}
+                      </span>
+                    </div>
+
+                    {/* Features */}
+                    <ul className="space-y-3 mb-10">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-3 text-sm" style={{ color: DIM }}>
+                          <span className="mt-0.5" style={{ color: ACCENT }}>&#10003;</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* CTA button */}
+                  <div className="relative z-10">
+                    <span
+                      className="block w-full py-4 text-xs font-label font-bold uppercase tracking-widest text-center rounded-sm transition-all duration-200 group-hover:scale-[1.01]"
+                      style={
+                        plan.featured || isSelected
+                          ? { background: ACCENT, color: TEXT }
+                          : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
+                      }
+                    >
+                      {isSelected ? "\u2713 Selected" : plan.cta}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Confirm */}
+          <AnimatePresence>
+            {selected && (
+              <motion.div
+                className="flex justify-center mt-12"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 16 }}
+                transition={{ duration: 0.4, ease: "easeOut" as const }}
+              >
+                <Link
+                  href={`/assessment?plan=${selected}`}
+                  className="inline-block font-label text-sm font-bold tracking-widest uppercase px-12 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+                  style={{ background: ACCENT, color: TEXT }}
+                >
+                  Continue with {planNames[selected]} &rarr;
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ COMPARISON TABLE ═══════════════════ */}
+      <section className="py-24 md:py-32 px-8 md:px-24">
+        <div className="max-w-6xl mx-auto">
+          <motion.div className="text-center mb-4" {...fadeUp()}>
+            <button
+              onClick={() => setShowCompare((p) => !p)}
+              className="inline-flex items-center gap-3 font-label text-xs font-bold tracking-widest uppercase px-10 py-3 rounded-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
             >
-              Continue with {planNames[selected]} &rarr;
-            </Link>
+              {showCompare ? "Hide Comparison" : "Compare All Plans"}
+              <motion.svg
+                width="12" height="12" viewBox="0 0 12 12" fill="none"
+                stroke="currentColor" strokeWidth="1.5"
+                animate={{ rotate: showCompare ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <path d="M2 4l4 4 4-4" />
+              </motion.svg>
+            </button>
           </motion.div>
-        )}
-      </AnimatePresence>
 
-      {!selected && <div className="mb-32" />}
-
-      {/* ── Compare Tiers ────────────────────────────────── */}
-      <motion.section
-        className="mb-32"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <h3 className="font-serif text-3xl font-bold mb-12 text-center text-on-surface">
-          Compare Tiers
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-surface-container">
-                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface-variant border-b border-outline/10">
-                  Feature
-                </th>
-                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
-                  Starter
-                </th>
-                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-primary border-b border-outline/10 bg-primary/5">
-                  Premium <span className="text-[9px] ml-1 bg-primary text-on-primary px-2 py-0.5 rounded-sm">MOST POPULAR</span>
-                </th>
-                <th className="p-3 sm:p-6 font-label text-xs uppercase tracking-widest text-on-surface border-b border-outline/10">
-                  Elite
-                </th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {comparisonRows.map((row) => (
-                <tr key={row.feature} className="hover:bg-surface-container-low transition-colors">
-                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant font-medium">
-                    {row.feature}
-                  </td>
-                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant">
-                    {row.starter === "check" ? (
-                      <span className="material-symbols-outlined text-primary">check</span>
-                    ) : row.starter}
-                  </td>
-                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant bg-primary/5">
-                    {row.premium === "check" ? (
-                      <span className="material-symbols-outlined text-primary">check</span>
-                    ) : row.premium}
-                  </td>
-                  <td className="p-3 sm:p-6 border-b border-outline/10 text-on-surface-variant">
-                    {row.elite === "check" ? (
-                      <span className="material-symbols-outlined text-primary">check</span>
-                    ) : row.elite}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <AnimatePresence>
+            {showCompare && (
+              <motion.div
+                className="overflow-hidden"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" as const }}
+              >
+                <div className="mt-8 overflow-x-auto rounded-sm" style={{ border: `1px solid ${CARD_BORDER}` }}>
+                  <table className="w-full text-left border-collapse" style={{ minWidth: 720 }}>
+                    <thead>
+                      <tr style={{ background: "rgba(245,245,240,0.04)" }}>
+                        <th className="p-4 md:py-5 md:px-6 font-label text-[10px] uppercase tracking-[0.25em]" style={{ color: DIM, borderBottom: `1px solid ${CARD_BORDER}` }}>
+                          Feature
+                        </th>
+                        <th className="p-4 md:py-5 md:px-6 font-label text-[10px] uppercase tracking-[0.25em]" style={{ color: TEXT, borderBottom: `1px solid ${CARD_BORDER}` }}>
+                          Starter
+                        </th>
+                        <th
+                          className="p-4 md:py-5 md:px-6 font-label text-[10px] uppercase tracking-[0.25em]"
+                          style={{ color: ACCENT, borderBottom: `1px solid ${ACCENT}`, background: "rgba(184,92,44,0.06)" }}
+                        >
+                          Premium
+                          <span className="ml-2 text-[9px] px-2 py-0.5 rounded-sm" style={{ background: ACCENT, color: TEXT }}>
+                            POPULAR
+                          </span>
+                        </th>
+                        <th className="p-4 md:py-5 md:px-6 font-label text-[10px] uppercase tracking-[0.25em]" style={{ color: TEXT, borderBottom: `1px solid ${CARD_BORDER}` }}>
+                          Elite
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-body text-sm">
+                      {COMPARISON.map((row, ri) => (
+                        <tr
+                          key={row.feature}
+                          style={{
+                            borderBottom: `1px solid ${CARD_BORDER}`,
+                            background: ri % 2 === 1 ? ROW_ALT : "transparent",
+                          }}
+                        >
+                          <td className="p-4 md:py-4 md:px-6 font-medium" style={{ color: TEXT }}>
+                            {row.feature}
+                          </td>
+                          <td className="p-4 md:py-4 md:px-6" style={{ color: DIM }}>
+                            {row.starter === "\u2713"
+                              ? <span style={{ color: ACCENT, fontWeight: 700 }}>\u2713</span>
+                              : row.starter === "\u2014"
+                                ? <span style={{ opacity: 0.3 }}>\u2014</span>
+                                : row.starter}
+                          </td>
+                          <td
+                            className="p-4 md:py-4 md:px-6"
+                            style={{ color: DIM, background: ri % 2 === 1 ? "rgba(184,92,44,0.04)" : "rgba(184,92,44,0.06)" }}
+                          >
+                            {row.premium === "\u2713"
+                              ? <span style={{ color: ACCENT, fontWeight: 700 }}>\u2713</span>
+                              : row.premium === "\u2014"
+                                ? <span style={{ opacity: 0.3 }}>\u2014</span>
+                                : row.premium}
+                          </td>
+                          <td className="p-4 md:py-4 md:px-6" style={{ color: DIM }}>
+                            {row.elite === "\u2713"
+                              ? <span style={{ color: ACCENT, fontWeight: 700 }}>\u2713</span>
+                              : row.elite === "\u2014"
+                                ? <span style={{ opacity: 0.3 }}>\u2014</span>
+                                : row.elite}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── Assessment CTA ────────────────────────────────── */}
-      <motion.section
-        className="relative bg-surface-container p-6 sm:p-12 md:p-24 overflow-hidden group rounded-sm"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="max-w-xl">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 tracking-tight text-on-surface">
-              Not sure where to start?
-            </h2>
-            <p className="text-on-surface-variant text-lg font-light leading-relaxed">
-              Our assessment engine analyses your current performance metrics,
-              historical training volume, and physiological thresholds to
-              recommend the ideal path.
-            </p>
-          </div>
+      {/* Divider */}
+      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
+
+      {/* ═══════════════ BOTTOM CTA ════════════════════════ */}
+      <section className="py-32 md:py-40 px-8 md:px-24 text-center">
+        <motion.h2
+          className="font-headline text-4xl md:text-5xl font-bold mb-5"
+          {...fadeUp()}
+        >
+          Not sure which <span style={{ color: ACCENT }}>plan</span>?
+        </motion.h2>
+        <motion.p
+          className="font-body text-base mb-12 max-w-md mx-auto"
+          style={{ color: DIM }}
+          {...fadeUp(0.1)}
+        >
+          Take the assessment and we&rsquo;ll tell you.
+        </motion.p>
+        <motion.div {...fadeUp(0.2)}>
           <Link
-            href="/assessment"
-            className="bg-primary text-on-primary px-10 py-5 text-sm font-headline font-bold uppercase tracking-widest hover:bg-primary-dim hover:scale-105 transition-all duration-300 whitespace-nowrap rounded-sm"
+            href="/process"
+            className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+            style={{ background: ACCENT, color: TEXT }}
           >
-            TAKE ASSESSMENT
+            Take Assessment &rarr;
           </Link>
-        </div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] group-hover:bg-primary/10 transition-colors" />
-      </motion.section>
+        </motion.div>
+      </section>
 
+      {/* ═══════════════ FOOTER ═════════════════════════════ */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">Plan Metric</span>
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <Link key={label} href={href} className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white" style={{ color: DIM }}>
+              {label}
+            </Link>
+          ))}
+        </div>
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>&copy; 2026 Plan Metric. Precision Endurance.</span>
+      </footer>
     </main>
   );
 }

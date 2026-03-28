@@ -1,231 +1,243 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 
-const steps = [
+/* ─── Palette (matches homepage) ─────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+
+/* ─── B&W image style ────────────────────────────────────────── */
+const bwImg: React.CSSProperties = {
+  filter: "grayscale(100%)",
+  objectFit: "cover" as const,
+  width: "100%",
+  height: "100%",
+  position: "absolute" as const,
+  inset: 0,
+};
+
+/* ─── Animation presets ──────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+const heroIn = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay },
+});
+
+/* ─── Steps data ─────────────────────────────────────────────── */
+const STEPS = [
   {
     number: "01",
-    title: "CHOOSE YOUR PATH",
-    body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. Complete our deep-dive questionnaire covering fitness, goals, schedule, and injury history. This isn't just a form; it's the architectural blueprint of your next season.",
-    badge: null,
-    image: "/images/swimmer.png",
     phase: "Phase: Assessment",
-    cta: null,
+    title: "Choose Your Path",
+    body: "Select your discipline — Running, Triathlon, or Cycling — and choose the plan level that matches your goals. Complete our deep-dive questionnaire covering fitness, goals, schedule, and injury history. This isn\u2019t just a form; it\u2019s the architectural blueprint of your next season.",
   },
   {
     number: "02",
-    title: "8\u201310 MIN INTAKE",
-    body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
-    badge: null,
-    image: "/images/intake-form.png",
     phase: "Phase: Data Integration",
-    cta: null,
+    title: "8\u201310 Min Intake",
+    body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
   },
   {
     number: "03",
-    title: "48H DELIVERY",
-    body: "Within 48 hours, your personalised plan is built around everything about you — your fitness, your race, your schedule, your body. No generic templates. Your sessions are calibrated to your exact thresholds and delivered directly to your dashboard.",
-    badge: null,
-    image: "/images/athlete-phone.png",
     phase: "Phase: Deployment",
-    cta: "START YOUR INTAKE",
+    title: "48H Delivery",
+    body: "Within 48 hours, your personalised plan is built around everything about you — your fitness, your race, your schedule, your body. No generic templates. Your sessions are calibrated to your exact thresholds and delivered directly to your dashboard.",
+  },
+  {
+    number: "04",
+    phase: "Phase: Execution",
+    title: "Execute Race Day",
+    body: "Show up to race day with a plan built for exactly you \u2014 and nothing left to chance. Every session, every taper, every race-week detail has been mapped to your specific physiology and goals.",
   },
 ];
 
-/* ─── Animated step circle ────────────────────────────────── */
-function StepCircle({ number }: { number: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={inView ? { scale: 1, opacity: 1 } : {}}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="w-10 h-10 rounded-full border border-primary flex items-center justify-center bg-background z-10"
-    >
-      <span className="font-label text-primary text-xs font-bold">{number}</span>
-    </motion.div>
-  );
-}
-
-/* ─── Animated SVG timeline ───────────────────────────────── */
-function TimelineLine() {
-  const ref = useRef<SVGPathElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(containerRef, { once: true, margin: "-100px" });
-
-  return (
-    <div
-      ref={containerRef}
-      className="hidden md:block absolute left-[1.1rem] top-0 bottom-0 w-px"
-      aria-hidden
-    >
-      <svg
-        className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="none"
-        viewBox="0 0 2 100"
-      >
-        <motion.path
-          ref={ref}
-          d="M1 0 V 100"
-          stroke="rgba(160,82,45,0.2)"
-          strokeWidth="0.6"
-          fill="none"
-          initial={{ pathLength: 0 }}
-          animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 1.8, ease: "easeInOut", delay: 0.3 }}
-        />
-      </svg>
-    </div>
-  );
-}
-
-/* ─── Step row ────────────────────────────────────────────── */
-function StepRow({ step, index }: { step: (typeof steps)[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const delay = index * 0.15;
-  const isEven = index % 2 === 0;
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: "easeOut" as const, delay }}
-      className="md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative"
-    >
-      {/* Step circle */}
-      <div className="md:col-span-1 flex items-center justify-center md:justify-start">
-        <StepCircle number={step.number} />
-      </div>
-
-      {/* Image — left on even rows (mobile: always first) */}
-      <div className={`md:col-span-5 ${isEven ? "md:order-first" : "md:order-last"} order-first`}>
-        <div className="overflow-hidden rounded-xl max-w-[400px] mx-auto md:mx-0">
-          <img
-            src={step.image}
-            alt={step.title}
-            className="w-full h-[240px] md:h-[300px] object-cover hover:scale-[1.02] transition-transform duration-300"
-          />
-        </div>
-      </div>
-
-      {/* Text */}
-      <div className={`md:col-span-6 ${isEven ? "" : "md:order-first"}`}>
-        <span className="font-label text-[10px] text-primary uppercase tracking-widest mb-3 block">
-          {step.phase}
-        </span>
-        <h3 className="font-headline text-3xl font-bold mb-6 tracking-tight">
-          {step.title}
-        </h3>
-        <p className="font-body text-on-surface-variant leading-relaxed mb-6">
-          {step.body}
-        </p>
-
-        {step.badge && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-low rounded-sm">
-            <span className="material-symbols-outlined text-primary text-sm">error</span>
-            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-              {step.badge}
-            </span>
-          </div>
-        )}
-
-        {step.cta && (
-          <Link
-            href="/assessment"
-            className="inline-block bg-primary text-on-primary px-8 py-4 text-sm font-bold tracking-widest rounded-sm hover:opacity-90 transition-all uppercase"
-          >
-            {step.cta}
-          </Link>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── Page ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════ */
+/*  PAGE                                                          */
+/* ═══════════════════════════════════════════════════════════════ */
 export default function ProcessPage() {
   return (
-    <main className="pt-32 pb-20">
+    <main style={{ background: BG, color: TEXT }} className="-mt-[72px]">
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <motion.section
-        className="px-8 max-w-7xl mx-auto mb-32"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="w-full md:w-3/5">
-            <span className="font-label text-primary tracking-[0.3em] uppercase text-[10px] mb-4 block">
-              Engineered Performance
-            </span>
-            <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
-              A Precise Path to
-              <br />
-              <span className="text-primary-dim">Peak Endurance.</span>
-            </h1>
-          </div>
-          <div className="w-full md:w-2/5 md:pl-12">
-            <p className="font-body text-on-surface-variant text-lg leading-relaxed border-l border-outline-variant/30 pl-8">
-              Our process is built on the philosophy of limited volume for
-              maximum quality. We focus on the metric, so you can focus on the
-              movement.
-            </p>
-          </div>
+      {/* ───────────────── HERO ────────────────────────────── */}
+      <section className="relative min-h-[75vh] flex flex-col justify-end overflow-hidden">
+        {/* BG image */}
+        <img
+          src="/images/track-stretch.png"
+          alt=""
+          aria-hidden="true"
+          style={bwImg}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgba(0,0,0,0.70)" }}
+        />
+        {/* Fade to dark at bottom */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-40"
+          style={{ background: `linear-gradient(to bottom, transparent, ${BG})` }}
+        />
+
+        {/* Push content well below nav */}
+        <div className="relative z-10 px-8 md:px-24 pb-24 pt-40 max-w-5xl">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: ACCENT }}
+            {...heroIn(0.1)}
+          >
+            Engineered Performance
+          </motion.span>
+
+          <motion.h1
+            className="font-headline text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.05] tracking-tight mb-8"
+            {...heroIn(0.25)}
+          >
+            A precise path to{" "}
+            <br className="hidden md:block" />
+            peak <span style={{ color: ACCENT }}>endurance</span>.
+          </motion.h1>
+
+          <motion.p
+            className="font-body text-lg md:text-xl leading-relaxed max-w-xl"
+            style={{ color: DIM }}
+            {...heroIn(0.45)}
+          >
+            Our process is built on the philosophy of limited volume for
+            maximum quality. We focus on the metric, so you can focus on the
+            movement.
+          </motion.p>
         </div>
-      </motion.section>
+      </section>
 
-      {/* ── Steps ─────────────────────────────────────────── */}
-      <section className="px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-24 relative">
-          <TimelineLine />
-          {steps.map((step, index) => (
-            <StepRow key={step.number} step={step} index={index} />
+      {/* ───────────────── STEPS (one at a time reveal) ───── */}
+      <section className="px-8 md:px-24">
+        <div className="max-w-3xl mx-auto">
+          {STEPS.map((step, i) => (
+            <motion.div
+              key={step.number}
+              className="min-h-screen flex flex-col justify-center py-20"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: "easeOut" as const }}
+            >
+              {/* Giant ghost number */}
+              <span
+                className="font-headline text-[8rem] md:text-[12rem] font-extrabold leading-none block mb-6"
+                style={{ color: "rgba(245,245,240,0.04)" }}
+              >
+                {step.number}
+              </span>
+
+              <span
+                className="font-label text-[10px] tracking-[0.35em] uppercase block mb-4"
+                style={{ color: ACCENT }}
+              >
+                {step.phase}
+              </span>
+
+              <h2 className="font-headline text-3xl md:text-5xl font-bold tracking-tight mb-8">
+                {step.title}
+              </h2>
+
+              <p
+                className="font-body text-base md:text-lg leading-relaxed max-w-xl"
+                style={{ color: DIM }}
+              >
+                {step.body}
+              </p>
+
+              {/* CTA on last step */}
+              {i === STEPS.length - 1 && (
+                <div className="mt-12">
+                  <Link
+                    href="/assessment"
+                    className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+                    style={{ background: ACCENT, color: TEXT }}
+                  >
+                    Start Your Intake &rarr;
+                  </Link>
+                </div>
+              )}
+
+              {/* Subtle divider between steps */}
+              {i < STEPS.length - 1 && (
+                <div
+                  className="mt-20 w-16 h-px"
+                  style={{ background: CARD_BORDER }}
+                />
+              )}
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ── Final CTA ─────────────────────────────────────── */}
-      <motion.section
-        className="mt-40 px-8"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="max-w-4xl mx-auto p-6 sm:p-12 md:p-24 text-center rounded-sm relative overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <img
-              src="/images/start-line.png"
-              alt="Triathlete standing on road at sunrise"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0" style={{ background: "rgba(240,230,212,0.7)" }} />
-          </div>
-          <h2 className="font-headline text-4xl md:text-5xl font-bold mb-8 tracking-tighter">
-            Ready for <br />
-            <span className="text-primary">Precision.</span>
-          </h2>
-          <p className="font-body text-on-surface-variant max-w-xl mx-auto mb-12">
-            Join a community of disciplined athletes who value data as much as
-            effort.
-          </p>
+      {/* ───────────────── FINAL CTA (no image) ──────────── */}
+      <section className="py-32 md:py-44 text-center px-8">
+        <motion.h2
+          className="font-headline text-4xl md:text-5xl font-bold mb-6"
+          {...fadeUp()}
+        >
+          Ready for{" "}
+          <span style={{ color: ACCENT }}>precision</span>.
+        </motion.h2>
+        <motion.p
+          className="font-body text-base mb-12 max-w-xl mx-auto"
+          style={{ color: DIM }}
+          {...fadeUp(0.1)}
+        >
+          Join a community of disciplined athletes who value data as much as
+          effort.
+        </motion.p>
+        <motion.div {...fadeUp(0.2)}>
           <Link
             href="/assessment"
-            className="px-10 py-5 bg-primary text-on-primary font-bold tracking-widest uppercase rounded-sm text-sm hover:bg-primary-dim hover:scale-105 transition-all duration-300"
+            className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+            style={{ background: ACCENT, color: TEXT }}
           >
-            START YOUR ASSESSMENT
+            Start Your Assessment &rarr;
           </Link>
-        </div>
-      </motion.section>
+        </motion.div>
+      </section>
 
+      {/* ───────────────────── FOOTER ─────────────────────── */}
+      <footer
+        className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
+        style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
+      >
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">
+          Plan Metric
+        </span>
+        <div className="flex gap-8">
+          {[
+            ["Terms", "/terms"],
+            ["Privacy", "/privacy"],
+            ["Instagram", "https://www.instagram.com/planmetric"],
+          ].map(([label, href]) => (
+            <Link
+              key={label}
+              href={href}
+              className="font-label text-[10px] tracking-widest uppercase transition-colors duration-200 hover:text-white"
+              style={{ color: DIM }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+        <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>
+          &copy; 2026 Plan Metric. Precision Endurance.
+        </span>
+      </footer>
     </main>
   );
 }

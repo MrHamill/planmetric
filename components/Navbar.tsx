@@ -15,6 +15,9 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const darkPages = ["/", "/process", "/methodology", "/pricing", "/blog", "/plans"];
+  const isDark = darkPages.some(p => pathname === p || pathname.startsWith(p + "/"));
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -47,7 +50,11 @@ export default function Navbar() {
         <Link
           href="/"
           className={`font-headline text-xl font-bold tracking-tighter uppercase transition-colors duration-300 ${
-            scrolled || mobileOpen ? "text-[#E8DCC8]" : "text-primary"
+            scrolled || mobileOpen
+              ? "text-[#E8DCC8]"
+              : isDark
+                ? "text-[#F5F5F0]"
+                : "text-primary"
           }`}
         >
           PLAN METRIC
@@ -63,10 +70,10 @@ export default function Navbar() {
                 href={href}
                 className={`font-headline tracking-tight text-sm transition-colors duration-300 ${
                   active
-                    ? scrolled
+                    ? scrolled || isDark
                       ? "font-bold text-[#E8DCC8] border-b border-[#E8DCC8] pb-1"
                       : "font-bold text-primary border-b border-primary pb-1"
-                    : scrolled
+                    : scrolled || isDark
                       ? "font-medium text-[#E8DCC8]/70 hover:text-[#E8DCC8]"
                       : "font-medium text-on-surface hover:text-primary"
                 }`}
@@ -80,25 +87,29 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/assessment"
-            className="hidden sm:inline-block bg-primary text-on-primary px-4 sm:px-6 py-2 text-xs font-bold tracking-widest rounded-sm hover:bg-primary-dim transition-all duration-200 uppercase whitespace-nowrap"
+            className={`hidden sm:inline-block px-4 sm:px-6 py-2 text-xs font-bold tracking-widest rounded-sm transition-all duration-200 uppercase whitespace-nowrap ${
+              isDark && !scrolled
+                ? "bg-[#B85C2C] text-[#F5F5F0] hover:bg-[#a14f26]"
+                : "bg-primary text-on-primary hover:bg-primary-dim"
+            }`}
           >
             GET STARTED
           </Link>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — always visible on homepage */}
           <button
             onClick={() => setMobileOpen(o => !o)}
             className="md:hidden flex flex-col gap-1.5 p-2"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             <span className={`block w-6 h-0.5 transition-all duration-300 ${
-              scrolled || mobileOpen ? "bg-[#E8DCC8]" : "bg-on-surface"
+              scrolled || mobileOpen ? "bg-[#E8DCC8]" : isDark ? "bg-[#F5F5F0]" : "bg-on-surface"
             } ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
             <span className={`block w-6 h-0.5 transition-all duration-300 ${
-              scrolled || mobileOpen ? "bg-[#E8DCC8]" : "bg-on-surface"
+              scrolled || mobileOpen ? "bg-[#E8DCC8]" : isDark ? "bg-[#F5F5F0]" : "bg-on-surface"
             } ${mobileOpen ? "opacity-0" : ""}`} />
             <span className={`block w-6 h-0.5 transition-all duration-300 ${
-              scrolled || mobileOpen ? "bg-[#E8DCC8]" : "bg-on-surface"
+              scrolled || mobileOpen ? "bg-[#E8DCC8]" : isDark ? "bg-[#F5F5F0]" : "bg-on-surface"
             } ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
           </button>
         </div>
