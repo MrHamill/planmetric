@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 /* ─── Palette ────────────────────────────────────────────────── */
@@ -27,11 +28,14 @@ const heroIn = (delay = 0) => ({
 
 /* ─── Category colours (dark theme) ──────────────────────────── */
 const catColor: Record<string, { text: string; bg: string }> = {
-  Training:  { text: ACCENT, bg: "rgba(184,92,44,0.10)" },
-  Swim:      { text: "#0ea5e9", bg: "rgba(14,165,233,0.10)" },
-  Bike:      { text: "#22c55e", bg: "rgba(34,197,94,0.10)" },
-  Run:       { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
-  Nutrition: { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
+  Training:    { text: ACCENT, bg: "rgba(184,92,44,0.10)" },
+  Swim:        { text: "#0ea5e9", bg: "rgba(14,165,233,0.10)" },
+  Bike:        { text: "#22c55e", bg: "rgba(34,197,94,0.10)" },
+  Run:         { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
+  Nutrition:   { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
+  Methodology: { text: "#8b5cf6", bg: "rgba(139,92,246,0.10)" },
+  Triathlon:   { text: "#a855f7", bg: "rgba(168,85,247,0.10)" },
+  Racing:      { text: "#ef4444", bg: "rgba(239,68,68,0.10)" },
 };
 
 /* ─── Article data ───────────────────────────────────────────── */
@@ -57,6 +61,11 @@ const FEATURED = [
 ];
 
 const TOPICS = [
+  { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones" },
+  { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition" },
+  { title: "Why most training plans fail \u2014 and what to do instead", category: "Methodology", readTime: "7 min read", excerpt: "Standardised plans underperform individualised ones by half. The research behind adaptive training and the 10% rule.", href: "/blog/why-training-plans-fail" },
+  { title: "Brick sessions explained \u2014 how to train your legs for the run off the bike", category: "Triathlon", readTime: "6 min read", excerpt: "What brick legs are, how many bricks you need before race day, and why your cycling cadence determines your run.", href: "/blog/brick-sessions-explained" },
+  { title: "How to taper before race day without losing fitness", category: "Racing", readTime: "5 min read", excerpt: "Reduce volume, maintain intensity, and arrive at the start line sharp. The science of the pre-race taper.", href: "/blog/how-to-taper" },
   { title: "Zone 2 training: the foundation of endurance", category: "Training", readTime: "5 min read", excerpt: "Why most of your training should feel easy. The aerobic base that underpins every distance from 5K to Ironman." },
   { title: "Swim technique drills for triathletes", category: "Swim", readTime: "7 min read", excerpt: "Six drills that build efficiency in the water. Focus on catch, rotation, and breathing rhythm for open water." },
   { title: "Power meter basics for cyclists", category: "Bike", readTime: "6 min read", excerpt: "Understanding watts, FTP, and how to use power zones to structure your bike training more effectively." },
@@ -198,6 +207,8 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {TOPICS.map((article, i) => {
               const cat = catColor[article.category] || catColor.Training;
+              const Wrapper = article.href ? Link : "div";
+              const wrapperProps = article.href ? { href: article.href } : {};
               return (
                 <motion.article
                   key={article.title}
@@ -207,7 +218,8 @@ export default function BlogPage() {
                   whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="p-8 flex-1 flex flex-col">
+                  {/* @ts-expect-error dynamic wrapper */}
+                  <Wrapper {...wrapperProps} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
                     <div className="flex items-center gap-3 mb-6">
                       <span
                         className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
@@ -231,7 +243,7 @@ export default function BlogPage() {
                     >
                       Read article &rarr;
                     </span>
-                  </div>
+                  </Wrapper>
                 </motion.article>
               );
             })}

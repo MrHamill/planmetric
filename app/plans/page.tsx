@@ -95,6 +95,40 @@ const DESCRIPTIONS: Record<string, Record<string, string>> = {
   },
 };
 
+/* ─── Stripe price IDs per event + level ─────────────────────── */
+const PRICE_IDS: Record<string, Record<string, string>> = {
+  "10K": {
+    Beginner:     "price_1TGCV4Et0xoOVcMA0m3HGEYb",
+    Intermediate: "price_1TGCWkEt0xoOVcMA2z34Rh0A",
+    Elite:        "price_1TGCX8Et0xoOVcMAhXyLAN2o",
+  },
+  "Half Marathon": {
+    Beginner:     "price_1TGCa9IvKrc1hDGjwHao5UQz",
+    Intermediate: "price_1TGCabIvKrc1hDGjNWRfQq3i",
+    Elite:        "price_1TGCb0IvKrc1hDGjk3lhmq6f",
+  },
+  "Marathon": {
+    Beginner:     "price_1TGCbRIvKrc1hDGj0xhL3pTz",
+    Intermediate: "price_1TGCbiIvKrc1hDGjN2RlzSx7",
+    Elite:        "price_1TGCcYIvKrc1hDGj4UKHRZz9",
+  },
+  "Olympic Tri": {
+    Beginner:     "price_1TGCedIvKrc1hDGjcSgLkPTP",
+    Intermediate: "price_1TGCf6IvKrc1hDGjiMEOkL06",
+    Elite:        "price_1TGCfMIvKrc1hDGjt2W2serP",
+  },
+  "70.3": {
+    Beginner:     "price_1TGCfqIvKrc1hDGj7KC0KTRZ",
+    Intermediate: "price_1TGCgAIvKrc1hDGjH6PNYzJA",
+    Elite:        "price_1TGCgbIvKrc1hDGjd6fhglyf",
+  },
+  "Ironman": {
+    Beginner:     "price_1TGCiYIvKrc1hDGjuJ6GlmNc",
+    Intermediate: "price_1TGCioIvKrc1hDGjELgMiu1S",
+    Elite:        "price_1TGCj4IvKrc1hDGjr9GqAYFV",
+  },
+};
+
 const PREVIEW_WEEKS: Record<string, string[]> = {
   "5K": [
     "Mon: Rest",
@@ -228,7 +262,7 @@ function PreviewModal({
         </p>
 
         <Link
-          href={isFree ? "#" : "/assessment"}
+          href={isFree ? "#" : `https://buy.stripe.com/${PRICE_IDS[event]?.[level] || ""}`}
           className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02]"
           style={{ background: ACCENT, color: TEXT }}
         >
@@ -437,7 +471,7 @@ export default function PlansPage() {
                               </Link>
                             ) : (
                               <Link
-                                href="/assessment"
+                                href={`https://buy.stripe.com/${PRICE_IDS[event.name]?.[level] || ""}`}
                                 className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
                                 style={{ background: ACCENT, color: TEXT }}
                               >
