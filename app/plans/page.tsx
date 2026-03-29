@@ -195,6 +195,25 @@ const PREVIEW_WEEKS: Record<string, string[]> = {
   ],
 };
 
+/* ─── 5K download file paths ─────────────────────────────────── */
+const FREE_PLAN_FILES: Record<string, string> = {
+  Beginner:     "/plans/5k-beginner.html",
+  Intermediate: "/plans/5k-intermediate.html",
+  Elite:        "/plans/5k-elite.html",
+};
+
+/* ─── What's included in every starter plan ─────────────────── */
+const PLAN_INCLUDES = [
+  "Day by day session breakdown for every week",
+  "Exact distances, paces and heart rate zones \u2014 nothing vague",
+  "Weekly focus and volume targets",
+  "Coach tips and race day strategy",
+  "Glossary of all training terms",
+  "Delivered as a beautifully designed HTML file",
+  "Mobile friendly \u2014 use it anywhere",
+  "Yours forever \u2014 instant download after purchase",
+];
+
 /* ─── Preview Modal ──────────────────────────────────────────── */
 function PreviewModal({
   event,
@@ -218,7 +237,7 @@ function PreviewModal({
       onClick={onClose}
     >
       <motion.div
-        className="max-w-lg w-full p-8 md:p-12 rounded-sm relative"
+        className="max-w-lg w-full p-8 md:p-12 rounded-sm relative overflow-y-auto max-h-[90vh]"
         style={{ background: "#161616", border: `1px solid ${CARD_BORDER}` }}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -234,12 +253,12 @@ function PreviewModal({
         </button>
 
         <span className="font-label text-[10px] uppercase tracking-widest block mb-2" style={{ color: ACCENT }}>
-          Week 1 Preview
+          Plan Preview
         </span>
         <h3 className="font-headline text-2xl font-bold mb-2">
           {event} &mdash; {level}
         </h3>
-        <p className="font-body text-sm mb-6" style={{ color: DIM }}>
+        <p className="font-body text-sm mb-8" style={{ color: DIM }}>
           {DURATIONS[event]?.[level]} plan &middot;{" "}
           {isFree ? (
             <span style={{ color: ACCENT, fontWeight: 700 }}>FREE</span>
@@ -248,23 +267,23 @@ function PreviewModal({
           )}
         </p>
 
-        <ul className="space-y-3 mb-8">
-          {week.map((day) => (
-            <li key={day} className="flex items-start gap-3 text-sm">
-              <span style={{ color: ACCENT }} className="mt-0.5">&#9654;</span>
-              <span style={{ color: DIM }}>{day}</span>
+        {/* What's included */}
+        <p className="font-label text-[10px] uppercase tracking-widest mb-4" style={{ color: DIM }}>
+          What&rsquo;s included
+        </p>
+        <ul className="space-y-3 mb-10">
+          {PLAN_INCLUDES.map((item) => (
+            <li key={item} className="flex items-start gap-3 text-sm">
+              <span style={{ color: ACCENT }} className="mt-0.5">&#10003;</span>
+              <span style={{ color: "rgba(245,245,240,0.7)" }}>{item}</span>
             </li>
           ))}
         </ul>
 
-        <p className="font-label text-[10px] uppercase tracking-widest mb-6" style={{ color: DIM }}>
-          {isFree ? "Full plan available for free download" : "Full plan unlocked after purchase"}
-        </p>
-
         <Link
-          href={isFree ? "#" : (STRIPE_URLS[event]?.[level] || "#")}
-          target={isFree ? undefined : "_blank"}
-          rel={isFree ? undefined : "noopener noreferrer"}
+          href={isFree ? (FREE_PLAN_FILES[level] || "#") : (STRIPE_URLS[event]?.[level] || "#")}
+          target="_blank"
+          rel="noopener noreferrer"
           className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02]"
           style={{ background: ACCENT, color: TEXT }}
         >
@@ -465,7 +484,9 @@ export default function PlansPage() {
                             </button>
                             {isFree ? (
                               <Link
-                                href="#"
+                                href={FREE_PLAN_FILES[level] || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
                                 style={{ background: ACCENT, color: TEXT }}
                               >
