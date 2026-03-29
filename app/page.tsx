@@ -135,14 +135,17 @@ export default function HomePage() {
           {/* Headline — word-by-word stagger */}
           <h1 className="font-headline text-[clamp(2.8rem,8vw,6rem)] font-extrabold leading-[1.05] tracking-tight mb-8">
             {HERO_LINES.map((line, li) => (
-              <span key={li} className="block">
+              <span key={li} style={{ display: "block" }}>
                 {line.map(({ word, accent }) => {
                   const i = wordIdx++;
                   return (
                     <motion.span
                       key={i}
-                      className="inline-block mr-[0.25em]"
-                      style={accent ? { color: ACCENT } : undefined}
+                      style={{
+                        display: "inline-block",
+                        marginRight: "0.25em",
+                        ...(accent ? { color: ACCENT } : {}),
+                      }}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{

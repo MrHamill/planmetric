@@ -46,7 +46,7 @@ const STEPS = [
     number: "02",
     phase: "Phase: Data Integration",
     title: "8\u201310 Min Intake",
-    body: "Precision starts with data. We analyse your Strava history, injury history, specific heart rate zones (BPM), and your current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
+    body: "Precision starts with data. We analyse your injury history, heart rate zones, and current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
   },
   {
     number: "03",
@@ -87,6 +87,19 @@ export default function ProcessPage() {
           className="absolute inset-x-0 bottom-0 h-40"
           style={{ background: `linear-gradient(to bottom, transparent, ${BG})` }}
         />
+
+        {/* Ghost word */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <span
+            className="font-headline font-extrabold text-[22vw] leading-none whitespace-nowrap uppercase"
+            style={{ WebkitTextStroke: "1px rgba(245,245,240,0.05)", color: "transparent" }}
+          >
+            PROCESS.
+          </span>
+        </div>
 
         {/* Push content well below nav */}
         <div className="relative z-10 px-8 md:px-24 pb-24 pt-40 max-w-5xl">
@@ -196,8 +209,7 @@ export default function ProcessPage() {
           style={{ color: DIM }}
           {...fadeUp(0.1)}
         >
-          Join a community of disciplined athletes who value data as much as
-          effort.
+          Every athlete who crosses their finish line started with a plan built for them.
         </motion.p>
         <motion.div {...fadeUp(0.2)}>
           <Link

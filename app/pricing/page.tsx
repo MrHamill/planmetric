@@ -149,7 +149,7 @@ export default function PricingPage() {
             style={{ color: DIM }}
             {...heroIn(0.35)}
           >
-            Every plan is built around you. Pick the level that matches your commitment.
+            Choose your level. Every plan is built around you.
           </motion.p>
         </div>
       </section>
@@ -414,7 +414,7 @@ export default function PricingPage() {
           style={{ color: DIM }}
           {...fadeUp(0.1)}
         >
-          Take the assessment and we&rsquo;ll tell you.
+          Not sure which plan? Take the assessment and we&rsquo;ll recommend the right one.
         </motion.p>
         <motion.div {...fadeUp(0.2)}>
           <Link

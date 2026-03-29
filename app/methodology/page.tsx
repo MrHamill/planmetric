@@ -94,40 +94,40 @@ const PRINCIPLES = [
   {
     number: "01",
     title: "Data Over Guesswork",
-    body: "Your data isn\u2019t just numbers; it\u2019s a physiological narrative. We integrate heart rate zones, training history, and injury data to build plans grounded in evidence \u2014 not assumptions.",
+    body: "We start with your actual numbers \u2014 current weekly volume, heart rate zones, race date, injury history and schedule. Not assumptions.",
   },
   {
     number: "02",
     title: "Human Review, Not Just Algorithms",
-    body: "Algorithms provide the base, but humans provide the nuance. Every block is vetted by an endurance specialist to ensure safety, logic, and that the plan actually makes sense for your life.",
+    body: "Every plan is checked by a coach before it reaches you. Algorithms build the structure. Humans ensure it makes sense for your life.",
   },
   {
     number: "03",
     title: "Built Around Your Life",
-    body: "Work-life balance and past injuries are treated as hard data points. If your schedule only allows four sessions a week, we build four high-quality sessions \u2014 not six mediocre ones.",
+    body: "Work, family, travel \u2014 these are inputs, not obstacles. Your plan adapts to your reality, not the other way around.",
   },
 ];
 
 const BUILD_STEPS = [
   {
     number: "01",
-    title: "Intake Form",
-    body: "An 8\u201310 minute deep-dive into your fitness, goals, schedule, and injury history.",
+    title: "You complete your intake form",
+    body: "8\u201310 minutes covering fitness level, goals, schedule, injury history and race date.",
   },
   {
     number: "02",
-    title: "Analyse Data",
-    body: "We process your heart rate zones, training history, race date, and weekly availability.",
+    title: "We analyse your data",
+    body: "Heart rate zones, weekly volume, thresholds and constraints are mapped together.",
   },
   {
     number: "03",
-    title: "Coach Reviews",
-    body: "Every plan is reviewed by a human coach for safety, logic, and real-world applicability.",
+    title: "A coach reviews every block",
+    body: "No plan leaves without a human checking it makes sense for your specific situation.",
   },
   {
     number: "04",
-    title: "Plan Delivered",
-    body: "Your personalised HTML plan lands in your inbox within 48 hours. Ready to execute.",
+    title: "Your HTML plan is delivered",
+    body: "Within 48 hours. Clean, collapsible, readable on any device.",
   },
 ];
 
@@ -221,7 +221,7 @@ export default function MethodologyPage() {
             style={{ color: DIM }}
             {...fadeUp()}
           >
-            Core Principles
+            How We Think
           </motion.span>
 
           <motion.h2
@@ -277,7 +277,7 @@ export default function MethodologyPage() {
             style={{ color: DIM }}
             {...fadeUp()}
           >
-            How We Build Your Plan
+            From Data to Design
           </motion.span>
 
           <motion.h2
@@ -366,8 +366,9 @@ export default function MethodologyPage() {
             style={{ color: DIM }}
             {...fadeUp(0.1)}
           >
-            Your training plan is delivered as a bespoke HTML interface —
-            beautifully designed, fully collapsible, and accessible on any device.
+            Your plan arrives as a beautifully designed HTML file —
+            fully collapsible by week, readable on any device, and built
+            to be used, not filed away.
           </motion.p>
 
           <div className="space-y-8">

@@ -69,18 +69,31 @@ const INIT: FD = {
   trainingPreference: "", intensityFeeling: "", trainingBlockers: "", motivation: "", successDefinition: "",
 };
 
+/* ─── Dark palette ──────────────────────────────────────────── */
+const BG = "#0F0F0F";
+const TEXT = "#F5F5F0";
+const DIM = "rgba(245,245,240,0.45)";
+const ACCENT = "#B85C2C";
+const CARD_BG = "rgba(245,245,240,0.03)";
+const CARD_BORDER = "rgba(245,245,240,0.10)";
+const INPUT_BG = "rgba(245,245,240,0.05)";
+
 /* ─── Shared CSS ─────────────────────────────────────────────── */
-const inp = "w-full bg-surface-container-low border border-outline-variant/20 px-4 py-3 font-body text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary transition-colors rounded-sm";
-const lbl = "font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 block";
-const hint = "font-label text-[10px] text-on-surface-variant/50 mt-1.5";
+const inp = "w-full px-4 py-3 font-body text-sm focus:outline-none transition-colors rounded-sm";
+const inpStyle: React.CSSProperties = { background: INPUT_BG, border: `1px solid ${CARD_BORDER}`, color: TEXT };
+const inpFocusStyle: React.CSSProperties = { ...inpStyle, borderColor: ACCENT };
+const lbl = "font-label text-[10px] uppercase tracking-widest mb-2 block";
+const lblStyle: React.CSSProperties = { color: DIM };
+const hint = "font-label text-[10px] mt-1.5";
+const hintStyle: React.CSSProperties = { color: "rgba(245,245,240,0.3)" };
 
 /* ─── Primitive components (defined outside to prevent remounting) ── */
 function F({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className={lbl}>{label}</label>
+      <label className={lbl} style={lblStyle}>{label}</label>
       {children}
-      {note && <p className={hint}>{note}</p>}
+      {note && <p className={hint} style={hintStyle}>{note}</p>}
     </div>
   );
 }
@@ -96,6 +109,7 @@ function TextInput({ value, onChange, type = "text", placeholder = "", disabled 
       placeholder={placeholder}
       disabled={disabled}
       className={inp + (disabled ? " opacity-30 pointer-events-none" : "")}
+      style={inpStyle}
     />
   );
 }
@@ -104,7 +118,7 @@ function SelectInput({ value, onChange, options, placeholder = "Select..." }: {
   value: string; onChange: (v: string) => void; options: string[]; placeholder?: string;
 }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"}>
+    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"} style={inpStyle}>
       <option value="">{placeholder}</option>
       {options.map(o => <option key={o} value={o}>{o}</option>)}
     </select>
@@ -121,6 +135,7 @@ function TextareaInput({ value, onChange, placeholder = "", rows = 3 }: {
       placeholder={placeholder}
       rows={rows}
       className={inp + " resize-none"}
+      style={inpStyle}
     />
   );
 }
@@ -128,10 +143,13 @@ function TextareaInput({ value, onChange, placeholder = "", rows = 3 }: {
 function Checkbox({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
     <button type="button" onClick={() => onChange(!checked)} className="flex items-center gap-2 cursor-pointer">
-      <span className={`w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors ${checked ? "bg-primary border-primary" : "border-outline-variant/40 bg-surface-container-low"}`}>
-        {checked && <span className="material-symbols-outlined text-on-primary" style={{ fontSize: "12px" }}>check</span>}
+      <span
+        className="w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors"
+        style={checked ? { background: ACCENT, borderColor: ACCENT } : { borderColor: CARD_BORDER, background: INPUT_BG }}
+      >
+        {checked && <span style={{ color: TEXT, fontSize: "12px", lineHeight: 1 }}>&#10003;</span>}
       </span>
-      <span className="font-label text-[10px] uppercase tracking-wider text-on-surface-variant whitespace-nowrap">{label}</span>
+      <span className="font-label text-[10px] uppercase tracking-wider whitespace-nowrap" style={{ color: DIM }}>{label}</span>
     </button>
   );
 }
@@ -148,9 +166,16 @@ function MultiSelect({ selected, onChange, options }: {
         const on = selected.includes(o);
         return (
           <button key={o} type="button" onClick={() => toggle(o)}
-            className={`flex items-center gap-3 px-4 py-3 text-sm font-body text-left border transition-colors rounded-sm ${on ? "border-primary bg-primary/10 text-on-surface" : "border-outline-variant/20 bg-surface-container-low text-on-surface-variant hover:border-primary/40"}`}>
-            <span className={`w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors ${on ? "bg-primary border-primary" : "border-outline-variant/40"}`}>
-              {on && <span className="material-symbols-outlined text-on-primary" style={{ fontSize: "12px" }}>check</span>}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-body text-left border transition-colors rounded-sm"
+            style={on
+              ? { borderColor: ACCENT, background: "rgba(184,92,44,0.10)", color: TEXT }
+              : { borderColor: CARD_BORDER, background: INPUT_BG, color: DIM }
+            }>
+            <span
+              className="w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors"
+              style={on ? { background: ACCENT, borderColor: ACCENT } : { borderColor: CARD_BORDER }}
+            >
+              {on && <span style={{ color: TEXT, fontSize: "12px", lineHeight: 1 }}>&#10003;</span>}
             </span>
             {o}
           </button>
@@ -162,9 +187,9 @@ function MultiSelect({ selected, onChange, options }: {
 
 function InfoBox({ title, body }: { title: string; body: string }) {
   return (
-    <div className="bg-surface-container-low border-l-2 border-primary px-5 py-4">
-      <p className="font-label text-[10px] uppercase tracking-widest text-primary mb-1">{title}</p>
-      <p className="font-body text-sm text-on-surface-variant">{body}</p>
+    <div className="px-5 py-4" style={{ background: CARD_BG, borderLeft: `2px solid ${ACCENT}` }}>
+      <p className="font-label text-[10px] uppercase tracking-widest mb-1" style={{ color: ACCENT }}>{title}</p>
+      <p className="font-body text-sm" style={{ color: DIM }}>{body}</p>
     </div>
   );
 }
@@ -623,32 +648,36 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
   /* ─── Plan selection screen ─────────────────────────────── */
   if (!plan) {
     return (
-      <main className="pt-32 pb-20 min-h-screen px-8">
+      <main className="pt-32 pb-20 min-h-screen px-8" style={{ background: BG, color: TEXT }}>
         <div className="max-w-4xl mx-auto">
           <div className="mb-16">
-            <span className="font-label text-[10px] text-primary uppercase tracking-widest mb-4 block">Step 0 of {visible.length + 1}</span>
+            <span className="font-label text-[10px] uppercase tracking-widest mb-4 block" style={{ color: ACCENT }}>Step 0 of {visible.length + 1}</span>
             <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight mb-4">
               CHOOSE YOUR PLAN
             </h1>
-            <p className="font-body text-on-surface-variant">
+            <p className="font-body" style={{ color: DIM }}>
               Select the plan you want. You will fill out the form first, then pay at the end.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {PLANS.map(p => (
-              <div key={p.id} className="relative bg-surface-container-low p-10 flex flex-col justify-between hover:bg-surface-container transition-colors duration-300">
+              <div
+                key={p.id}
+                className="relative p-10 flex flex-col justify-between rounded-sm transition-colors duration-300"
+                style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+              >
                 {p.badge && (
-                  <span className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-label tracking-widest uppercase px-3 py-1 rounded-sm">
+                  <span className="absolute top-0 right-0 text-[10px] font-label tracking-widest uppercase px-3 py-1 rounded-sm" style={{ background: ACCENT, color: TEXT }}>
                     {p.badge}
                   </span>
                 )}
                 <div>
-                  <span className="font-label text-[10px] tracking-widest uppercase text-primary mb-2 block">{p.level}</span>
+                  <span className="font-label text-[10px] tracking-widest uppercase mb-2 block" style={{ color: ACCENT }}>{p.level}</span>
                   <h2 className="font-headline text-3xl font-bold mb-6">{p.name}</h2>
                   <ul className="space-y-3 mb-10">
                     {p.features.map(f => (
-                      <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
-                        <span className="material-symbols-outlined text-primary text-sm">check</span>
+                      <li key={f} className="flex items-center gap-3 text-sm" style={{ color: DIM }}>
+                        <span style={{ color: ACCENT }}>&#10003;</span>
                         {f}
                       </li>
                     ))}
@@ -657,11 +686,12 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                 <div>
                   <div className="mb-6">
                     <span className="font-headline text-4xl font-bold">{p.price}</span>
-                    <span className="font-label text-xs text-on-surface-variant uppercase ml-2 tracking-widest">{p.billing}</span>
+                    <span className="font-label text-xs uppercase ml-2 tracking-widest" style={{ color: DIM }}>{p.billing}</span>
                   </div>
                   <button
                     onClick={() => setPlan(p.id)}
-                    className="w-full py-4 font-label text-xs uppercase tracking-widest bg-primary text-on-primary hover:opacity-90 transition-all rounded-sm"
+                    className="w-full py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm cursor-pointer"
+                    style={{ background: ACCENT, color: TEXT }}
                   >
                     Select {p.name}
                   </button>
@@ -677,20 +707,18 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
   /* ─── Thank you screen ───────────────────────────────────── */
   if (submitted) {
     return (
-      <main className="pt-32 pb-20 min-h-screen flex items-center justify-center px-8">
+      <main className="pt-32 pb-20 min-h-screen flex items-center justify-center px-8" style={{ background: BG, color: TEXT }}>
         <div className="max-w-lg text-center">
-          <span className="material-symbols-outlined text-primary mb-8 block" style={{ fontSize: "56px", fontVariationSettings: "'FILL' 1" }}>
-            check_circle
-          </span>
-          <span className="font-label text-[10px] text-primary uppercase tracking-widest mb-4 block">Intake Received</span>
+          <span className="mb-8 block" style={{ color: ACCENT, fontSize: "56px" }}>&#10003;</span>
+          <span className="font-label text-[10px] uppercase tracking-widest mb-4 block" style={{ color: ACCENT }}>Intake Received</span>
           <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tighter mb-6">
             Your data is in.
           </h1>
-          <p className="font-body text-on-surface-variant text-lg leading-relaxed mb-3">
+          <p className="font-body text-lg leading-relaxed mb-3" style={{ color: DIM }}>
             Your personalised plan will be delivered within 48 hours.
           </p>
-          <p className="font-body text-on-surface-variant">
-            Check your email at <span className="text-primary">{form.email}</span> for confirmation.
+          <p className="font-body" style={{ color: DIM }}>
+            Check your email at <span style={{ color: ACCENT }}>{form.email}</span> for confirmation.
           </p>
         </div>
       </main>
@@ -699,33 +727,33 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
 
   /* ─── Main render ────────────────────────────────────────── */
   return (
-    <main className="pt-24 pb-20 min-h-screen px-8">
+    <main className="pt-24 pb-20 min-h-screen px-8" style={{ background: BG, color: TEXT }}>
       <div className="max-w-2xl mx-auto">
 
         {/* Progress */}
         <div className="mb-12">
           <div className="flex justify-between items-center mb-3">
-            <span className="font-label text-[10px] uppercase tracking-widest text-primary">
+            <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: ACCENT }}>
               Section {step + 1} of {total}
             </span>
-            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+            <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
               {pct}% complete
             </span>
           </div>
-          <div className="w-full h-px bg-surface-container-high">
-            <div className="h-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
+          <div className="w-full h-px" style={{ background: CARD_BORDER }}>
+            <div className="h-full transition-all duration-500" style={{ width: `${pct}%`, background: ACCENT }} />
           </div>
         </div>
 
         {/* Section header */}
         <div className="mb-10">
-          <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-3 block">
+          <span className="font-label text-[10px] uppercase tracking-widest mb-3 block" style={{ color: DIM }}>
             {meta.num}
           </span>
           <h1 className="font-headline text-3xl md:text-4xl font-bold tracking-tight mb-3">
             {meta.title.toUpperCase()}
           </h1>
-          <p className="font-body text-on-surface-variant">
+          <p className="font-body" style={{ color: DIM }}>
             {meta.sub}
           </p>
         </div>
@@ -743,30 +771,33 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between items-center pt-8 border-t border-outline-variant/10">
+        <div className="flex justify-between items-center pt-8" style={{ borderTop: `1px solid ${CARD_BORDER}` }}>
           <button
             type="button"
             onClick={() => setStep(s => s - 1)}
             disabled={step === 0}
-            className="font-label text-xs uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-20 disabled:pointer-events-none"
+            className="font-label text-xs uppercase tracking-widest transition-colors disabled:opacity-20 disabled:pointer-events-none cursor-pointer"
+            style={{ color: DIM }}
           >
-            ← Back
+            &larr; Back
           </button>
 
           {step < total - 1 ? (
             <button
               type="button"
               onClick={() => setStep(s => s + 1)}
-              className="bg-primary text-on-primary px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm"
+              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm cursor-pointer"
+              style={{ background: ACCENT, color: TEXT }}
             >
-              Continue →
+              Continue &rarr;
             </button>
           ) : (
             <button
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="bg-primary text-on-primary px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-50"
+              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-50 cursor-pointer"
+              style={{ background: ACCENT, color: TEXT }}
             >
               {submitting ? "Redirecting to payment..." : submitLabel}
             </button>

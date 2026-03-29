@@ -57,12 +57,12 @@ const FEATURED = [
 ];
 
 const TOPICS = [
-  { title: "Zone 2 training: the foundation of endurance", category: "Training", readTime: "5 min" },
-  { title: "Swim technique drills for triathletes", category: "Swim", readTime: "7 min" },
-  { title: "Power meter basics for cyclists", category: "Bike", readTime: "6 min" },
-  { title: "Running economy: what it is and how to improve it", category: "Run", readTime: "8 min" },
-  { title: "Recovery protocols that actually work", category: "Training", readTime: "5 min" },
-  { title: "Strength training for endurance athletes", category: "Training", readTime: "7 min" },
+  { title: "Zone 2 training: the foundation of endurance", category: "Training", readTime: "5 min read", excerpt: "Why most of your training should feel easy. The aerobic base that underpins every distance from 5K to Ironman." },
+  { title: "Swim technique drills for triathletes", category: "Swim", readTime: "7 min read", excerpt: "Six drills that build efficiency in the water. Focus on catch, rotation, and breathing rhythm for open water." },
+  { title: "Power meter basics for cyclists", category: "Bike", readTime: "6 min read", excerpt: "Understanding watts, FTP, and how to use power zones to structure your bike training more effectively." },
+  { title: "Running economy: what it is and how to improve it", category: "Run", readTime: "8 min read", excerpt: "The hidden metric that separates good runners from great ones. Cadence, ground contact, and stride efficiency explained." },
+  { title: "Recovery protocols that actually work", category: "Training", readTime: "5 min read", excerpt: "Sleep, nutrition timing, and active recovery. What the research says about bouncing back faster between sessions." },
+  { title: "Strength training for endurance athletes", category: "Training", readTime: "7 min read", excerpt: "How to add gym work without compromising your endurance training. Exercises, frequency, and periodisation." },
 ];
 
 /* ═══════════════════════════════════════════════════════════════ */
@@ -188,52 +188,54 @@ export default function BlogPage() {
       <section className="py-24 md:py-32 px-8 md:px-24">
         <div className="max-w-6xl mx-auto">
           <motion.span
-            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-12"
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
             style={{ color: DIM }}
             {...fadeUp()}
           >
             More Articles
           </motion.span>
 
-          <div className="space-y-4">
-            {TOPICS.map((topic, i) => {
-              const cat = catColor[topic.category] || catColor.Training;
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TOPICS.map((article, i) => {
+              const cat = catColor[article.category] || catColor.Training;
               return (
-                <motion.div
-                  key={topic.title}
-                  className="p-6 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer group"
+                <motion.article
+                  key={article.title}
+                  className="rounded-sm overflow-hidden group cursor-pointer flex flex-col"
                   style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
-                  {...fadeUp(i * 0.08)}
-                  whileHover={{ borderColor: ACCENT, x: 4 }}
+                  {...fadeUp(i * 0.1)}
+                  whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <span
+                        className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
+                        style={{ color: cat.text, background: cat.bg }}
+                      >
+                        {article.category}
+                      </span>
+                      <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                        {article.readTime}
+                      </span>
+                    </div>
+                    <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
+                      {article.title}
+                    </h2>
+                    <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
+                      {article.excerpt}
+                    </p>
                     <span
-                      className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm whitespace-nowrap"
-                      style={{ color: cat.text, background: cat.bg }}
+                      className="font-label text-xs tracking-wider mt-6 inline-block"
+                      style={{ color: ACCENT }}
                     >
-                      {topic.category}
-                    </span>
-                    <span className="font-body text-sm font-medium">
-                      {topic.title}
+                      Read article &rarr;
                     </span>
                   </div>
-                  <span className="font-label text-[10px] uppercase tracking-widest whitespace-nowrap" style={{ color: DIM }}>
-                    {topic.readTime}
-                  </span>
-                </motion.div>
+                </motion.article>
               );
             })}
           </div>
-
-          <motion.div className="text-center mt-12" {...fadeUp(0.3)}>
-            <button
-              className="font-label text-xs font-bold tracking-widest uppercase px-10 py-3 rounded-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer"
-              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
-            >
-              Find More Articles
-            </button>
-          </motion.div>
         </div>
       </section>
 
