@@ -118,9 +118,9 @@ function SelectInput({ value, onChange, options, placeholder = "Select..." }: {
   value: string; onChange: (v: string) => void; options: string[]; placeholder?: string;
 }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"} style={inpStyle}>
-      <option value="">{placeholder}</option>
-      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"} style={{ ...inpStyle, colorScheme: "dark" }}>
+      <option value="" style={{ background: "#1a1a1a", color: TEXT }}>{placeholder}</option>
+      {options.map(o => <option key={o} value={o} style={{ background: "#1a1a1a", color: TEXT }}>{o}</option>)}
     </select>
   );
 }
