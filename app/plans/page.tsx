@@ -95,37 +95,37 @@ const DESCRIPTIONS: Record<string, Record<string, string>> = {
   },
 };
 
-/* ─── Stripe price IDs per event + level ─────────────────────── */
-const PRICE_IDS: Record<string, Record<string, string>> = {
+/* ─── Stripe checkout URLs per event + level ─────────────────── */
+const STRIPE_URLS: Record<string, Record<string, string>> = {
   "10K": {
-    Beginner:     "price_1TGCV4Et0xoOVcMA0m3HGEYb",
-    Intermediate: "price_1TGCWkEt0xoOVcMA2z34Rh0A",
-    Elite:        "price_1TGCX8Et0xoOVcMAhXyLAN2o",
+    Beginner:     "https://buy.stripe.com/cNi7sM14I1wVfX3fNZaR200",
+    Intermediate: "https://buy.stripe.com/fZu3cw3cQejH26dfNZaR201",
+    Elite:        "https://buy.stripe.com/28E14o3cQ2AZ26d9pBaR202",
   },
   "Half Marathon": {
-    Beginner:     "price_1TGCa9IvKrc1hDGjwHao5UQz",
-    Intermediate: "price_1TGCabIvKrc1hDGjNWRfQq3i",
-    Elite:        "price_1TGCb0IvKrc1hDGjk3lhmq6f",
+    Beginner:     "https://buy.stripe.com/eVq9AU5kYgrP3ah9pBaR204",
+    Intermediate: "https://buy.stripe.com/3cI4gA28MdfDbGNfNZaR205",
+    Elite:        "https://buy.stripe.com/cNi3cw6p20sR3ah7htaR206",
   },
   "Marathon": {
-    Beginner:     "price_1TGCbRIvKrc1hDGj0xhL3pTz",
-    Intermediate: "price_1TGCbiIvKrc1hDGjN2RlzSx7",
-    Elite:        "price_1TGCcYIvKrc1hDGj4UKHRZz9",
+    Beginner:     "https://buy.stripe.com/eVq9AU8xafnLdOVeJVaR207",
+    Intermediate: "https://buy.stripe.com/7sY9AU6p2fnL4elgS3aR208",
+    Elite:        "https://buy.stripe.com/eVqeVecNq8Zn6mt1X9aR209",
   },
   "Olympic Tri": {
-    Beginner:     "price_1TGCedIvKrc1hDGjcSgLkPTP",
-    Intermediate: "price_1TGCf6IvKrc1hDGjiMEOkL06",
-    Elite:        "price_1TGCfMIvKrc1hDGjt2W2serP",
+    Beginner:     "https://buy.stripe.com/eVqfZiaFi6RfcKR59laR20a",
+    Intermediate: "https://buy.stripe.com/3cI00k8xaa3reSZbxJaR20b",
+    Elite:        "https://buy.stripe.com/aFa6oI00E1wV26datFaR20c",
   },
   "70.3": {
-    Beginner:     "price_1TGCfqIvKrc1hDGj7KC0KTRZ",
-    Intermediate: "price_1TGCgAIvKrc1hDGjH6PNYzJA",
-    Elite:        "price_1TGCgbIvKrc1hDGjd6fhglyf",
+    Beginner:     "https://buy.stripe.com/3cI9AU7t64J7aCJ7htaR20d",
+    Intermediate: "https://buy.stripe.com/14A9AU9Be7Vj26d8lxaR20e",
+    Elite:        "https://buy.stripe.com/8x200k00E3F3aCJ1X9aR20f",
   },
   "Ironman": {
-    Beginner:     "price_1TGCiYIvKrc1hDGjuJ6GlmNc",
-    Intermediate: "price_1TGCioIvKrc1hDGjELgMiu1S",
-    Elite:        "price_1TGCj4IvKrc1hDGjr9GqAYFV",
+    Beginner:     "https://buy.stripe.com/cNi28s14I5NbfX3fNZaR20g",
+    Intermediate: "https://buy.stripe.com/9B68wQcNqdfD7qx8lxaR20h",
+    Elite:        "https://buy.stripe.com/cNifZi6p23F3bGN0T5aR20i",
   },
 };
 
@@ -262,7 +262,9 @@ function PreviewModal({
         </p>
 
         <Link
-          href={isFree ? "#" : `https://buy.stripe.com/${PRICE_IDS[event]?.[level] || ""}`}
+          href={isFree ? "#" : (STRIPE_URLS[event]?.[level] || "#")}
+          target={isFree ? undefined : "_blank"}
+          rel={isFree ? undefined : "noopener noreferrer"}
           className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02]"
           style={{ background: ACCENT, color: TEXT }}
         >
@@ -471,7 +473,9 @@ export default function PlansPage() {
                               </Link>
                             ) : (
                               <Link
-                                href={`https://buy.stripe.com/${PRICE_IDS[event.name]?.[level] || ""}`}
+                                href={STRIPE_URLS[event.name]?.[level] || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
                                 style={{ background: ACCENT, color: TEXT }}
                               >
