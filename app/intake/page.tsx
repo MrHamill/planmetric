@@ -265,18 +265,29 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
     ? `Pay ${selectedPlan.price} & Submit →`
     : "Pay & Submit →";
 
+  const STRIPE_LINKS: Record<string, string> = {
+    premium: "https://buy.stripe.com/aFa28s8xa7Vj7qxdFRaR20j",
+    elite:   "https://buy.stripe.com/7sYcN63cQcbz5ip9pBaR20k",
+  };
+
   async function handleSubmit() {
     setSubmitting(true);
     setError("");
     try {
-      const res = await fetch("/api/checkout", {
+      // Save intake data via API (fire-and-forget — don't block payment)
+      fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, formData: form }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || data.error || "failed");
-      if (data.url) window.location.href = data.url;
+        body: JSON.stringify({ ...form, plan }),
+      }).catch(() => {});
+
+      // Redirect to Stripe payment link
+      const stripeUrl = STRIPE_LINKS[plan];
+      if (stripeUrl) {
+        window.open(stripeUrl, "_blank");
+      } else {
+        throw new Error("No payment link for this plan");
+      }
     } catch {
       setError("Something went wrong. Please try again or email admin@planmetric.com.au");
     } finally {
@@ -799,7 +810,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-50 cursor-pointer"
               style={{ background: ACCENT, color: TEXT }}
             >
-              {submitting ? "Redirecting to payment..." : submitLabel}
+              {submitting ? "Opening payment..." : submitLabel}
             </button>
           )}
         </div>
