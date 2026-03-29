@@ -274,14 +274,14 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
     setSubmitting(true);
     setError("");
     try {
-      // Save intake data via API (fire-and-forget — don't block payment)
-      fetch("/api/intake", {
+      // Save intake data and send admin email
+      await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, plan }),
-      }).catch(() => {});
+      });
 
-      // Redirect to Stripe payment link
+      // Open Stripe payment link in new tab
       const stripeUrl = STRIPE_LINKS[plan];
       if (stripeUrl) {
         window.open(stripeUrl, "_blank");
