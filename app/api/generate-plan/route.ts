@@ -5,6 +5,9 @@ import { Resend } from "resend";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
+// Allow up to 120 seconds for Claude to generate the full plan
+export const maxDuration = 120;
+
 /* ─── POST /api/generate-plan ──────────────────────────────────
    Body: { submission_id: string }
    1. Fetches athlete data from Supabase
