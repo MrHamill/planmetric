@@ -42,12 +42,15 @@ export async function POST(req: NextRequest) {
     const resend = new Resend(process.env.RESEND_API_KEY!);
     const firstName = sub.full_name?.split(" ")[0] || sub.full_name || "there";
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://planmetric.com.au";
+    const planUrl = `${siteUrl}/plan/${submission_id}`;
+
     // Send plan to athlete
     await resend.emails.send({
       from: "Plan Metric <admin@planmetric.com.au>",
       to: sub.email,
       subject: `Your ${sub.training_for || "Training"} Plan is Ready — Plan Metric`,
-      html: wrapPlanEmail(sub.full_name, sub.generated_plan),
+      html: wrapPlanEmail(firstName, planUrl),
     });
 
     // Send confirmation to admin
@@ -85,20 +88,34 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, email: sub.email });
 }
 
-function wrapPlanEmail(name: string, planHtml: string): string {
+function wrapPlanEmail(firstName: string, planUrl: string): string {
   return `<!DOCTYPE html>
 <html>
 <body style="background:#F0E6D4;color:#1C1614;font-family:system-ui,-apple-system,sans-serif;padding:0;margin:0;">
   <div style="background:#A0522D;color:#F0E6D4;padding:24px 32px;">
     <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 8px;">Plan Metric</p>
     <h1 style="font-size:24px;margin:0;font-weight:700;">Your Training Plan is Ready</h1>
-    <p style="margin:8px 0 0;font-size:14px;opacity:0.85;">Hi ${name}, here's your personalised plan.</p>
   </div>
-  <div style="padding:32px;max-width:800px;margin:0 auto;">
-    ${planHtml}
+  <div style="padding:32px;max-width:600px;margin:0 auto;font-size:15px;line-height:1.8;color:#3A2E28;">
+    <p style="margin:0 0 16px;">Hi ${firstName},</p>
+    <p style="margin:0 0 16px;">Thank you for choosing to train with the Metric team &mdash; we're genuinely excited to be part of your journey to the start line.</p>
+    <p style="margin:0 0 16px;">Your training plan is attached to this email. Everything you need is inside:</p>
+    <ul style="margin:0 0 16px;padding-left:20px;color:#1C1614;">
+      <li style="margin-bottom:8px;">Open the plan on any device &mdash; it's fully mobile friendly</li>
+      <li style="margin-bottom:8px;">Expand each week using the dropdown to see your full session breakdown</li>
+      <li style="margin-bottom:8px;">Read the Coach Tips section at the bottom &mdash; it's written specifically for you</li>
+    </ul>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${planUrl}" style="display:inline-block;background:#A0522D;color:#F0E6D4;padding:14px 36px;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;border-radius:2px;">View Your Plan</a>
+    </div>
+    <p style="margin:0 0 16px;">If you have any questions about your plan, a session, or anything at all &mdash; please don't hesitate to reach out. We're here to help you get to that finish line.</p>
+    <p style="margin:0 0 4px;font-weight:600;">Train smart. Race confident.</p>
+    <p style="margin:0 0 4px;">The Plan Metric Team</p>
+    <p style="margin:0 0 4px;"><a href="mailto:admin@planmetric.com.au" style="color:#A0522D;text-decoration:none;">admin@planmetric.com.au</a></p>
+    <p style="margin:0;"><a href="https://planmetric.com.au" style="color:#A0522D;text-decoration:none;">planmetric.com.au</a></p>
   </div>
   <div style="background:#1C1614;color:#F0E6D4;padding:24px 32px;font-size:11px;text-align:center;letter-spacing:0.1em;text-transform:uppercase;">
-    Plan Metric · admin@planmetric.com.au · planmetric.com.au
+    Plan Metric &middot; admin@planmetric.com.au &middot; planmetric.com.au
   </div>
 </body>
 </html>`;
