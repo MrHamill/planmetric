@@ -14,9 +14,10 @@ paths:
 | `email` | text | From `formData.email` |
 | `training_for` | text | Sport/event type |
 | `race_date` | date | Nullable |
-| `status` | text | `"pending_payment"` → `"paid"` |
+| `status` | text | `"pending_payment"` → `"paid"` → `"plan_generated"` → `"plan_sent"` |
 | `plan` | text | `"starter"` \| `"premium"` \| `"elite"` |
 | `data` | jsonb | Full form submission as JSON |
+| `generated_plan` | text | Stored HTML from Claude generation (Premium/Elite only) |
 | `stripe_session_id` | text | Set on payment verification |
 | `created_at` | timestamptz | Auto-set |
 

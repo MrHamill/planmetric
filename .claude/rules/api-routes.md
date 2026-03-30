@@ -8,10 +8,13 @@ paths:
 ## Route Files
 
 All API routes are under `app/api/`:
-- `app/api/generate-plan/route.ts` — POST: generates personalised HTML plan via Claude API + emails it
+- `app/api/generate-plan/route.ts` — POST: generates personalised HTML plan via Claude API, saves to DB, emails admin review link
+- `app/api/approve-plan/route.ts` — POST: sends stored generated plan to athlete + updates status to "plan_sent"
+- `app/api/admin/review/route.ts` — GET: fetches submission+plan for admin review; PATCH: saves edited plan HTML
 - `app/api/checkout/route.ts` — POST: creates Stripe session + saves draft to Supabase
 - `app/api/intake/route.ts` — POST: saves intake form + sends admin email
 - `app/api/intake/verify/route.ts` — GET: verifies Stripe payment, marks submission "paid"
+- `app/api/deliver-starter-plan/route.ts` — POST: reads pre-built HTML from public/plans/, emails to athlete
 
 ## Supabase Client
 
@@ -40,10 +43,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 ## Submission Status Lifecycle
 
-`intake_submissions.status` flows: `"pending_payment"` → `"paid"`
+`intake_submissions.status` flows:
+- Starter: `"pending_payment"` → `"paid"` → `"plan_sent"` (auto-delivered)
+- Premium/Elite: `"pending_payment"` → `"paid"` → `"plan_generated"` → `"plan_sent"` (admin reviews first)
 
 - `/api/checkout` sets `"pending_payment"` when saving the draft
 - `/api/intake/verify` checks for existing `"paid"` status to prevent double-processing before updating
+- `/api/generate-plan` sets `"plan_generated"` + stores HTML in `generated_plan` column
+- `/api/approve-plan` sets `"plan_sent"` after admin approves and plan is emailed to athlete
 
 ## Error Handling Philosophy
 
