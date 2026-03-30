@@ -16,7 +16,8 @@ interface FD {
   mainGoal: string; targetTime: string;
   completedRaceBefore: string; previousFinishTime: string;
   // S3 — Fitness
-  trainingConsistency: string; recentRaceResult: string; splitTimes: string;
+  trainingConsistency: string; recentRaceResult: string;
+  splitSwim: string; splitT1: string; splitBike: string; splitT2: string; splitRun: string;
   maxHR: string; maxHRUnknown: boolean; restingHR: string; restingHRUnknown: boolean;
   // S4 — Swim
   swimPaceEasy: string; swimPaceHard: string; weeklySwimVolume: string;
@@ -37,6 +38,12 @@ interface FD {
   doubleDays: string; doubleDayCombos: string[];
   preferredLongDay: string; preferredRestDay: string;
   workShifts: string; unavailableWeeks: string;
+  // S12 — Other Sports
+  otherSports: string;
+  otherSport1Name: string; otherSport1Days: string[]; otherSport1Time: string;
+  otherSport1Duration: string; otherSport1Intensity: string;
+  otherSport2Name: string; otherSport2Days: string[]; otherSport2Time: string;
+  otherSport2Duration: string; otherSport2Intensity: string;
   // S9 — Equipment
   gpsWatch: string; gymAccess: string; equipmentBudget: string;
   // S10 — Health
@@ -46,13 +53,16 @@ interface FD {
   // S11 — Motivation
   trainingPreference: string; intensityFeeling: string;
   trainingBlockers: string; motivation: string; successDefinition: string;
+  // S13 — Final
+  hasAnythingElse: string; anythingElse: string;
 }
 
 const INIT: FD = {
   fullName: "", email: "", age: "", gender: "", height: "", weight: "", location: "",
   trainingFor: "", raceName: "", raceDate: "", mainGoal: "", targetTime: "",
   completedRaceBefore: "", previousFinishTime: "",
-  trainingConsistency: "", recentRaceResult: "", splitTimes: "",
+  trainingConsistency: "", recentRaceResult: "",
+  splitSwim: "", splitT1: "", splitBike: "", splitT2: "", splitRun: "",
   maxHR: "", maxHRUnknown: false, restingHR: "", restingHRUnknown: false,
   swimPaceEasy: "", swimPaceHard: "", weeklySwimVolume: "", longestSwim: "",
   bilateralBreathing: "", poolAccess: "", openWaterAccess: "", wetsuit: "",
@@ -63,10 +73,14 @@ const INIT: FD = {
   trainingDaysPerWeek: "", restDaysPerWeek: "", preferredTimes: [], availableDays: [],
   maxWeekdaySession: "", maxWeekendSession: "", doubleDays: "", doubleDayCombos: [],
   preferredLongDay: "", preferredRestDay: "", workShifts: "", unavailableWeeks: "",
+  otherSports: "",
+  otherSport1Name: "", otherSport1Days: [], otherSport1Time: "", otherSport1Duration: "", otherSport1Intensity: "",
+  otherSport2Name: "", otherSport2Days: [], otherSport2Time: "", otherSport2Duration: "", otherSport2Intensity: "",
   gpsWatch: "", gymAccess: "", equipmentBudget: "",
   currentInjuries: "", injuryDescription: "", injuryHistory: "",
   avgSleep: "", stressLevel: "", raceNutrition: "", dietaryRestrictions: "", strengthTraining: "",
   trainingPreference: "", intensityFeeling: "", trainingBlockers: "", motivation: "", successDefinition: "",
+  hasAnythingElse: "", anythingElse: "",
 };
 
 /* ─── Dark palette ──────────────────────────────────────────── */
@@ -207,6 +221,8 @@ const META: Record<number, { num: string; title: string; sub: string }> = {
   9:  { num: "09", title: "Equipment & Access",      sub: "What you have determines what we can prescribe." },
   10: { num: "10", title: "Health & Recovery",       sub: "Injuries and recovery are hard data points, not optional details." },
   11: { num: "11", title: "Motivation & Preferences",sub: "Your voice shapes your coach notes and plan tone." },
+  12: { num: "08b", title: "Other Sports & Commitments", sub: "Other physical activities count as training load — we need to plan around them." },
+  13: { num: "Final", title: "Anything Else?", sub: "This plan is built for you. If there's anything we've missed, now's the time." },
 };
 
 /* ─── Plan config (only Premium & Elite — Starter goes to /plans) ── */
@@ -248,7 +264,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
     ...(isTri || isCyc ? [5] : []),
     6,
     ...(isTri ? [7] : []),
-    8, 9, 10, 11,
+    8, 12, 9, 10, 11, 13,
   ];
 
   const total = visible.length;
@@ -378,9 +394,17 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             <TextInput value={form.recentRaceResult} onChange={v => upd("recentRaceResult", v)} placeholder='e.g. "52 min 10K"' />
           </F>
           {isTri && (
-            <F label="Individual split times from that race *" note='e.g. "Swim 28:00 / T1 3:00 / Bike 1:12 / T2 2:00 / Run 50:00"'>
-              <TextInput value={form.splitTimes} onChange={v => upd("splitTimes", v)} placeholder="Swim / T1 / Bike / T2 / Run" />
-            </F>
+            <div>
+              <label className={lbl} style={lblStyle}>Individual split times from that race *</label>
+              <p className={hint} style={{ ...hintStyle, marginBottom: "8px", marginTop: 0 }}>Use mm:ss or h:mm:ss format. Leave blank if unknown.</p>
+              <div className="grid grid-cols-5 gap-3">
+                <F label="Swim"><TextInput value={form.splitSwim} onChange={v => upd("splitSwim", v)} placeholder="31:00" /></F>
+                <F label="T1"><TextInput value={form.splitT1} onChange={v => upd("splitT1", v)} placeholder="3:00" /></F>
+                <F label="Bike"><TextInput value={form.splitBike} onChange={v => upd("splitBike", v)} placeholder="1:13:00" /></F>
+                <F label="T2"><TextInput value={form.splitT2} onChange={v => upd("splitT2", v)} placeholder="4:00" /></F>
+                <F label="Run"><TextInput value={form.splitRun} onChange={v => upd("splitRun", v)} placeholder="45:00" /></F>
+              </div>
+            </div>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <F label="Max heart rate (BPM)">
@@ -472,7 +496,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 6: return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Current weekly running distance (km) *">
+            <F label="Current weekly running distance (km) *" note="Estimate is fine — e.g. 30km. Critical for planning safe volume progression.">
               <TextInput value={form.weeklyRunDistance} onChange={v => upd("weeklyRunDistance", v)} type="number" placeholder="e.g. 35" />
             </F>
             <F label="Longest run in last 4 weeks (km) *">
@@ -651,6 +675,107 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           </F>
         </div>
       );
+
+      /* ── Section 13: Final — Anything Else ── */
+      case 13: {
+        const wantsToAdd = form.hasAnythingElse === "Yes";
+        return (
+          <div className="space-y-6">
+            <div className="p-6" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, borderRadius: "2px" }}>
+              <p className="font-body text-base leading-relaxed mb-1" style={{ color: TEXT }}>
+                This plan is for <span style={{ color: ACCENT, fontWeight: 600 }}>{form.fullName || "you"}</span>.
+              </p>
+              <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                Is there any other information, thoughts, or concerns you think we should know before building your plan?
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {["No", "Yes"].map(opt => (
+                <button key={opt} type="button" onClick={() => upd("hasAnythingElse", opt)}
+                  className="py-4 font-label text-xs uppercase tracking-widest transition-colors rounded-sm cursor-pointer"
+                  style={form.hasAnythingElse === opt
+                    ? { background: "rgba(184,92,44,0.15)", border: `1px solid ${ACCENT}`, color: TEXT }
+                    : { background: INPUT_BG, border: `1px solid ${CARD_BORDER}`, color: DIM }
+                  }>
+                  {opt === "No" ? "No — I'm good to go" : "Yes — I have something to add"}
+                </button>
+              ))}
+            </div>
+            {wantsToAdd && (
+              <F label="Tell us anything" note="Training quirks, race-day fears, things you forgot to mention — anything goes.">
+                <TextareaInput value={form.anythingElse} onChange={v => upd("anythingElse", v)}
+                  placeholder="Write as much or as little as you'd like..." rows={5} />
+              </F>
+            )}
+          </div>
+        );
+      }
+
+      /* ── Section 12: Other Sports & Commitments ── */
+      case 12: {
+        const hasOther = form.otherSports === "Yes";
+        const showSecond = hasOther && form.otherSport1Name.trim() !== "";
+        return (
+          <div className="space-y-6">
+            <F label="Do you play other sports or have regular physical commitments? *">
+              <SelectInput value={form.otherSports} onChange={v => upd("otherSports", v)} options={["Yes", "No"]} />
+            </F>
+            {hasOther && (
+              <>
+                <InfoBox title="Why this matters" body="Other sports count as training load. If you play soccer twice a week, that's high-intensity running your plan needs to account for — otherwise we'd overload you." />
+                <div className="p-5 space-y-4" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, borderRadius: "2px" }}>
+                  <p className="font-label text-[10px] uppercase tracking-widest" style={{ color: ACCENT }}>Activity 1</p>
+                  <F label="Sport / activity name *" note='e.g. "Soccer", "Basketball", "CrossFit"'>
+                    <TextInput value={form.otherSport1Name} onChange={v => upd("otherSport1Name", v)} placeholder="e.g. Soccer" />
+                  </F>
+                  <F label="Which days? *">
+                    <MultiSelect selected={form.otherSport1Days} onChange={v => upd("otherSport1Days", v)}
+                      options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} />
+                  </F>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <F label="Time of day *">
+                      <SelectInput value={form.otherSport1Time} onChange={v => upd("otherSport1Time", v)} options={["Morning", "Afternoon", "Evening"]} />
+                    </F>
+                    <F label="Typical duration *">
+                      <SelectInput value={form.otherSport1Duration} onChange={v => upd("otherSport1Duration", v)} options={["30 min", "1 hour", "1.5 hours", "2 hours", "2+ hours"]} />
+                    </F>
+                    <F label="Intensity level *">
+                      <SelectInput value={form.otherSport1Intensity} onChange={v => upd("otherSport1Intensity", v)} options={["Light", "Moderate", "High"]} />
+                    </F>
+                  </div>
+                </div>
+                {showSecond && (
+                  <div className="p-5 space-y-4" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, borderRadius: "2px" }}>
+                    <p className="font-label text-[10px] uppercase tracking-widest" style={{ color: ACCENT }}>Activity 2 (optional)</p>
+                    <F label="Sport / activity name">
+                      <TextInput value={form.otherSport2Name} onChange={v => upd("otherSport2Name", v)} placeholder="e.g. Basketball" />
+                    </F>
+                    {form.otherSport2Name.trim() !== "" && (
+                      <>
+                        <F label="Which days?">
+                          <MultiSelect selected={form.otherSport2Days} onChange={v => upd("otherSport2Days", v)}
+                            options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} />
+                        </F>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <F label="Time of day">
+                            <SelectInput value={form.otherSport2Time} onChange={v => upd("otherSport2Time", v)} options={["Morning", "Afternoon", "Evening"]} />
+                          </F>
+                          <F label="Typical duration">
+                            <SelectInput value={form.otherSport2Duration} onChange={v => upd("otherSport2Duration", v)} options={["30 min", "1 hour", "1.5 hours", "2 hours", "2+ hours"]} />
+                          </F>
+                          <F label="Intensity level">
+                            <SelectInput value={form.otherSport2Intensity} onChange={v => upd("otherSport2Intensity", v)} options={["Light", "Moderate", "High"]} />
+                          </F>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        );
+      }
 
       default: return null;
     }

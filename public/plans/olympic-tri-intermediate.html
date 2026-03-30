@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olympic Triathlon Intermediate — Metric Athlete | Plan Metric</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0E6D4;--bg-card:#E4DAC8;--bg-hover:#DBD0BC;
+  --text:#1C1614;--text-sec:#3A2E28;--text-ter:#6B5E54;
+  --accent:#A0522D;--accent-dim:rgba(160,82,45,0.12);
+  --border:rgba(28,22,20,0.08);
+  --green:#2E7D32;--orange:#E65100;--red:#C62828;
+  --swim:#0ea5e9;--bike:#22c55e;--run:#f97316;--brick:#a855f7;
+  --radius:10px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:820px;margin:0 auto;padding:0 20px}
+h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-height:1.2}
+.section-label{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.section-label::before{content:'\25C6';font-size:8px;color:var(--accent)}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.badge{display:inline-flex;align-items:center;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:4px 10px;border-radius:20px;text-transform:uppercase}
+.badge-accent{background:var(--accent-dim);color:var(--accent)}
+.badge-green{background:rgba(46,125,50,0.1);color:var(--green)}
+.badge-orange{background:rgba(230,81,0,0.1);color:var(--orange)}
+.badge-red{background:rgba(198,40,40,0.1);color:var(--red)}
+.badge-rest{background:rgba(107,94,84,0.1);color:var(--text-ter)}
+.badge-swim{background:rgba(14,165,233,0.1);color:var(--swim)}
+.badge-bike{background:rgba(34,197,94,0.1);color:var(--bike)}
+.badge-run{background:rgba(249,115,22,0.1);color:var(--run)}
+.badge-brick{background:rgba(168,85,247,0.1);color:var(--brick)}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;font-size:20px}
+
+/* Header */
+.sticky-header{position:sticky;top:0;z-index:100;background:rgba(228,218,200,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+.sticky-header .logo{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text)}
+.sticky-header .plan-badge{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:var(--accent-dim);color:var(--accent)}
+
+/* Hero */
+.hero{padding:80px 0 48px;text-align:center}
+.hero h1{font-size:clamp(28px,5vw,42px);margin-bottom:12px;letter-spacing:-0.02em}
+.hero h1 span{color:var(--accent)}
+.hero .subtitle{color:var(--text-sec);font-size:16px;font-weight:300;max-width:520px;margin:0 auto 32px}
+.stats-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 20px;text-align:center;min-width:120px}
+.stat .num{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--accent);display:block}
+.stat .label{font-size:11px;color:var(--text-ter);text-transform:uppercase;letter-spacing:0.08em}
+
+/* How To Use */
+.how-to-list{list-style:none;padding:0;margin:0;counter-reset:howto}
+.how-to-list li{counter-increment:howto;display:flex;gap:14px;margin-bottom:16px;font-size:14px;color:var(--text-sec);font-weight:300;line-height:1.7}
+.how-to-list li:last-child{margin-bottom:0}
+.how-to-list li::before{content:counter(howto);font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--accent);min-width:24px;line-height:1.5;flex-shrink:0}
+
+/* Overview Grid */
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:48px}
+@media(max-width:600px){.overview-grid{grid-template-columns:repeat(2,1fr)}}
+.overview-cell{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s}
+.overview-cell:hover{background:var(--bg-hover);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(160,82,45,0.15)}
+.overview-cell .week-num{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.overview-cell .week-focus{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:6px}
+.overview-cell .week-km{font-size:12px;color:var(--text-ter)}
+
+/* Zones */
+.zones-table{width:100%;border-collapse:collapse;font-size:13px}
+.zones-table th{font-family:'Space Grotesk',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-ter);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+.zones-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-sec)}
+.zones-table td:first-child{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--accent)}
+.zones-table caption{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-ter);text-align:left;padding:14px 12px 6px;caption-side:top}
+
+/* Week Accordion */
+.week-accordion{margin-bottom:12px}
+.week-accordion summary{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;list-style:none;transition:all 0.2s;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
+.week-accordion summary::-webkit-details-marker{display:none}
+.week-accordion summary:hover{background:var(--bg-hover);border-color:var(--accent)}
+.week-accordion summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.week-accordion summary .chevron{transition:transform 0.3s;font-size:20px;color:var(--text-ter)}
+.week-accordion[open] summary{border-color:var(--accent);border-radius:var(--radius) var(--radius) 0 0}
+.week-accordion[open] summary .chevron{transform:rotate(180deg);color:var(--accent)}
+.week-content{background:var(--bg-card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:24px}
+.week-overview{color:var(--text-sec);font-size:14px;font-weight:300;margin-bottom:24px;line-height:1.7}
+
+/* Progress Dots */
+.progress-dots{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.progress-dots .dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all 0.2s;flex-shrink:0}
+.progress-dots .dot.filled{background:var(--accent)}
+.progress-dots .dot.current{background:transparent;border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.progress-dots .week-indicator{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-ter);margin-left:8px}
+
+/* Day Card */
+.day-card{background:#EDE3D0;border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px}
+.day-card.rest{opacity:0.6}
+.day-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.day-label{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);min-width:90px}
+.day-session{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text)}
+.day-badges{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.day-structure{font-size:13px;color:var(--text-sec);font-weight:300;margin-bottom:8px;line-height:1.6}
+.coach-note{background:rgba(160,82,45,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-top:10px}
+.coach-note strong{color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+/* Key Workout Callout */
+.key-callout{background:rgba(198,40,40,0.05);border:1px solid rgba(198,40,40,0.15);border-left:3px solid var(--red);border-radius:var(--radius);padding:20px;margin:20px 0}
+.key-callout h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.key-callout p{font-size:13px;color:var(--text);font-weight:300;line-height:1.7}
+
+/* Recovery & Check-in */
+.recovery-box{background:rgba(46,125,50,0.05);border:1px solid rgba(46,125,50,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
+.recovery-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.recovery-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7}
+.checkin-box{background:rgba(230,81,0,0.05);border:1px solid rgba(230,81,0,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
+.checkin-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
+.checkin-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7;font-style:italic}
+
+/* Upgrade Prompt */
+.upgrade-prompt{position:relative;background:var(--bg-card);border:1px solid var(--border);border-left:3px solid transparent;border-image:linear-gradient(to bottom,var(--accent),transparent) 1;border-image-slice:1;border-radius:var(--radius);padding:24px 24px 24px 40px;margin:24px 0}
+.upgrade-prompt::before{content:'\25C6';position:absolute;top:16px;left:14px;font-size:10px;color:var(--accent);opacity:0.6}
+.upgrade-prompt .prompt-brand{font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-ter);margin-bottom:8px;opacity:0.7}
+.upgrade-prompt p{font-size:13px;color:var(--text-ter);font-weight:300;line-height:1.7;margin-bottom:12px}
+.upgrade-prompt .prompt-link{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;transition:opacity 0.2s}
+.upgrade-prompt .prompt-link:hover{opacity:0.7}
+.upgrade-prompt .prompt-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* What's Next */
+.whats-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+@media(max-width:600px){.whats-next-grid{grid-template-columns:1fr}}
+.next-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column}
+.next-card h4{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.next-card p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-bottom:16px;flex:1}
+.next-card a{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;transition:opacity 0.2s}
+.next-card a:hover{opacity:0.7}
+.next-card a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Tips Grid */
+.tips-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:600px){.tips-grid{grid-template-columns:1fr}}
+.tip-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.tip-card h4{font-size:13px;color:var(--accent);margin-bottom:6px}
+.tip-card p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6}
+
+/* Glossary */
+.glossary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:600px){.glossary-grid{grid-template-columns:1fr}}
+.glossary-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.glossary-item dt{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.glossary-item dd{font-size:12px;color:var(--text-sec);font-weight:300;line-height:1.5}
+
+/* Footer */
+.plan-footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);margin-top:64px}
+.plan-footer .logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px}
+.plan-footer .links{font-size:11px;color:var(--text-ter);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
+.plan-footer .links a{color:var(--text-ter);text-decoration:none;margin:0 8px}
+.plan-footer .links a:hover{color:var(--accent)}
+.plan-footer .links a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plan-footer .copy{font-size:11px;color:var(--text-ter)}
+
+/* Focus states */
+a:focus-visible,.overview-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Print */
+@media print{
+  .sticky-header{position:static;background:var(--bg);border-bottom:none}
+  body{background:white;color:black}
+  .week-accordion[open] summary,.week-accordion summary{background:var(--bg-card)}
+  details{display:block!important}
+  details[open]>*{display:block!important}
+  details:not([open]){open:true}
+  details>summary{pointer-events:none}
+  details>.week-content{display:block!important}
+  .overview-cell{cursor:default}
+  .overview-cell:hover{transform:none;box-shadow:none}
+  .upgrade-prompt{display:none!important}
+  .day-card:hover,.overview-cell:hover,.week-accordion summary:hover{background:var(--bg-card);transform:none;box-shadow:none;border-color:var(--border)}
+}
+</style>
+</head>
+<body>
+
+<!-- Sticky Header -->
+<div class="sticky-header">
+  <div class="logo">Plan Metric</div>
+  <div class="plan-badge">Starter Plan</div>
+</div>
+
+<div class="container">
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Olympic Triathlon Intermediate.<br><span>Swim. Bike. Run. Race.</span></h1>
+  <p class="subtitle">A 12-week structured programme for athletes who have finished an Olympic triathlon and want to race one. Threshold work, CSS swim sets, tempo bricks, and race-pace sessions &mdash; all built on 80/20 polarised training.</p>
+  <div class="stats-row">
+    <div class="stat"><span class="num">12</span><span class="label">Weeks</span></div>
+    <div class="stat"><span class="num">5&ndash;6</span><span class="label">Sessions / Wk</span></div>
+    <div class="stat"><span class="num">51.5 km</span><span class="label">Race Distance</span></div>
+    <div class="stat"><span class="num">T2&ndash;T3</span><span class="label">Primary Zones</span></div>
+  </div>
+</section>
+
+<!-- Plan Focus -->
+<section style="margin-bottom:48px">
+  <div class="section-label">Plan Focus</div>
+  <div class="card">
+    <p style="color:var(--text-sec);font-weight:300;line-height:1.7;font-size:14px">You can finish an Olympic triathlon. This plan teaches you to race one. Over 12 weeks you&rsquo;ll build threshold capacity in the pool with CSS intervals, develop sustainable bike power through tempo and threshold blocks, and sharpen your run with race-pace segments and structured strides. Brick sessions from Week 5 train your body to run fast on tired legs. Recovery weeks at Weeks 4 and 8 let adaptation happen. Weeks 9&ndash;10 are race-specific &mdash; full dress rehearsals with transition practice. The taper delivers you to the start line fresh, sharp, and ready to execute a pacing plan, not just survive. 80% of training remains aerobic. The other 20% is where you get faster.</p>
+  </div>
+</section>
+
+<!-- How To Use This Plan -->
+<section style="margin-bottom:48px">
+  <div class="section-label">How To Use This Plan</div>
+  <div class="card">
+    <ol class="how-to-list">
+      <li>Read the full week before you start it. Sessions are ordered intentionally &mdash; hard sessions are followed by easy sessions or rest. Moving sessions around disrupts the training stimulus.</li>
+      <li>Respect the intensities. When the plan says RPE 3&ndash;4, it means easy. When it says RPE 6&ndash;7, it means uncomfortable. The temptation to make easy sessions moderate is the most common mistake intermediate athletes make &mdash; it erodes the quality of your hard sessions.</li>
+      <li>Complete every recovery week as written. Weeks 4 and 8 are deliberately reduced. Adaptation happens during rest, not during the session. Skipping recovery leads to plateau, not progress.</li>
+      <li>Practise race-day nutrition on every long ride and brick session. Your fuelling plan should be rehearsed 6&ndash;8 times before race day. Aim for 40&ndash;60g carbs per hour on the bike.</li>
+      <li>Transitions are free speed. From Week 5, every brick session includes a deliberate T2 rehearsal. By race day, the sequence should be automatic. Lay out your gear in the same order every time.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- 12-Week Overview Grid -->
+<section style="margin-bottom:48px">
+  <div class="section-label">12-Week Overview</div>
+  <div class="overview-grid" id="overviewGrid">
+    <div class="overview-cell" data-week="1" tabindex="0"><div class="week-num">Week 1</div><div class="week-focus">Base I</div><div class="week-km">~6 hrs</div></div>
+    <div class="overview-cell" data-week="2" tabindex="0"><div class="week-num">Week 2</div><div class="week-focus">Base II</div><div class="week-km">~6.5 hrs</div></div>
+    <div class="overview-cell" data-week="3" tabindex="0"><div class="week-num">Week 3</div><div class="week-focus">Base III</div><div class="week-km">~7 hrs</div></div>
+    <div class="overview-cell" data-week="4" tabindex="0"><div class="week-num">Week 4</div><div class="week-focus">Recovery</div><div class="week-km">~4.5 hrs</div></div>
+    <div class="overview-cell" data-week="5" tabindex="0"><div class="week-num">Week 5</div><div class="week-focus">Build I</div><div class="week-km">~7.5 hrs</div></div>
+    <div class="overview-cell" data-week="6" tabindex="0"><div class="week-num">Week 6</div><div class="week-focus">Build II</div><div class="week-km">~8 hrs</div></div>
+    <div class="overview-cell" data-week="7" tabindex="0"><div class="week-num">Week 7</div><div class="week-focus">Build III</div><div class="week-km">~8.5 hrs</div></div>
+    <div class="overview-cell" data-week="8" tabindex="0"><div class="week-num">Week 8</div><div class="week-focus">Recovery</div><div class="week-km">~5.5 hrs</div></div>
+    <div class="overview-cell" data-week="9" tabindex="0"><div class="week-num">Week 9</div><div class="week-focus">Race Specific</div><div class="week-km">~8.5 hrs</div></div>
+    <div class="overview-cell" data-week="10" tabindex="0"><div class="week-num">Week 10</div><div class="week-focus">Rehearsal</div><div class="week-km">~8 hrs</div></div>
+    <div class="overview-cell" data-week="11" tabindex="0"><div class="week-num">Week 11</div><div class="week-focus">Taper</div><div class="week-km">~5 hrs</div></div>
+    <div class="overview-cell" data-week="12" tabindex="0"><div class="week-num">Week 12</div><div class="week-focus">Race Week</div><div class="week-km">~3 hrs + Race</div></div>
+  </div>
+</section>
+
+<!-- Training Zones -->
+<section style="margin-bottom:48px">
+  <div class="section-label">Training Zones</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="zones-table">
+      <caption>Running Zones</caption>
+      <thead><tr><th>Zone</th><th>Name</th><th>RPE</th><th>How It Feels</th></tr></thead>
+      <tbody>
+        <tr><td>T1</td><td>Recovery</td><td>1&ndash;2</td><td>Very easy, effortless conversation, barely above walking</td></tr>
+        <tr><td>T2</td><td>Aerobic Base</td><td>3&ndash;4</td><td>Easy, comfortable, could talk in full sentences for hours</td></tr>
+        <tr><td>T3</td><td>Tempo</td><td>5&ndash;6</td><td>Comfortably hard, can speak in short sentences only</td></tr>
+        <tr><td>T4</td><td>VO2max</td><td>7&ndash;8</td><td>Hard, laboured breathing, a few words at most</td></tr>
+        <tr><td>T5</td><td>Anaerobic</td><td>9&ndash;10</td><td>Very hard, unsustainable beyond ~2 minutes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:12px">
+    <table class="zones-table">
+      <caption>Cycling Zones</caption>
+      <thead><tr><th>Zone</th><th>Name</th><th>RPE</th><th>How It Feels</th></tr></thead>
+      <tbody>
+        <tr><td>Z1</td><td>Active Recovery</td><td>1&ndash;2</td><td>Very easy spinning, legs barely working</td></tr>
+        <tr><td>Z2</td><td>Endurance</td><td>3&ndash;4</td><td>Easy pedalling, full conversation, could ride for hours</td></tr>
+        <tr><td>Z3</td><td>Tempo</td><td>5&ndash;6</td><td>Moderate effort, short sentences, breathing noticeable</td></tr>
+        <tr><td>Z4</td><td>Threshold</td><td>7&ndash;8</td><td>Hard, sustainable for 20&ndash;40 min, few words only</td></tr>
+        <tr><td>Z5</td><td>VO2max</td><td>8&ndash;9</td><td>Very hard, 3&ndash;8 min efforts, gasping</td></tr>
+        <tr><td>Z6</td><td>Neuromuscular</td><td>10</td><td>Maximum, short sprints only, &lt;30 seconds</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:12px">
+    <table class="zones-table">
+      <caption>Swimming Zones</caption>
+      <thead><tr><th>Zone</th><th>Name</th><th>RPE</th><th>How It Feels</th></tr></thead>
+      <tbody>
+        <tr><td>Recovery</td><td>Easy Swim</td><td>1&ndash;2</td><td>Effortless, could swim all day, focus on form</td></tr>
+        <tr><td>Aerobic</td><td>Steady Swim</td><td>3&ndash;4</td><td>Comfortable rhythm, controlled breathing, sustainable</td></tr>
+        <tr><td>CSS</td><td>Critical Swim Speed</td><td>5&ndash;6</td><td>Comfortably hard, threshold pace, breathing every 3 strokes</td></tr>
+        <tr><td>VO2max</td><td>Hard Intervals</td><td>7&ndash;8</td><td>Hard effort, breathing every 2 strokes, unsustainable long-term</td></tr>
+        <tr><td>Sprint</td><td>Maximum Effort</td><td>9&ndash;10</td><td>All-out, &lt;50m reps only, full recovery between</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--text-ter);margin-top:8px">This plan operates primarily in T2&ndash;T3 (run), Z2&ndash;Z3 (bike), and Aerobic&ndash;CSS (swim). Threshold and VO2max work appears from Week 2 in controlled doses &mdash; enough to develop speed, not so much that it compromises your aerobic base.</p>
+  <div class="upgrade-prompt">
+    <div class="prompt-brand">Plan Metric</div>
+    <p>This plan uses RPE-based effort guidance &mdash; no equipment needed. Premium plans include personalised heart rate zones, CSS test protocols, FTP-based bike zones, and race-specific pacing &mdash; all calibrated from your physiological intake data and reviewed by our head coach.</p>
+    <a href="https://planmetric.com.au/plans" class="prompt-link">View Plans &rarr;</a>
+  </div>
+</section>
+
+<!-- WEEK 1 -->
+<section id="week-1" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 1 &mdash; Base I</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="1">
+    <div class="progress-dots">
+      <span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 1 of 12</span>
+    </div>
+    <p class="week-overview">Establish your weekly rhythm across all three disciplines. Every session is aerobic with controlled technique focus. This week is about calibrating your effort levels and settling into the schedule &mdash; not testing fitness.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Technique + Aerobic</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">2000m</span></div></div><p class="day-structure">300m easy warm-up (mix of strokes) &rarr; 4 &times; 50m drill (catch-up, fingertip drag) with 10s rest &rarr; 6 &times; 150m freestyle at Aerobic zone with 15s rest &rarr; 4 &times; 50m easy kick &rarr; 200m cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>This is a rhythm session. Focus on a high elbow catch, body rotation, and bilateral breathing. Don&rsquo;t chase the clock &mdash; chase form. Count your strokes per 25m and try to lower them by 1&ndash;2 over the coming weeks.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Easy Endurance</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">70 min</span></div></div><p class="day-structure">70 min easy Z2 spinning. Flat to rolling terrain. Cadence 85&ndash;95 RPM. Stay relaxed in the shoulders and grip. Drink every 15 min.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Easy Run + Strides</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">40 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 28 min easy run at T2 &rarr; 4 &times; 20-sec strides with 40-sec walk recovery &rarr; 3 min walk cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Strides are controlled accelerations to about 85&ndash;90% effort, not sprints. Focus on quick turnover and relaxed shoulders. They prime your neuromuscular system without adding fatigue.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Swim &mdash; CSS Introduction</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">2200m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build (easy to CSS pace) with 10s rest &rarr; 6 &times; 100m at CSS with 15s rest &rarr; 4 &times; 100m Aerobic with 20s rest &rarr; 200m easy cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>CSS pace is your sustainable threshold &mdash; comfortably hard, breathing every 3 strokes. If you don&rsquo;t know your CSS pace, swim a 400m time trial this week and use that average pace per 100m as your starting point.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Bike &mdash; Long Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">90 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">90 min Z2 ride. Rolling terrain if available. Practise drinking from your bottle every 15 min and eating a gel or bar at the 45 min mark. Cadence 80&ndash;90 RPM on flats.</p><div class="coach-note"><strong>Coach's Note</strong>The long ride is the anchor session of every week. It builds your aerobic engine more than any other session. If you can only do one workout in a week, do the long ride.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 40 min easy run at T2 &rarr; 5 min walk cool-down. Conversational pace throughout. If your legs are heavy from Saturday, slow down &mdash; don&rsquo;t push.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Long Ride</h4><p>90 minutes of easy Z2 cycling. The foundation of your race fitness. Finish feeling like you could have done another 30 minutes &mdash; that means you rode it perfectly.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep 7&ndash;9 hours. Stretch hip flexors, quads, calves, and shoulders for 5&ndash;10 minutes after each session. Hydrate throughout the day &mdash; aim for pale yellow urine.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Did I complete all six sessions? Were my easy sessions genuinely easy? Can I identify my CSS pace in the pool? If not, schedule a 400m time trial this week.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 2 -->
+<section id="week-2" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 2 &mdash; Base II</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="2">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 2 of 12</span>
+    </div>
+    <p class="week-overview">Same structure, slightly longer sessions. The swim adds volume at CSS pace. The bike introduces short tempo efforts within the long ride. The run stays easy. Build the habit of fuelling on the bike.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Aerobic + Technique</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">2200m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m drill (fist drill, single arm) with 10s rest &rarr; 8 &times; 150m freestyle at Aerobic zone with 15s rest &rarr; 4 &times; 50m easy backstroke &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Easy Endurance + Tempo Efforts</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">75 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 3 &times; 5 min at Z3 (tempo) with 3 min Z2 recovery &rarr; remaining time Z2 easy spin.</p><div class="coach-note"><strong>Coach's Note</strong>These tempo efforts should feel like &ldquo;moderate work&rdquo; &mdash; harder than easy but you could sustain them for 30+ minutes. They teach your body to produce more power at a lower metabolic cost.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Easy Run + Strides</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">42 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 30 min easy run at T2 &rarr; 4 &times; 20-sec strides with 40-sec walk &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Swim &mdash; CSS Intervals</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">2400m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build with 10s rest &rarr; 8 &times; 100m at CSS with 12s rest &rarr; 4 &times; 50m easy &rarr; 4 &times; 100m Aerobic with 15s rest &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Bike &mdash; Long Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">100 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">100 min Z2 ride. Eat at 40 min and 80 min. Drink every 15 min. Practise your race-day fuelling routine. Flat to rolling route.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">55 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 45 min easy run at T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Long Ride</h4><p>100 minutes. Same easy effort, 10 minutes longer. The new element is rehearsing your nutrition plan &mdash; every long ride from now on doubles as a fuelling rehearsal.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Post-session: refuel with carbs + protein within 60 min. Foam roll or stretch if tight. If any joint pain appears, take an extra rest day &mdash; training through pain at this stage creates problems, not fitness.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Am I holding CSS pace consistently in the pool? Are my easy sessions genuinely conversational, or am I creeping into moderate effort?&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 3 -->
+<section id="week-3" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 3 &mdash; Base III</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="3">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 3 of 12</span>
+    </div>
+    <p class="week-overview">Peak base week. The longest sessions before your first recovery week. The run introduces a tempo block. The swim CSS volume increases. Next week is recovery &mdash; absorb this week&rsquo;s work.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Aerobic Endurance</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">2400m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 6 &times; 50m drill with 10s rest &rarr; 3 &times; 300m at Aerobic zone with 20s rest &rarr; 4 &times; 50m kick &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Tempo Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">80 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 2 &times; 10 min at Z3 (tempo) with 5 min Z2 recovery &rarr; remaining time Z2 easy spin &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Tempo Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">45 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 15 min at T3 (tempo) &rarr; 10 min easy T2 &rarr; 5 min walk cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Your first sustained tempo block. T3 should feel &ldquo;comfortably hard&rdquo; &mdash; you can speak in short sentences but wouldn&rsquo;t want to. Hold that effort steady; don&rsquo;t accelerate through the block.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Swim &mdash; CSS Threshold</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">2600m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build with 10s rest &rarr; 10 &times; 100m at CSS with 10s rest &rarr; 200m easy &rarr; 4 &times; 50m easy kick &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Bike &mdash; Long Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">105 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">105 min Z2 ride. Eat every 30&ndash;40 min. Drink every 15 min. Flat to rolling. Focus on holding a consistent effort on any climbs &mdash; don&rsquo;t surge.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">55 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 45 min easy run at T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Thursday Tempo Run</h4><p>Your first 15-min sustained tempo block. This effort is close to Olympic tri race pace for the run leg. Getting comfortable at this intensity is how you race faster.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Next week is a recovery week. Don&rsquo;t try to &ldquo;bank&rdquo; extra training this week. Finish the sessions as written and trust that your body will absorb the work during Week 4.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;How did the 15-min tempo run feel? Could I hold a conversation? If yes, I went too easy. Could I not speak at all? Too hard. Short sentences = right zone.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 4 -->
+<section id="week-4" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 4 &mdash; Recovery</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="4">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 4 of 12</span>
+    </div>
+    <p class="week-overview">Recovery week. Volume drops 35&ndash;40%. Intensity stays light. Keep each discipline in the schedule but shorter. You cannot gain fitness by doing more this week &mdash; but you will lose it by not recovering. Adaptation happens now.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Easy Technique</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">1600m</span></div></div><p class="day-structure">200m easy warm-up &rarr; 6 &times; 50m drill (catch-up, fingertip drag, fist) with 15s rest &rarr; 4 &times; 100m Aerobic with 20s rest &rarr; 200m easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Easy Spin</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">50 min very easy Z1&ndash;Z2. Flat route. High cadence, low effort. Legs should feel light.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Easy Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">30 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 20 min very easy run at T1&ndash;T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest or Easy Swim</span><div class="day-badges"><span class="badge badge-rest">REST</span><span class="badge badge-swim">OPTIONAL</span></div></div><p class="day-structure">Rest, or 800m easy swim if you want pool time. Recovery zone only. No structured sets.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Bike &mdash; Easy Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">60 min</span></div></div><p class="day-structure">60 min easy Z2. Flat route. Practise nutrition as usual but keep effort very light.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">35 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 25 min easy run at T1&ndash;T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; All Sessions: Easy</h4><p>There is no key workout this week. The key is restraint. Every session should feel too easy. That&rsquo;s the point. Your body is absorbing 3 weeks of training.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep 8&ndash;9 hours. Extra stretching and foam rolling. Consider a massage or yoga session. Eat well &mdash; don&rsquo;t cut calories during recovery. Your body is rebuilding.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Do I feel fresher than last week? Am I sleeping well? Is anything persistently sore? If so, address it now before the build phase starts.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 5 -->
+<section id="week-5" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 5 &mdash; Build I</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="5">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 5 of 12</span>
+    </div>
+    <p class="week-overview">Build phase begins. The bike introduces threshold efforts. The swim adds longer CSS sets. Your first brick session arrives &mdash; bike to run with a deliberate T2 transition. This is where you start training to race, not just finish.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; CSS Blocks</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">2600m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build with 10s rest &rarr; 3 &times; 200m at CSS with 15s rest &rarr; 4 &times; 100m at CSS with 10s rest &rarr; 200m easy &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Threshold Intervals</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">80 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 3 &times; 8 min at Z4 (threshold) with 4 min Z2 recovery &rarr; remaining time Z2 easy &rarr; 5 min easy cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Threshold efforts should feel &ldquo;hard but sustainable for 20&ndash;40 minutes.&rdquo; You can speak a few words but not a sentence. These build the power you&rsquo;ll sustain on race day.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Tempo Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">45 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 2 &times; 8 min at T3 with 3 min T2 recovery &rarr; 8 min easy T2 &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Swim &mdash; Aerobic + Sighting</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">2200m</span></div></div><p class="day-structure">300m easy warm-up with sighting every 8 strokes &rarr; 4 &times; 50m drill with 10s rest &rarr; 6 &times; 200m Aerobic with 15s rest (sight every 100m) &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Bike + Run</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">90 min + 20 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">90 min Z2 ride (nutrition every 30 min) &rarr; T2 transition rehearsal (rack bike, helmet off, run shoes on) &rarr; 20 min easy-to-moderate run (start T2, settle into T2&ndash;T3 by KM 2).</p><div class="coach-note"><strong>Coach's Note</strong>Your first brick session. The jelly-leg feeling when you start running is normal &mdash; it fades within 5&ndash;10 minutes. Start slowly. The T2 transition should be practised deliberately: lay out your run gear before the ride, then execute the change as you would on race day.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">55 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 45 min easy run at T2 &rarr; 5 min walk cool-down. Take it easy after yesterday&rsquo;s brick.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Brick Session</h4><p>Your first bike-to-run combo. The physical sensation is new &mdash; embrace it. The mental adaptation is just as valuable: you&rsquo;re learning what race day feels like.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>The brick session is a new stress. Expect your legs to feel heavier on Sunday. Extra stretching and foam rolling on Saturday evening. Refuel well after the brick &mdash; carbs + protein within 60 min.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;How did my legs feel running off the bike? Did the jelly-leg sensation settle? Did I practise T2 deliberately, or did I just change shoes and run?&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 6 -->
+<section id="week-6" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 6 &mdash; Build II</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="6">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 6 of 12</span>
+    </div>
+    <p class="week-overview">Volume increases. Open water swim practice begins. The brick gets longer. Threshold work on the bike extends. You&rsquo;re building race-specific fitness now &mdash; every session has a clear connection to race day.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; CSS + VO2max</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">2800m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build with 10s rest &rarr; 4 &times; 200m at CSS with 12s rest &rarr; 6 &times; 50m at VO2max (hard) with 20s rest &rarr; 200m easy &rarr; 200m cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>First VO2max swim reps. These 50m efforts should be hard &mdash; RPE 7&ndash;8, breathing every 2 strokes. They develop top-end swim speed. Full recovery between reps is essential.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Threshold Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">85 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 2 &times; 12 min at Z4 with 5 min Z2 recovery &rarr; remaining time Z2 &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Tempo Intervals</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">48 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 3 &times; 6 min at T3 with 2 min T2 recovery &rarr; 8 min easy T2 &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Open Water Swim</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">25&ndash;35 min</span></div></div><p class="day-structure">Open water session. 5 min easy swim to warm up &rarr; 15&ndash;20 min continuous at Aerobic effort &rarr; Sight every 8&ndash;10 strokes &rarr; 5 min easy cool-down. Never swim open water alone.</p><div class="coach-note"><strong>Coach's Note</strong>Open water is a completely different experience to the pool. No black line, no wall push-offs, possible chop and current. The goal today is comfort: relaxed breathing, rhythmic sighting, and confidence. You have 6 weeks to master this before race day.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Bike + Run</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">100 min + 20 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">100 min Z2 ride (nutrition every 30 min) &rarr; T2 rehearsal &rarr; 20 min run (start T2, last 10 min at T3 tempo).</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">55 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 45 min easy run at T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Brick with Tempo Finish</h4><p>The brick now includes 10 minutes of tempo running at the end. This simulates the second half of your race run &mdash; when you need to push on tired legs.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Open water swimming uses different muscles and more energy than pool swimming (no push-offs, no flip turns, current). Expect to feel more tired after Friday&rsquo;s session. Sleep well before Saturday&rsquo;s brick.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;How did open water feel? Was I comfortable or anxious? Could I sight effectively? What do I need to practise before race day?&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 7 -->
+<section id="week-7" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 7 &mdash; Build III</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="7">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 7 of 12</span>
+    </div>
+    <p class="week-overview">Peak build week. Longest sessions before the second recovery week. The swim includes a 1500m continuous threshold effort. The brick extends. Threshold bike work peaks. Next week is recovery &mdash; push through this week with good form.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Race Distance at CSS</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">2800m</span></div></div><p class="day-structure">300m easy warm-up &rarr; 4 &times; 50m build with 10s rest &rarr; 1500m continuous at CSS pace (sight every 100m) &rarr; 200m easy &rarr; 4 &times; 50m easy kick &rarr; 200m cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>1500m non-stop at CSS pace &mdash; this is race distance at race effort. Settle in by 200m and hold. If you need to stop, rest 10 seconds and continue. The goal is to finish knowing you can hold this pace on race day.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Threshold Blocks</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">90 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 2 &times; 15 min at Z4 with 5 min Z2 recovery &rarr; remaining time Z2 &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Tempo Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 20 min at T3 (tempo) &rarr; 10 min easy T2 &rarr; 5 min walk cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>20 minutes of sustained tempo. This is longer than the race run at this intensity, which means you&rsquo;re building capacity beyond what race day demands. That&rsquo;s the point &mdash; race day should feel easier than training.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Open Water Swim</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">30&ndash;40 min</span></div></div><p class="day-structure">Open water. 5 min easy warm-up &rarr; 20&ndash;25 min continuous at Aerobic-to-CSS effort &rarr; Practise race starts: treading water, then accelerate for 30 strokes, settle into rhythm &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Long Bike + Run</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">105 min + 25 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">105 min Z2&ndash;Z3 ride (last 20 min at Z3 tempo) &rarr; T2 rehearsal &rarr; 25 min run (first 15 min T2, last 10 min T3 tempo). Nutrition every 30 min on the bike.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 40 min easy run at T2 &rarr; 5 min walk cool-down. If heavy from the brick, shorten to 30 min.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Tuesday 1500m CSS Swim + Saturday Brick</h4><p>Two landmark sessions. The swim proves you can hold race pace for race distance. The brick proves you can ride and then run at race effort. Both are race rehearsals.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>This is the hardest training week so far. Recovery next week is non-negotiable. Sleep 8&ndash;9 hours. Eat well. Foam roll. Gentle mobility work on Sunday evening.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;I just swam 1500m non-stop at CSS pace and ran tempo off the bike. Am I starting to see myself as a racer, not just a finisher?&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 8 -->
+<section id="week-8" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 8 &mdash; Recovery</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="8">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 8 of 12</span>
+    </div>
+    <p class="week-overview">Recovery week. Volume drops 35%. Keep all disciplines in rotation but shorter and easier. This is the last recovery week before the race-specific block. Absorb 7 weeks of work. Come out fresh for the final push.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Easy + Drills</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 2&ndash;4</span><span class="badge badge-accent">1800m</span></div></div><p class="day-structure">200m easy warm-up &rarr; 6 &times; 50m drill with 15s rest &rarr; 4 &times; 100m at CSS with 15s rest (keep it controlled) &rarr; 4 &times; 50m easy backstroke &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Easy Spin</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">55 min</span></div></div><p class="day-structure">55 min very easy Z1&ndash;Z2. Include 3 &times; 30-sec efforts at Z3 to keep the legs awake. Full recovery between.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Easy Run + Strides</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 2&ndash;4</span><span class="badge badge-accent">32 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 18 min easy run at T1&ndash;T2 &rarr; 4 &times; 15-sec strides with 45-sec walk &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Easy Swim</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-rest">RPE 1&ndash;2</span><span class="badge badge-accent">1000m</span></div></div><p class="day-structure">1000m easy swim. Mix of strokes. Relaxed. Focus on feeling the water and breathing rhythm.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Bike &mdash; Easy Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">70 min</span></div></div><p class="day-structure">70 min easy Z2. Flat route. Practise nutrition but keep effort light. Finish feeling fresh.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">35 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 25 min easy run &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Restraint</h4><p>Same as Week 4: the key is restraint. You should finish every session feeling like you could have done much more. That&rsquo;s how you arrive at Week 9 ready to race.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Last recovery week before race-specific training. Sleep, eat, stretch. If anything is sore, address it now &mdash; physio, massage, rest. You need to be 100% for the next 4 weeks.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Am I fresh? Am I healthy? Is anything niggling? Four weeks to race day &mdash; everything from here is about arriving at the start line ready to execute.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 9 -->
+<section id="week-9" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 9 &mdash; Race Specific</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="9">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 9 of 12</span>
+    </div>
+    <p class="week-overview">Race-specific block. Sessions now simulate race demands. The swim includes race-pace 1500m. The brick is a full race rehearsal with race-day nutrition and T2 practice. The run includes race-pace segments. Everything is intentional.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Race Simulation</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">2800m</span></div></div><p class="day-structure">300m easy warm-up with sighting drill &rarr; 1500m continuous at CSS pace (sight every 8&ndash;10 strokes) &rarr; 200m easy &rarr; 6 &times; 50m at VO2max with 20s rest &rarr; 200m cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>1500m at CSS pace plus VO2max finishers. The VO2max 50s at the end simulate the surge you&rsquo;ll need to exit the swim strong and run into T1 with energy. Don&rsquo;t skip them.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Race-Pace Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">85 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 40 min at Z3&ndash;Z4 (race pace) &rarr; 15 min Z2 recovery &rarr; 10 min at Z4 (threshold finish) &rarr; 5 min easy cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>40 minutes at race pace is the bread and butter of this session. Your race bike leg is about 65&ndash;80 minutes depending on course and fitness. Holding Z3&ndash;Z4 for 40 minutes proves you can sustain race effort.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Race-Pace Intervals</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">48 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 4 &times; 5 min at T3&ndash;T4 (race pace to slightly faster) with 2 min T2 recovery &rarr; 5 min easy T2 &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Open Water Swim</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">30&ndash;40 min</span></div></div><p class="day-structure">Open water. 5 min easy &rarr; 20 min continuous at race effort (CSS pace) &rarr; Practise race start (treading water, whistle, 30-stroke surge, settle) &times; 3 &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Race Rehearsal</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">100 min + 30 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">100 min ride: 20 min Z2 warm-up, 60 min at Z3 (race pace), 20 min Z2 cool-down. Eat a gel at 30 min and 70 min. Drink every 15 min &rarr; Full T2 rehearsal &rarr; 30 min run: 10 min T2, 15 min T3 (race pace), 5 min T2 cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>This is a full race rehearsal. Use your race-day gear: tri suit, race shoes, race nutrition. Lay out T2 in advance. Execute the transition as you would on race day. The more familiar this feels, the calmer you&rsquo;ll be on race morning.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Long Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 40 min easy run at T2 &rarr; 5 min walk cool-down. Easy. If legs are heavy from Saturday, shorten to 30 min.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Race Rehearsal Brick</h4><p>100 min bike with 60 min at race pace + 30 min run with 15 min at race pace. Use race gear, race nutrition, race transition. If you can do this, you can race on race day.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Big week. Recover aggressively: 8&ndash;9 hours sleep, eat well, hydrate. Gentle stretching or yoga on Sunday evening. You&rsquo;ve earned it.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;I just rehearsed race day. What went well? What needs adjustment? Did my nutrition plan work? Did T2 feel smooth? Fix anything that didn&rsquo;t work before next week.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 10 -->
+<section id="week-10" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 10 &mdash; Rehearsal</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="10">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span>
+      <span class="week-indicator">Week 10 of 12</span>
+    </div>
+    <p class="week-overview">Final hard week. One more brick session. Open water continues. Volume similar to Week 9 but quality is king. This is your last chance to refine gear, nutrition, and transitions. After this week, you taper.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Threshold + Speed</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">2600m</span></div></div><p class="day-structure">300m easy warm-up with sighting &rarr; 8 &times; 100m at CSS with 10s rest &rarr; 4 &times; 50m at VO2max with 20s rest &rarr; 4 &times; 100m Aerobic with 15s rest &rarr; 200m cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Threshold Ride</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;7</span><span class="badge badge-accent">80 min</span></div></div><p class="day-structure">15 min easy Z2 warm-up &rarr; 2 &times; 12 min at Z4 with 4 min Z2 recovery &rarr; remaining time Z2 &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Race-Pace Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">45 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 10 min easy T2 &rarr; 20 min at T3 (race pace) &rarr; 5 min easy T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Open Water Swim + T1 Practice</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">25&ndash;35 min</span></div></div><p class="day-structure">Open water. 15&ndash;20 min continuous at race effort &rarr; Practise T1 exit: run out of the water, strip wetsuit (if using), jog to transition spot. Repeat the exit sequence 2&ndash;3 times.</p><div class="coach-note"><strong>Coach's Note</strong>Wetsuit tip: body glide on ankles and wrists before the swim makes stripping the suit much faster. Practise the full sequence: unzip at the waist as you jog, pull arms out, push to ankles, step out.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Bike + Run</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">90 min + 25 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">90 min ride: 15 min Z2, 50 min Z3 (race pace), 15 min Z2, 10 min Z4 (threshold finish) &rarr; T2 &rarr; 25 min run: 10 min T2, 10 min T3, 5 min T2 cool-down. Race nutrition throughout.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">40 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 30 min easy run at T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Brick + Friday T1 Practice</h4><p>The last heavy training weekend. After this, volume drops. Everything from here is about arriving at the start line fresh, confident, and prepared.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Next week is the taper. Recover well this weekend. Extra sleep, good food, gentle stretching. Your fitness is built &mdash; now we protect it.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Have I rehearsed T1 and T2? Do I know my gear sequence? Is my nutrition plan tested and reliable? Fix anything outstanding this weekend.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 11 -->
+<section id="week-11" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 11 &mdash; Taper</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="11">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span>
+      <span class="week-indicator">Week 11 of 12</span>
+    </div>
+    <p class="week-overview">Taper week. Volume drops 35&ndash;40%. Intensity stays &mdash; short, sharp efforts to keep the engine sharp. You keep each discipline in the schedule but shorter. Feeling antsy, sluggish, or emotional is normal. It&rsquo;s the taper, not a loss of fitness.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Short + Sharp</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;6</span><span class="badge badge-accent">1800m</span></div></div><p class="day-structure">200m easy warm-up &rarr; 4 &times; 50m drill with 10s rest &rarr; 6 &times; 100m at CSS with 12s rest &rarr; 4 &times; 50m easy &rarr; 200m cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Shorter session, same intensity. The CSS reps keep your swim speed sharp. Don&rsquo;t add volume &mdash; resist the urge to &ldquo;do more&rdquo; this week.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike &mdash; Easy Spin + Openers</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">50 min</span></div></div><p class="day-structure">40 min easy Z2 &rarr; 3 &times; 1 min at Z4 (threshold) with 2 min Z2 recovery &rarr; 5 min easy cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Run &mdash; Easy Run + Strides</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">30 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 16 min easy run at T2 &rarr; 4 &times; 15-sec strides with 45-sec walk &rarr; 3 min walk cool-down.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Easy Swim</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-rest">RPE 1&ndash;2</span><span class="badge badge-accent">1000m</span></div></div><p class="day-structure">1000m easy. Mix of strokes. Practise a few sighting reps. Relaxed. Last pool session before race week.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Brick &mdash; Short Sharpener</span><div class="day-badges"><span class="badge badge-brick">BRICK</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">45 min + 10 min</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">45 min easy Z2 ride with 3 &times; 2 min at Z3 &rarr; Quick T2 &rarr; 10 min easy jog with 2 &times; 30-sec race-pace pickups. Short and sweet &mdash; finish feeling light and fast.</p><div class="coach-note"><strong>Coach's Note</strong>Last brick session. Deliberately short. The purpose is to keep the bike-to-run transition feeling familiar and your legs feeling springy.</div></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Run &mdash; Easy Run</span><div class="day-badges"><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">30 min</span></div></div><p class="day-structure">5 min walk warm-up &rarr; 20 min easy run at T2 &rarr; 5 min walk cool-down.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday Taper Brick</h4><p>Short sharpener. You should feel light and fast after this. That&rsquo;s the taper working. If you feel sluggish, that&rsquo;s also the taper &mdash; your body is supercompensating. Trust it.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep 8&ndash;9 hours every night this week. Eat well &mdash; don&rsquo;t cut calories. Hydrate. Make a checklist of everything you need for race day: tri suit, wetsuit, goggles (plus spare), bike, helmet, shoes, nutrition, race number, timing chip.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;Do I feel ready? If nerves are showing up, that&rsquo;s normal &mdash; it means I care about the goal. I&rsquo;ve done the work. Next week, I execute.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- WEEK 12 -->
+<section id="week-12" style="margin-bottom:16px">
+<details class="week-accordion">
+  <summary><span>Week 12 &mdash; Race Week</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content" data-week="12">
+    <div class="progress-dots">
+      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span>
+      <span class="week-indicator">Week 12 of 12</span>
+    </div>
+    <p class="week-overview">Race week. Short activation sessions to keep the body ticking over. The training is done &mdash; this week is about execution. You cannot gain fitness this week, but you can lose it by doing too much. Prepare your gear, visualise your race plan, and trust 12 weeks of preparation.</p>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Swim &mdash; Activation</span><div class="day-badges"><span class="badge badge-swim">SWIM</span><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">1200m</span></div></div><p class="day-structure">200m easy warm-up &rarr; 4 &times; 100m at CSS with 15s rest &rarr; 4 &times; 50m easy with sighting drill &rarr; 200m easy cool-down. Short, sharp, done.</p></div>
+    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Bike + Run &mdash; Activation</span><div class="day-badges"><span class="badge badge-bike">BIKE</span><span class="badge badge-run">RUN</span><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">30 min + 10 min</span></div></div><p class="day-structure">30 min very easy Z2 spin with 3 &times; 30-sec at Z3 &rarr; 10 min easy jog with 4 &times; 15-sec strides. Last bike-run combo. Everything should feel sharp and light.</p></div>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Easy Walk or Rest</span><div class="day-badges"><span class="badge badge-rest">RPE 1</span><span class="badge badge-rest">15 min</span></div></div><p class="day-structure">Gentle walk if desired. Visualise your race: the swim start, your pacing strategy, T1, the bike course, T2, the run, crossing the finish. Run through your pacing plan in your head.</p></div>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest &mdash; Race Prep</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest. Prepare all gear tonight. Lay out swim kit (wetsuit, goggles, cap), bike kit (helmet, shoes, nutrition on the bike), and run kit (shoes, hat, race belt) in transition order. Check tyre pressure. Charge your watch. Reduce morning friction to zero.</p></div>
+    <div class="day-card" style="border-color:var(--accent)"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">OLYMPIC TRIATHLON &mdash; RACE DAY</span><div class="day-badges"><span class="badge badge-red">RPE 5&ndash;8</span><span class="badge badge-red">RACE</span></div></div><p class="day-structure">See Race Day Protocol below for full details.</p><div class="coach-note"><strong>Coach's Note</strong>This is it. 1.5 km swim, 40 km bike, 10 km run. You&rsquo;ve trained for this. Execute your pacing plan: swim at CSS, bike at Z3&ndash;Z4, run at T3. Negative split the bike and the run. Start conservative, finish strong. Race smart.</div></div>
+    <div class="day-card rest"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Recovery</span><div class="day-badges"><span class="badge badge-green">RPE 1</span><span class="badge badge-green">REST</span></div></div><p class="day-structure">You did it &mdash; and you raced it, not just finished it. Walk, stretch, eat well, hydrate. Recovery takes 5&ndash;7 days before returning to structured training. Enjoy the result.</p></div>
+    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday: Your Olympic Triathlon</h4><p>Everything in this plan built to this day. Swim at CSS. Bike at Z3&ndash;Z4. Run at T3. Negative split. Race your plan, not the person next to you.</p></div>
+    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Post-race: walk for 10 minutes to cool down. Eat carbs + protein within 60 minutes. Rehydrate with electrolytes. Sleep well. Allow 5&ndash;7 days of easy movement before structured training.</p></div>
+    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>&ldquo;How did my race go versus my plan? Did I execute my pacing strategy? What would I change? That analysis is the foundation for my next race.&rdquo;</p></div>
+  </div>
+</details>
+</section>
+
+<!-- What's Next? -->
+<section style="margin-top:48px;margin-bottom:48px">
+  <div class="section-label">What&rsquo;s Next?</div>
+  <p style="color:var(--text-sec);font-weight:300;line-height:1.7;font-size:14px;margin-bottom:24px">You just raced an Olympic triathlon &mdash; not just finished it. That&rsquo;s a different athlete. Here&rsquo;s where Metric Athletes go from here.</p>
+  <div class="whats-next-grid">
+    <div class="next-card">
+      <h4>Olympic Tri Elite</h4>
+      <p>You can race it. Now sharpen the blade &mdash; VO2max work, threshold blocks, and advanced periodisation for a competitive result.</p>
+      <a href="https://planmetric.com.au/plans">View Plan &rarr;</a>
+    </div>
+    <div class="next-card">
+      <h4>70.3 Beginner Plan</h4>
+      <p>Double the distance. Your Olympic fitness is the perfect foundation. 16 weeks to 1.9 km / 90 km / 21.1 km.</p>
+      <a href="https://planmetric.com.au/plans">View Plan &rarr;</a>
+    </div>
+    <div class="next-card">
+      <h4>Premium Plan</h4>
+      <p>Get a plan built from your data &mdash; personalised swim, bike, and run zones, coach-reviewed, delivered in 48 hours.</p>
+      <a href="https://planmetric.com.au/assessment">Start Assessment &rarr;</a>
+    </div>
+  </div>
+  <div class="upgrade-prompt">
+    <div class="prompt-brand">Plan Metric</div>
+    <p>Ready for a plan built around your schedule, your fitness level, and your next race? Premium plans start with an 8-minute intake assessment and are delivered within 48 hours &mdash; reviewed by a real coach, with personalised swim CSS zones, FTP-based bike power, and race-specific run pacing.</p>
+    <a href="https://planmetric.com.au/assessment" class="prompt-link">Start Your Assessment &rarr;</a>
+  </div>
+</section>
+
+<!-- Important Notes & Tips -->
+<section style="margin-bottom:48px">
+<details class="week-accordion">
+  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Important Notes &amp; Tips</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content">
+  <div class="tips-grid">
+    <div class="tip-card"><h4>Polarised Training Works</h4><p>80% easy, 20% hard. The most common mistake intermediate athletes make is turning easy sessions into moderate sessions. This blunts the quality of your hard sessions and leads to plateau. Easy means easy. Hard means hard. Nothing in between.</p></div>
+    <div class="tip-card"><h4>The Long Ride Is King</h4><p>The Saturday long ride or brick is the anchor of this plan. If you can only do one session in a week, do the long ride. It builds the aerobic engine that carries you through all three legs on race day.</p></div>
+    <div class="tip-card"><h4>Race Your Plan, Not the Pack</h4><p>Have a pacing strategy for each discipline: swim at CSS, bike at Z3&ndash;Z4, run at T3. Write it down. Tape it to your top tube. The athletes who execute a plan outperform those who race by feel.</p></div>
+    <div class="tip-card"><h4>Nutrition Is a Discipline</h4><p>Practise your race-day nutrition on every long ride and brick. Aim for 40&ndash;60g carbs per hour on the bike. Test your gels, bars, and hydration in training &mdash; never try something new on race day.</p></div>
+    <div class="tip-card"><h4>Transitions Are Free Speed</h4><p>A smooth T1 and T2 can save 2&ndash;5 minutes versus a flustered one. Practise the sequence: lay out gear in order, rehearse the movements, know exactly what goes on in what order.</p></div>
+    <div class="tip-card"><h4>CSS Is Your Swim Compass</h4><p>Critical Swim Speed is the fastest pace you can sustain for about 20 minutes. It&rsquo;s your threshold in the water. All swim intervals in this plan are calibrated relative to CSS. Retest every 4 weeks.</p></div>
+    <div class="tip-card"><h4>Open Water Confidence</h4><p>Get at least 4&ndash;5 open water sessions before race day. Practise sighting, race starts, and T1 exits. Swim with a buddy. The pool builds fitness; open water builds race readiness.</p></div>
+    <div class="tip-card"><h4>Brick Sessions Build Race Legs</h4><p>The jelly-leg feeling fades with practice. Every brick session teaches your body and mind what to expect on race day. The T2 transition should feel automatic by Week 10.</p></div>
+    <div class="tip-card"><h4>Sleep Is Your Best Recovery Tool</h4><p>7&ndash;9 hours per night. A bad night of sleep affects your next session more than a missed session does. Prioritise sleep over an extra training session every time.</p></div>
+    <div class="tip-card"><h4>Negative Split Everything</h4><p>Start the swim conservative, build through the bike, finish the run strong. The athlete who negative splits outperforms the athlete who goes out hard and fades. Always have something left.</p></div>
+  </div>
+  </div>
+</details>
+</section>
+
+<!-- Glossary -->
+<section style="margin-bottom:48px">
+<details class="week-accordion">
+  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Glossary</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
+  <div class="week-content">
+  <dl class="glossary-grid">
+    <div class="glossary-item"><dt>RPE</dt><dd>Rate of Perceived Exertion &mdash; a 1&ndash;10 scale of how hard a session feels. The primary intensity measure in this plan.</dd></div>
+    <div class="glossary-item"><dt>Brick Session</dt><dd>A workout combining two disciplines back-to-back, typically bike then run. Trains the body to perform the second discipline on fatigued legs &mdash; simulating race conditions.</dd></div>
+    <div class="glossary-item"><dt>T1 (Transition 1)</dt><dd>The transition from swim to bike. Includes exiting the water, removing wetsuit, putting on helmet and bike shoes, and mounting the bike.</dd></div>
+    <div class="glossary-item"><dt>T2 (Transition 2)</dt><dd>The transition from bike to run. Includes dismounting, racking the bike, removing helmet, changing to run shoes, and heading out on the run course.</dd></div>
+    <div class="glossary-item"><dt>CSS (Critical Swim Speed)</dt><dd>Your sustainable threshold pace in the pool &mdash; the fastest pace you can hold for about 20 minutes. Equivalent to lactate threshold for swimming.</dd></div>
+    <div class="glossary-item"><dt>Cadence</dt><dd>Pedal revolutions per minute (RPM) on the bike. For endurance cycling, aim for 80&ndash;95 RPM.</dd></div>
+    <div class="glossary-item"><dt>Sighting</dt><dd>Lifting your head briefly while swimming to navigate in open water. Look forward every 8&ndash;10 strokes to stay on course.</dd></div>
+    <div class="glossary-item"><dt>Threshold (Z4 / T3&ndash;T4)</dt><dd>The intensity you can sustain for 20&ndash;40 minutes. Hard but controlled. The effort you race at for Olympic distance bike and run.</dd></div>
+    <div class="glossary-item"><dt>Tempo (Z3 / T3)</dt><dd>Comfortably hard. Sustainable for 40&ndash;60 minutes. Short sentences only. The middle ground between easy and threshold.</dd></div>
+    <div class="glossary-item"><dt>Negative Split</dt><dd>Completing the second half of a distance faster than the first half. The ideal pacing strategy for all three legs of a triathlon.</dd></div>
+    <div class="glossary-item"><dt>Strides</dt><dd>Short accelerations (15&ndash;20 seconds) at a faster pace during a run. Develops running form and neuromuscular coordination. Not sprints.</dd></div>
+    <div class="glossary-item"><dt>Polarised Training</dt><dd>An intensity distribution where ~80% of training is easy (Z1&ndash;Z2) and ~20% is hard (Z4+). Minimal time in the moderate &ldquo;grey zone&rdquo; (Z3). Produces the best endurance adaptations.</dd></div>
+    <div class="glossary-item"><dt>Progressive Overload</dt><dd>Gradually increasing training stress (duration, intensity) week over week. How fitness is built safely. Max ~10% increase per week.</dd></div>
+    <div class="glossary-item"><dt>Active Recovery</dt><dd>Very light movement (walking, easy swimming, easy spinning) to promote blood flow without adding training stress.</dd></div>
+    <div class="glossary-item"><dt>Aero Position</dt><dd>A low, aerodynamic position on the bike. Reduces wind resistance. Practise in training &mdash; don&rsquo;t try it for the first time on race day.</dd></div>
+    <div class="glossary-item"><dt>VO2max Intervals</dt><dd>Short, hard efforts (3&ndash;8 minutes) at RPE 7&ndash;8 that develop maximum aerobic capacity. Used sparingly in this plan for top-end speed development.</dd></div>
+  </dl>
+  </div>
+</details>
+</section>
+
+<!-- Race Day Protocol -->
+<section style="margin-bottom:48px">
+  <div class="section-label">Race Day Protocol</div>
+  <div class="card">
+    <h3 style="font-size:18px;margin-bottom:16px">Your Olympic Triathlon Race Plan</h3>
+    <div style="display:grid;gap:16px">
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Night Before</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Eat a normal meal with carbohydrates. Don&rsquo;t experiment. Hydrate well. Prepare all gear in transition order. Check tyre pressure. Pin race number to race belt. Set two alarms. Get to bed early &mdash; you may not sleep well, and that&rsquo;s fine. One bad night doesn&rsquo;t affect performance.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Race Morning (3 hrs before start)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Pre-race meal: 1&ndash;2g carbs per kg body weight. Familiar foods only &mdash; toast with jam, banana, porridge. Sip water, don&rsquo;t overdrink. Take a gel 15 min before swim start.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Arrival (60&ndash;90 min early)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Set up transition: bike racked, helmet on bars (open and ready), shoes positioned, run gear laid out. Walk the transition area &mdash; know your entry/exit for T1 and T2. Use the toilets. Wetsuit on 15&ndash;20 min before start.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Warm-Up (10&ndash;15 min before)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Swim 200&ndash;400m easy if warm-up area is open. Get your face in the water, settle your breathing, find your rhythm. If no swim warm-up, do arm swings and light jogging.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--swim);margin-bottom:4px">Swim &mdash; 1.5 km</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6"><strong style="color:var(--text)">Start at CSS pace.</strong> Don&rsquo;t sprint the first 200m. Find clear water, settle into rhythm by 200m. Sight every 8&ndash;10 strokes. Draft off a slightly faster swimmer if possible &mdash; legal and efficient. Build effort in the last 300m to exit strong.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--swim);margin-bottom:4px">T1 &mdash; Swim to Bike</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Run out of the water. Unzip wetsuit at waist while jogging. At your spot: pull suit to ankles, step out. Helmet on (buckle it!), sunglasses, bike shoes. Grab bike, run to mount line, mount and go. You&rsquo;ve rehearsed this &mdash; trust the sequence.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--bike);margin-bottom:4px">Bike &mdash; 40 km</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6"><strong style="color:var(--text)">Ride at Z3&ndash;Z4.</strong> Start conservative (Z3 for first 10 km), build to Z3&ndash;Z4. Eat within the first 15 min: 40&ndash;60g carbs/hr. Drink every 15 min. Hold steady on climbs &mdash; don&rsquo;t surge. Maintain legal drafting distance. Save your legs for the run &mdash; the race is won in the last 5 km.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--bike);margin-bottom:4px">T2 &mdash; Bike to Run</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Dismount before the line. Rack bike, remove helmet, run shoes on, race belt, go. Smooth and automatic &mdash; you&rsquo;ve done this dozens of times in training.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--run);margin-bottom:4px">Run &mdash; 10 km</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6"><strong style="color:var(--text)">First 2 km: settle.</strong> Start at T2&ndash;T3, let the jelly legs pass. By KM 3, settle into T3 race pace. Take water or sports drink at every aid station. KM 7&ndash;8: if you feel good, build. Last KM: give everything you have. Negative split the run &mdash; that&rsquo;s how you race smart.</p></div>
+      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:4px">Post-Race</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Walk 10 min. Rehydrate with electrolytes. Eat carbs + protein within 60 min. 5&ndash;7 days easy before structured training. Review your race plan vs. execution &mdash; that analysis fuels your next block.</p></div>
+    </div>
+  </div>
+  <div class="upgrade-prompt">
+    <div class="prompt-brand">Plan Metric</div>
+    <p>Your Starter plan includes a general race execution overview. Premium plans include a detailed race strategy with personalised pacing per discipline, nutrition protocol with exact gram targets, transition setup guides, and warm-up sequences calibrated to your goal time.</p>
+    <a href="https://planmetric.com.au/plans" class="prompt-link">View Plans &rarr;</a>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<!-- Footer -->
+<div class="plan-footer">
+  <div class="logo">Plan Metric</div>
+  <div class="links"><a href="https://planmetric.com.au/terms">Terms</a> / <a href="https://planmetric.com.au/privacy">Privacy</a> / <a href="https://instagram.com/planmetric">Instagram</a></div>
+  <div class="copy">&copy; 2026 Plan Metric. Precision Endurance.</div>
+</div>
+
+<script>
+// Accordion — click overview grid cell to open week
+document.querySelectorAll('.overview-cell').forEach(cell => {
+  cell.addEventListener('click', () => {
+    const week = cell.dataset.week;
+    const target = document.getElementById('week-' + week);
+    if (!target) return;
+    const details = target.querySelector('details');
+    if (details && !details.open) details.open = true;
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  cell.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      cell.click();
+    }
+  });
+});
+
+// Print: force all details open
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+});
+</script>
+</body>
+</html>

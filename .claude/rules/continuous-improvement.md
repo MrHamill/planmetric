@@ -35,6 +35,7 @@ This codebase evolves over time. Rules in `.claude/rules/` must stay in sync wit
 | `payments.md` | `app/api/checkout/**`, `app/intake/**` | Stripe plans, checkout flow, verify, success page |
 | `database.md` | `app/api/**` | Supabase schema, insert/update/select patterns |
 | `typescript.md` | `**/*.ts`, `**/*.tsx` | Naming conventions, form typing, props patterns |
+| `research.md` | `docs/research/**` | Research content processing, formatting, and file routing |
 | `continuous-improvement.md` | (global) | This file — meta-rules for maintaining rules |
 
 ## Signs a Rule Is Stale
