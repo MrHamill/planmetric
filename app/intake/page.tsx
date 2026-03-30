@@ -397,7 +397,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             <div>
               <label className={lbl} style={lblStyle}>Individual split times from that race *</label>
               <p className={hint} style={{ ...hintStyle, marginBottom: "8px", marginTop: 0 }}>Use mm:ss or h:mm:ss format. Leave blank if unknown.</p>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 <F label="Swim"><TextInput value={form.splitSwim} onChange={v => upd("splitSwim", v)} placeholder="31:00" /></F>
                 <F label="T1"><TextInput value={form.splitT1} onChange={v => upd("splitT1", v)} placeholder="3:00" /></F>
                 <F label="Bike"><TextInput value={form.splitBike} onChange={v => upd("splitBike", v)} placeholder="1:13:00" /></F>
@@ -575,7 +575,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <F label="Preferred long session day *">
-                <SelectInput value={form.preferredLongDay} onChange={v => upd("preferredLongDay", v)} options={["Saturday", "Sunday", "Either"]} />
+                <SelectInput value={form.preferredLongDay} onChange={v => upd("preferredLongDay", v)} options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Flexible"]} />
               </F>
               <F label="Preferred rest day *">
                 <SelectInput value={form.preferredRestDay} onChange={v => upd("preferredRestDay", v)}

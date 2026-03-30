@@ -327,8 +327,9 @@ export default function PricingPage() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" as const }}
               >
-                <div className="mt-8 overflow-x-auto rounded-sm" style={{ border: `1px solid ${CARD_BORDER}` }}>
-                  <table className="w-full text-left border-collapse" style={{ minWidth: 720 }}>
+                <p className="text-right mb-2 text-xs font-label sm:hidden" style={{ color: DIM }}>Scroll to compare →</p>
+                <div className="mt-0 sm:mt-8 overflow-x-auto rounded-sm" style={{ border: `1px solid ${CARD_BORDER}` }}>
+                  <table className="w-full text-left border-collapse" style={{ minWidth: 560 }}>
                     <thead>
                       <tr style={{ background: "rgba(245,245,240,0.04)" }}>
                         <th className="p-4 md:py-5 md:px-6 font-label text-[10px] uppercase tracking-[0.25em]" style={{ color: DIM, borderBottom: `1px solid ${CARD_BORDER}` }}>
