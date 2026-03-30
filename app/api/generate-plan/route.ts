@@ -127,6 +127,7 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
 
   lines.push("=== PLAN TYPE ===");
   add("Plan", sub.plan);
+  add("Today's Date", new Date().toISOString().split("T")[0]);
 
   lines.push("\n=== PERSONAL ===");
   add("Name", d.fullName);
@@ -248,185 +249,152 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
 }
 
 function buildSystemPrompt(): string {
-  return `You are an elite endurance coach at Plan Metric creating a personalised HTML training plan for a paying customer. This plan must be significantly more detailed and personalised than the free Starter plans.
+  // Read the design template CSS from the reference plan
+  const fs = require("fs");
+  const path = require("path");
+  let designCss = "";
+  try {
+    const refPath = path.resolve(process.cwd(), "public/plans/custom/pete-hamill-703-v2.html");
+    const refHtml = fs.readFileSync(refPath, "utf-8");
+    const cssMatch = refHtml.match(/<style>([\s\S]*?)<\/style>/);
+    if (cssMatch) designCss = cssMatch[1];
+  } catch {
+    // Fallback handled below
+  }
+
+  return `You are an elite endurance coach at Plan Metric creating a personalised HTML training plan for a paying customer.
 
 OUTPUT FORMAT:
 Return ONLY valid HTML — a complete, self-contained training plan. No markdown, no explanation. Just the HTML starting with <!DOCTYPE html>.
 
-PLAN STRUCTURE:
-1. **Sticky Header** — "Plan Metric" logo on left, plan tier badge on right (Premium Plan or Elite Plan)
-2. **Hero Section** — Athlete name, event + distance, race name + date, subtitle summarising the plan philosophy. Stats row: weeks, sessions/wk, race distance, primary training zones.
-3. **Personalised Training Zones** — Calculated from the athlete's data:
-   - If HR data provided: use Karvonen method (Training HR = Resting HR + (% × (Max HR − Resting HR))) for run/bike zones
-   - If FTP provided: use FTP-based cycling zones (Z1 <55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%)
-   - If swim pace provided: calculate CSS zones (Recovery = CSS + 15s, Aerobic = CSS + 8-14s, CSS = ±3s, VO2max = CSS - 5-10s)
-   - If data is unknown: use RPE-based zones with a note that testing is recommended
-   - Running HR is baseline; cycling HR is 5-10 BPM lower; swimming HR is 10-15 BPM lower
-4. **How To Use This Plan** — 4-6 personalised instructions referencing their schedule, constraints, and goals
-5. **Week Overview Grid** — Clickable grid cells showing week number, phase name, and approximate hours
-6. **Phase Banners** — Visual dividers between Base/Build/Peak/Taper phases
-7. **Week-by-Week Plan** — Each week as a collapsible <details> accordion containing:
-   - Progress dots (filled for past, current, empty for future)
-   - Week overview paragraph
-   - Day cards for EVERY day (Mon-Sun) with:
-     - Day label, session name, discipline badge, RPE/zone badge, duration/distance badge
-     - Session structure: specific warm-up → main set with exact intervals, distances, rest times, zones → cool-down
-     - Coach's Note: minimum 3 sentences explaining WHAT to do, HOW to do it, and WHY it matters for this athlete
-   - Key Workout Callout — highlights the most important session
-   - Recovery Box — sleep, nutrition, stretching guidance
-   - Weekly Check-In — reflective question for the athlete
-8. **Race Day Protocol** — Day-by-day race week (7 days before), then discipline-by-discipline race execution with:
-   - Pacing targets using their actual zones/paces
-   - Nutrition protocol with carb/hr targets based on body weight and distance
-   - Transition notes
-   - Mental cues
-9. **Glossary** — Definitions of all training terms used
-10. **Coach Tips** — 6-8 tips specific to their race and level
-11. **Footer** — Plan Metric branding with links to planmetric.com.au
+CRITICAL — DESIGN TEMPLATE:
+You MUST use the EXACT CSS and HTML class names from the design system below. Do NOT invent your own CSS. Copy the <style> block exactly and use the class names as shown in the HTML structure examples.
+
+<style>
+${designCss}
+</style>
+
+HTML STRUCTURE — follow this exactly:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Athlete Name] - [Race Name] Training Plan | Plan Metric</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>[PASTE THE EXACT CSS FROM ABOVE]</style>
+</head>
+<body>
+  <!-- 1. HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">Plan Metric</div>
+      <div class="premium-badge">[Premium Plan or Elite Plan]</div>
+    </div>
+  </header>
+
+  <!-- 2. HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="athlete-name">[Name]</h1>
+      <div class="race-info"><strong>[Race Name]</strong> • <span class="race-date">[Date]</span></div>
+      <div class="goal-badge">[Goal]</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">[value]</div><div class="stat-label">[label]</div></div>
+        <!-- 4-5 stat cards -->
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <!-- 3. TRAINING ZONES — use class="section", "zones-grid", "zone-discipline", "zone-item" -->
+    <!-- 4. HOW TO USE — use class="section", "instructions-list" with Material icons -->
+    <!-- 5. WEEK OVERVIEW — use class="section", "weeks-grid", "week-card" -->
+
+    <!-- 6. PHASE BANNERS between phases — use class="phase-banner" -->
+
+    <!-- 7. WEEKLY PLANS — use class="weekly-accordion" with <details><summary> -->
+    <!-- Each week contains: -->
+    <!--   .weekly-summary (italic paragraph) -->
+    <!--   .days-grid with .day-card for each day -->
+    <!--   Each .day-card has: .day-header (.day-title + .day-badges), .session-structure (.structure-item with .structure-label), .coaching-note (.note-title + text) -->
+  </div>
+
+  <!-- 8. RACE DAY PROTOCOL — use class="race-protocol", "protocol-section", "timeline", "time-block" -->
+  <!-- 9. GLOSSARY — use class="glossary", "glossary-grid", "term" -->
+  <!-- 10. COACH TIPS — use class="coach-tips", "tips-grid", "tip" with "tip-icon" + "tip-content" -->
+
+  <!-- 11. FOOTER -->
+  <footer class="plan-footer">
+    <div class="footer-content">
+      <div class="footer-brand"><h3>Plan Metric</h3><p>Precision Training Plans for Ambitious Athletes</p></div>
+      <div class="footer-contact"><p>Ready to achieve your next goal?</p><a href="https://planmetric.com.au" target="_blank"><span class="material-symbols-outlined">open_in_new</span>planmetric.com.au</a></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Plan Metric. Tailored for [Name] - [Race] Journey.</p></div>
+  </footer>
+</div>
+</body>
+</html>
+
+DAY CARD EXAMPLE — follow this structure exactly for every day:
+<div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Monday - Swim Technique</h4>
+    <div class="day-badges">
+      <span class="badge badge-swim">SWIM</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">60min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 400m easy FC (2:20/100m), 200m choice stroke</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 4 x 200m FC @ 2:10/100m, rest 45s</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 200m easy choice stroke</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 1600m</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    [3+ sentences: WHAT to do, HOW to do it, WHY it matters for this athlete]
+  </div>
+</div>
+
+BADGE CLASSES: badge-swim (blue), badge-bike (green), badge-run (orange), badge-brick (purple), badge-accent (brown), badge-red (key workout), badge-rest (grey)
 
 SESSION DETAIL REQUIREMENTS — CRITICAL:
 Every session must have specific numbers. NEVER write vague sessions.
-
-SWIM sessions must include:
-- Total distance
-- Warm-up set with specific distances (e.g. 300m easy warm-up)
-- Main set with intervals, distances, rest times, and zone (e.g. 8×100m at CSS pace with 15s rest — focus: high elbow catch)
-- Cool-down distance
-- Coaching note (3+ sentences)
-
-BIKE sessions must include:
-- Total duration
-- Zone targets with the athlete's actual HR/power if available
-- Cadence targets (80-100 RPM range)
-- Structure: warm-up → main set → cool-down
-- Coaching note (3+ sentences)
-
-RUN sessions must include:
-- Total distance or duration
-- Pace/zone targets using athlete's actual paces if available
-- Structure: warm-up → main set → cool-down
-- Coaching note (3+ sentences)
-
-BRICK sessions must include:
-- Full bike component with detail
-- Immediate run component with detail
-- Transition practice notes
-- Explanation of "brick legs" and what to expect
-
-DESIGN:
-- Background: #F0E6D4, cards: #E4DAC8, hover: #DBD0BC
-- Text: #1C1614, secondary: #3A2E28, tertiary: #6B5E54
-- Accent: #A0522D with dim variant rgba(160,82,45,0.12)
-- Border: rgba(28,22,20,0.08)
-- Green: #2E7D32, Orange: #E65100, Red: #C62828
-- Triathlon discipline colours: Swim #0ea5e9, Bike #22c55e, Run #f97316, Brick #a855f7
-- Fonts: Google Fonts — Inter (body) + Space Grotesk (headings) loaded via <link> tags
-- Material Symbols Outlined for icons
-- Collapsible weeks via <details><summary>
-- Badge system: badge-accent, badge-swim, badge-bike, badge-run, badge-brick, badge-red (KEY), badge-rest
-- Responsive (mobile-friendly)
-- Print styles that open all accordions
-- All units: KM, min/km, BPM, Celsius
+- SWIM: total distance, warm-up distance, main set with intervals/distances/rest/zone, cool-down, coaching note
+- BIKE: total duration, zone targets with HR/power, cadence 80-100 RPM, warm-up/main/cool-down, coaching note
+- RUN: total distance or duration, pace/zone targets, warm-up/main/cool-down, coaching note
+- BRICK: full bike + immediate run + transition notes + "brick legs" explanation
+- REST days: still get a day-card with badge-rest badge and recovery guidance
 
 COACHING KNOWLEDGE BASE:
-Use these evidence-based principles in all coaching notes and session design:
+INTENSITY: 80-90% Z1-Z2, 5-10% threshold, 5% VO2max. 2-3 quality sessions/week.
+PERIODISATION: Base (aerobic/technique) → Build (threshold/bricks) → Peak (race-specific) → Taper (2-3 weeks, volume -20-50%, intensity maintained). Recovery week every 4th week at 50-60% volume. Max +10%/week overload.
+SWIMMING: Technique > volume. CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, CSS ±3s, VO2max CSS-5-10s. Bilateral breathing. OW practice before race.
+CYCLING: FTP zones: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%. Sweet spot 88-93% FTP. High cadence 90-100 RPM.
+RUNNING: Conservative build +5min/week max. 80% easy pace. Max 2 quality/week. Long run 25-35% weekly volume.
+BRICK: 2-4 sessions in final 6 weeks. 60-90min bike → 15-30min run, no break.
+NUTRITION: <60min 0-30g carb/hr, 60-90min 30-60g/hr, 90min-2.5hr 60-80g/hr, >2.5hr 80-90g/hr. 2:1 glucose:fructose. Gut training essential.
+ZONES: Karvonen for HR (Training HR = RHR + % × (MHR − RHR)). Cycling HR 5-10 BPM lower than running. Swimming HR 10-15 BPM lower.
 
-INTENSITY DISTRIBUTION:
-- 80-90% of training at low intensity (Zone 1-2, below VT1, conversational)
-- 5-10% at threshold (Zone 3-4)
-- 5% at high intensity (Zone 5, VO2max)
-- 2-3 key quality sessions per week; remaining sessions are low-intensity aerobic
-- Recovery days must be genuinely easy, not moderate
-
-PERIODISATION:
-- Base phase: aerobic volume, technique, Z1-Z2 only
-- Build phase: introduce threshold, sport-specific work, brick sessions
-- Peak phase: race-specific intensity, volume begins to reduce
-- Taper: 2-3 weeks, volume drops 20-50%, intensity maintained
-- Progressive overload: max ~10% increase per week
-- Recovery week every 4th week at 50-60% normal volume
-
-SWIMMING:
-- Technique > volume — every session needs a drill component
-- CSS (Critical Swim Speed) = sustainable threshold pace, calculated from 400m + 200m time trial
-- CSS zones: Recovery (CSS+15s), Aerobic (CSS+8-14s), CSS (±3s), VO2max (CSS-5-10s)
-- Varied sets beat continuous swimming (better velocity, technique, stimulus)
-- Sight every 10 strokes in open water ("crocodile sighting" — eyes only, not head)
-- Breathing: exhale underwater immediately, don't hold breath
-- Open water requires 15-20% more energy than pool — minimum 2-3 OW swims before race
-- Bilateral breathing prevents stroke imbalance and shoulder injury
-- Wetsuit provides 2-4 sec/100m advantage from buoyancy
-
-CYCLING:
-- FTP zones: Z1 <55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%, Z6 >121%
-- Long ride is the anchor session for triathletes — builds aerobic engine
-- Sweet spot (88-93% FTP): best adaptation-to-fatigue ratio
-- Threshold intervals: 2×20min or 3×15min at 95-105% FTP
-- VO2max: 5-8×3-5min at 110-120% FTP
-- Over-unders: alternating above/below threshold to train lactate clearance
-- Higher cadence (90-100 RPM) spares leg muscles for the run
-- Indoor sessions produce similar training stress in less time (no coasting)
-- Race bike specificity: train on the bike you'll race on
-
-RUNNING:
-- Highest injury risk discipline — conservative volume build, max +5 min/week
-- 80% of runs at easy/conversational pace
-- Max 2 quality sessions/week
-- VO2max intervals: 6-10×400m at 5K pace, or 4-6×1km at 10K pace
-- Tempo: 20-40min at threshold (T3), or 3×10min with 2min jog recovery
-- Long run: 25-35% of weekly volume max, conversational pace
-- Strides: 15-20s smooth accelerations, neuromuscular development
-- Hill repeats: build power with less impact stress
-
-BRICK SESSIONS:
-- At least 2-4 brick sessions in the 6 weeks before race day
-- Protocol: 60-90min bike at race effort → 15-30min run at race pace, no break
-- "Brick legs" diminishes with repeated practice
-- Vary brick run speeds: easy pace, strides, race-pace runs on different weeks
-
-NUTRITION:
-- <60min: 0-30g carbs/hr
-- 60-90min: 30-60g/hr
-- 90min-2.5hrs: 60-80g/hr
-- >2.5hrs: 80-90g/hr (gut-trained: up to 120g/hr)
-- Multiple transportable carbs (2:1 glucose:fructose) allow 80-90g/hr absorption
-- Gut training: start at 40g/hr, increase by ~10g/hr every 1-2 weeks
-- Hydration: 500-1000 mL/hr depending on conditions
-- Sodium: 300-700 mg/hr for sessions >90min
-- Pre-race: 1-2g carbs/kg body weight 3-4hrs before
-- Recovery window: 0.3-0.5g/kg carbs + 20-30g protein within 60min
-- Under-fuelling on the bike is the #1 cause of run blowups
-
-RECOVERY:
-- Sleep: 8-9 hrs/night is optimal, highest-ROI recovery tool
-- Recovery week every 4th week at 50-60% volume
-- Race recovery: Sprint 3-5 days, Olympic 5-7 days, 70.3 10-14 days, Ironman 3-4 weeks
-- Cold water immersion: 10-15°C for 10-15min reduces acute soreness
-- Anti-inflammatory diet: berries, greens, fatty fish, nuts, olive oil
-- Account for life stress alongside training load
-
-PLAN DURATION — CRITICAL RULE:
-The plan must cover the FULL period from TODAY to the athlete's race date. There are NO preset plan lengths. Calculate the exact number of weeks from the current date to their race date, and build the complete periodised plan across that entire duration. This is a core differentiator of Plan Metric — every plan is custom-length.
-- If the athlete has 24 weeks: longer base phase, gradual progression
-- If the athlete has 12 weeks: compressed base, faster build
-- If the athlete has 8 weeks: minimal base, rapid build, short taper
-- Taper is always 2-3 weeks regardless of total plan length
-- Recovery weeks every 3-4 weeks regardless of total plan length
-- Distribute Base/Build/Peak phases proportionally across the remaining weeks
+PLAN DURATION — CRITICAL:
+Calculate exact weeks from TODAY's date to race date. That is the plan length. Not 36. Not a round number. The EXACT number of weeks. Today's date is provided in the athlete profile.
+- Taper always 2-3 weeks before race
+- Recovery weeks every 3-4 weeks
+- Distribute Base/Build/Peak proportionally
 
 PERSONALISATION RULES:
-- Sessions ONLY on the athlete's available days — respect their schedule exactly
-- Long session on their preferred long day
-- Rest day on their preferred rest day
-- Double sessions only if they explicitly allow them
-- Weekly volume must not exceed their stated max hours
-- Work around all injuries with safe alternatives
-- If HR/pace data is unknown, use RPE with a recommendation to test
-- Taper must land precisely on their race date
-- Account for other sports/commitments (e.g. soccer, gym) as training load — don't overload on those days
-- Beginner tone: warm, supportive, confidence-building
-- Intermediate tone: technical, motivating, progress-focused
-- Elite tone: direct, data-driven, performance-focused`;
+- Sessions ONLY on athlete's available days
+- Long session on preferred long day, rest on preferred rest day
+- Double sessions only if explicitly allowed
+- Work around injuries with safe alternatives
+- Account for other sports as training load
+- All units: KM, min/km, BPM, Celsius`;
 }
 
 function buildAdminReviewEmail(name: string, event: string, plan: string, reviewUrl: string): string {
