@@ -14,7 +14,11 @@ export async function GET(req: NextRequest) {
   /* ── Verify Stripe payment ──────────────────────────────── */
   const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-  if (session.payment_status !== "paid" && session.status !== "complete") {
+  const isPaid = session.payment_status === "paid"
+    || session.payment_status === "no_payment_required"
+    || session.status === "complete";
+
+  if (!isPaid) {
     return NextResponse.json({ error: "Payment not completed" }, { status: 402 });
   }
 
