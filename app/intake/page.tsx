@@ -12,8 +12,8 @@ interface FD {
   fullName: string; email: string; age: string; gender: string;
   height: string; weight: string; location: string;
   // S2 — Race & Goal
-  trainingFor: string; raceName: string; raceDate: string;
-  mainGoal: string; targetTime: string;
+  hasRace: string; trainingFor: string; raceName: string; raceDate: string;
+  planWeeks: string; mainGoal: string; targetTime: string;
   completedRaceBefore: string; previousFinishTime: string;
   // S3 — Fitness
   trainingConsistency: string; recentRaceResult: string;
@@ -59,7 +59,7 @@ interface FD {
 
 const INIT: FD = {
   fullName: "", email: "", age: "", gender: "", height: "", weight: "", location: "",
-  trainingFor: "", raceName: "", raceDate: "", mainGoal: "", targetTime: "",
+  hasRace: "", trainingFor: "", raceName: "", raceDate: "", planWeeks: "", mainGoal: "", targetTime: "",
   completedRaceBefore: "", previousFinishTime: "",
   trainingConsistency: "", recentRaceResult: "",
   splitSwim: "", splitT1: "", splitBike: "", splitT2: "", splitRun: "",
@@ -211,7 +211,7 @@ function InfoBox({ title, body }: { title: string; body: string }) {
 /* ─── Section metadata ───────────────────────────────────────── */
 const META: Record<number, { num: string; title: string; sub: string }> = {
   1:  { num: "01", title: "Personal Details",       sub: "The basics — needed for accurate zone calculations and recovery guidance." },
-  2:  { num: "02", title: "Race & Goal",             sub: "Tell us about the event you are building toward." },
+  2:  { num: "02", title: "Race & Goal",             sub: "Tell us about your training goal." },
   3:  { num: "03", title: "Current Fitness",         sub: "Where you are right now determines exactly where we start." },
   4:  { num: "04", title: "Swim",                    sub: "Your current swim capability and available resources." },
   5:  { num: "05", title: "Bike",                    sub: "Your cycling data and access." },
@@ -348,36 +348,66 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
 
       /* ── Section 2: Race & Goal ── */
       case 2: {
+        const isRace     = form.hasRace === "Yes";
+        const isNoRace   = form.hasRace === "No";
         const showTarget = ["Hit a target time", "Podium", "Qualify for championships"].includes(form.mainGoal);
         const showPrev   = form.completedRaceBefore === "Yes";
         return (
           <div className="space-y-6">
-            <F label="What are you training for? *">
-              <SelectInput value={form.trainingFor} onChange={v => upd("trainingFor", v)}
-                options={["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "Ultra Marathon", "10K", "5K", "Cycling Event", "Other"]} />
+            <F label="Are you training for a specific event or race? *">
+              <SelectInput value={form.hasRace} onChange={v => upd("hasRace", v)} options={["Yes", "No"]} />
             </F>
-            <F label="Race name and location" note="Optional — e.g. Noosa Tri, QLD">
-              <TextInput value={form.raceName} onChange={v => upd("raceName", v)} placeholder="e.g. Challenge Roth, Germany" />
-            </F>
-            <F label="Race date *" note="Exact date — used to calculate your plan length">
-              <TextInput value={form.raceDate} onChange={v => upd("raceDate", v)} type="date" />
-            </F>
-            <F label="What is your main goal? *">
-              <SelectInput value={form.mainGoal} onChange={v => upd("mainGoal", v)}
-                options={["Just finish", "Finish strong", "Hit a target time", "Podium", "Qualify for championships"]} />
-            </F>
-            {showTarget && (
-              <F label="Target finish time *" note='e.g. "Sub 5 hours" or "3:30 marathon"'>
-                <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. Sub 5:00" />
+            {(isRace || isNoRace) && (
+              <F label="What are you training for? *">
+                <SelectInput value={form.trainingFor} onChange={v => upd("trainingFor", v)}
+                  options={["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "Ultra Marathon", "10K", "5K", "Cycling Event", "Other"]} />
               </F>
             )}
-            <F label="Have you completed a race at or longer than this distance before? *">
-              <SelectInput value={form.completedRaceBefore} onChange={v => upd("completedRaceBefore", v)} options={["Yes", "No"]} />
-            </F>
-            {showPrev && (
-              <F label="Most recent finish time at that distance" note='e.g. "5:15 for 70.3" or "3:45 marathon"'>
-                <TextInput value={form.previousFinishTime} onChange={v => upd("previousFinishTime", v)} placeholder="e.g. 5:15 for 70.3" />
+            {isRace && (
+              <>
+                <F label="Race name and location" note="Optional — e.g. Noosa Tri, QLD">
+                  <TextInput value={form.raceName} onChange={v => upd("raceName", v)} placeholder="e.g. Challenge Roth, Germany" />
+                </F>
+                <F label="Race date *" note="Exact date — used to calculate your plan length">
+                  <TextInput value={form.raceDate} onChange={v => upd("raceDate", v)} type="date" />
+                </F>
+              </>
+            )}
+            {isNoRace && (
+              <F label="How many weeks would you like your plan to be? *" note="Maximum 24 weeks">
+                <TextInput value={form.planWeeks} onChange={v => {
+                  const n = parseInt(v, 10);
+                  if (v === "" || (n >= 1 && n <= 24)) upd("planWeeks", v);
+                }} type="number" placeholder="e.g. 12" />
               </F>
+            )}
+            {(isRace || isNoRace) && (
+              <>
+                <F label="What is your main goal? *">
+                  <SelectInput value={form.mainGoal} onChange={v => upd("mainGoal", v)}
+                    options={isRace
+                      ? ["Just finish", "Finish strong", "Hit a target time", "Podium", "Qualify for championships"]
+                      : ["General fitness", "Build endurance", "Get faster", "Hit a target time"]
+                    } />
+                </F>
+                {showTarget && (
+                  <F label="Target finish time *" note='e.g. "Sub 5 hours" or "3:30 marathon"'>
+                    <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. Sub 5:00" />
+                  </F>
+                )}
+              </>
+            )}
+            {isRace && (
+              <>
+                <F label="Have you completed a race at or longer than this distance before? *">
+                  <SelectInput value={form.completedRaceBefore} onChange={v => upd("completedRaceBefore", v)} options={["Yes", "No"]} />
+                </F>
+                {showPrev && (
+                  <F label="Most recent finish time at that distance" note='e.g. "5:15 for 70.3" or "3:45 marathon"'>
+                    <TextInput value={form.previousFinishTime} onChange={v => upd("previousFinishTime", v)} placeholder="e.g. 5:15 for 70.3" />
+                  </F>
+                )}
+              </>
             )}
           </div>
         );

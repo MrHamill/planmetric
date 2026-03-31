@@ -138,9 +138,11 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Location", d.location);
 
   lines.push("\n=== RACE & GOAL ===");
+  add("Training For Race", d.hasRace);
   add("Training For", d.trainingFor);
   add("Race Name", d.raceName);
   add("Race Date", d.raceDate);
+  add("Plan Duration", d.planWeeks ? `${d.planWeeks} weeks` : "");
   add("Main Goal", d.mainGoal);
   add("Target Time", d.targetTime);
   add("Completed Before", d.completedRaceBefore);

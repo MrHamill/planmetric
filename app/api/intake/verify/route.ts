@@ -158,9 +158,11 @@ function buildEmail(d: Record<string, unknown>, plan: string): string {
       row("Weight", d.weight ? d.weight + " kg" : ""), row("Location", d.location),
     ].join(""))}
     ${section("Race & Goal", [
-      row("Training For", d.trainingFor), row("Race Name", d.raceName),
-      row("Race Date", d.raceDate), row("Main Goal", d.mainGoal),
-      row("Target Time", d.targetTime), row("Done Distance Before", d.completedRaceBefore),
+      row("Training For Race", d.hasRace), row("Training For", d.trainingFor),
+      row("Race Name", d.raceName), row("Race Date", d.raceDate),
+      row("Plan Duration", d.planWeeks ? d.planWeeks + " weeks" : ""),
+      row("Main Goal", d.mainGoal), row("Target Time", d.targetTime),
+      row("Done Distance Before", d.completedRaceBefore),
       row("Previous Time", d.previousFinishTime),
     ].join(""))}
     ${section("Current Fitness", [

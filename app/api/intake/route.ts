@@ -83,9 +83,11 @@ function buildEmail(d: Record<string, unknown>): string {
     ].join(""))}
 
     ${section("Race & Goal", [
+      row("Training For Race",  d.hasRace as string),
       row("Training For",       d.trainingFor as string),
       row("Race Name",          d.raceName as string),
       row("Race Date",          d.raceDate as string),
+      row("Plan Duration",      d.planWeeks ? d.planWeeks + " weeks" : ""),
       row("Main Goal",          d.mainGoal as string),
       row("Target Time",        d.targetTime as string),
       row("Done Distance Before", d.completedRaceBefore as string),
