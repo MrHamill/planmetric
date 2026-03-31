@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
@@ -51,19 +51,15 @@ export async function POST(req: NextRequest) {
 
   /* ── Email the plan ──────────────────────────────────────── */
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY!);
-
-    await resend.emails.send({
-      from: "Plan Metric <admin@planmetric.com.au>",
+    await sendEmail({
       to: sub.email,
       subject: `Your ${event} ${level} Plan is Ready — Plan Metric`,
       html: wrapEmail(sub.full_name, event, level, planHtml),
     });
 
-    await resend.emails.send({
-      from: "Plan Metric <admin@planmetric.com.au>",
-      to: "admin@planmetric.com.au",
-      subject: `📋 Starter Plan Sent: ${sub.full_name} — ${event} ${level}`,
+    await sendEmail({
+      to: "pete@planmetric.com.au",
+      subject: `Starter Plan Sent: ${sub.full_name} — ${event} ${level}`,
       html: wrapEmail(sub.full_name, event, level, planHtml),
     });
   } catch (e) {

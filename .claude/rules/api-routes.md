@@ -8,7 +8,8 @@ paths:
 ## Route Files
 
 All API routes are under `app/api/`:
-- `app/api/generate-plan/route.ts` — POST: generates personalised HTML plan via Claude API, saves to DB, emails admin review link
+- `app/api/generate-plan/route.ts` — POST: pass 1 of two-pass plan generation. Generates header + zones + first half of weeks, saves to `generated_plan_part1`, fires off `/api/generate-plan/continue`
+- `app/api/generate-plan/continue/route.ts` — POST: pass 2 of plan generation. Generates remaining weeks + race day + footer, stitches with pass 1, injects CSS server-side, validates all weeks present, saves final plan to `generated_plan`, emails admin review link
 - `app/api/approve-plan/route.ts` — POST: sends stored generated plan to athlete + updates status to "plan_sent"
 - `app/api/admin/review/route.ts` — GET: fetches submission+plan for admin review; PATCH: saves edited plan HTML
 - `app/api/checkout/route.ts` — POST: creates Stripe session + saves draft to Supabase
@@ -49,7 +50,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 - `/api/checkout` sets `"pending_payment"` when saving the draft
 - `/api/intake/verify` checks for existing `"paid"` status to prevent double-processing before updating
-- `/api/generate-plan` sets `"plan_generated"` + stores HTML in `generated_plan` column
+- `/api/generate-plan` runs pass 1, stores partial HTML in `generated_plan_part1`, then fires off `/api/generate-plan/continue`
+- `/api/generate-plan/continue` stitches passes, injects CSS, validates weeks, sets `"plan_generated"` + stores final HTML in `generated_plan`
 - `/api/approve-plan` sets `"plan_sent"` after admin approves and plan is emailed to athlete
 
 ## Error Handling Philosophy
@@ -64,7 +66,7 @@ Use dynamic imports for heavy dependencies only where needed to reduce cold-star
 
 ```typescript
 const { createClient } = await import("@supabase/supabase-js");
-const { Resend } = await import("resend");
+const { sendEmail } = await import("@/lib/email");
 ```
 
 Static imports are fine for Stripe (already at module scope).
@@ -75,7 +77,8 @@ Static imports are fine for Stripe (already at module scope).
 |---|---|
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_SERVICE_KEY` | Service role key — server only |
-| `RESEND_API_KEY` | Email delivery |
+| `SMTP_USER` | GoDaddy email address (pete@planmetric.com.au) |
+| `SMTP_PASS` | GoDaddy email password |
 | `STRIPE_SECRET_KEY` | Stripe server SDK |
 | `NEXT_PUBLIC_SITE_URL` | Used in Stripe success/cancel redirect URLs |
 
@@ -83,6 +86,7 @@ Always use non-null assertion (`!`) for env vars — they're expected to be set 
 
 ## Email
 
-- Emails sent via Resend from `"Plan Metric <admin@planmetric.com.au>"` to `"admin@planmetric.com.au"`
+- Emails sent via Nodemailer + GoDaddy SMTP from `"Plan Metric <pete@planmetric.com.au>"` to `"pete@planmetric.com.au"` (admin)
+- Shared `sendEmail()` helper in `lib/email.ts` — all routes import from there
 - HTML emails use the `row()` / `section()` helper pattern — maintain this when adding new email templates
 - Empty/undefined/false/null values are suppressed with the `row()` helper (returns `""`)

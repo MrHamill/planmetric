@@ -17,7 +17,8 @@ paths:
 | `status` | text | `"pending_payment"` → `"paid"` → `"plan_generated"` → `"plan_sent"` |
 | `plan` | text | `"starter"` \| `"premium"` \| `"elite"` |
 | `data` | jsonb | Full form submission as JSON |
-| `generated_plan` | text | Stored HTML from Claude generation (Premium/Elite only) |
+| `generated_plan` | text | Final stitched HTML from two-pass Claude generation (Premium/Elite only) |
+| `generated_plan_part1` | text | Temporary storage for pass 1 HTML during two-pass generation. Cleared after stitching. |
 | `stripe_session_id` | text | Set on payment verification |
 | `created_at` | timestamptz | Auto-set |
 

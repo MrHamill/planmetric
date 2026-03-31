@@ -41,7 +41,7 @@ No test suite is configured.
 - **Framer Motion 12** for animations
 - **Supabase** — database (`intake_submissions` table)
 - **Stripe** — payments (one-time for Starter/Premium, subscription for Elite)
-- **Resend** — transactional email
+- **Nodemailer + GoDaddy SMTP** — transactional email (shared helper in `lib/email.ts`)
 - **Anthropic SDK** — Claude Sonnet for AI plan generation (Premium/Elite)
 
 ### Key User Flow
@@ -53,7 +53,8 @@ No test suite is configured.
 
 Post-payment plan delivery (fire-and-forget from verify):
   Starter:       → /api/deliver-starter-plan (emails static HTML from public/plans/)
-  Premium/Elite: → /api/generate-plan (Claude AI generates personalised plan, emails it)
+  Premium/Elite: → /api/generate-plan (pass 1: first half of weeks)
+                   → /api/generate-plan/continue (pass 2: remaining weeks, stitch, inject CSS, validate, email admin)
 ```
 
 ### API Routes
@@ -61,7 +62,8 @@ Post-payment plan delivery (fire-and-forget from verify):
 - `/api/checkout` — POST: creates Stripe session + saves draft to Supabase
 - `/api/intake` — POST: saves intake form to Supabase + sends admin email
 - `/api/intake/verify` — GET: verifies Stripe payment, marks submission "paid", triggers plan delivery
-- `/api/generate-plan` — POST: builds athlete profile from form data, calls Claude API with a 400-line coaching system prompt, emails HTML plan to athlete + admin
+- `/api/generate-plan` — POST: pass 1 — generates header + zones + first half of weeks via Claude API, saves to `generated_plan_part1`, fires off continue route
+- `/api/generate-plan/continue` — POST: pass 2 — generates remaining weeks + race day + footer, stitches with pass 1, injects CSS server-side, validates all weeks present, emails admin review link
 - `/api/deliver-starter-plan` — POST: reads pre-built HTML from `public/plans/{event}-{level}.html`, wraps in email template, sends to athlete
 
 ### Plan Delivery Architecture
@@ -69,7 +71,7 @@ Post-payment plan delivery (fire-and-forget from verify):
 Plans are always personalised from purchase date to race date (never preset lengths).
 
 - **Starter plans** — Pre-built static HTML files in `public/plans/` (24 files covering 5K through Ironman at beginner/intermediate/elite levels). Auto-delivered to the customer immediately.
-- **Premium/Elite plans** — Generated on-demand by Claude using a comprehensive system prompt encoding periodisation rules, zone calculations (Karvonen HR, FTP, CSS swim, RPE fallback), and coaching knowledge. The generate-plan route flattens all 50+ form fields into readable text for Claude. Delivered to admin first for review before forwarding to athlete.
+- **Premium/Elite plans** — Generated on-demand by Claude via a **two-pass system** to prevent missing weeks. Pass 1 generates header + zones + first half of weeks. Pass 2 generates remaining weeks + race day + footer. The passes are stitched server-side, CSS is injected (not in the Claude prompt), and all weeks are validated. The generate-plan route flattens all 50+ form fields into readable text for Claude. Delivered to admin first for review before forwarding to athlete.
 
 ### Intake Form
 
@@ -88,7 +90,7 @@ Supabase table `intake_submissions`:
 
 Required in `.env.local`:
 - `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
-- `RESEND_API_KEY`
+- `SMTP_USER`, `SMTP_PASS` (GoDaddy email credentials)
 - `STRIPE_SECRET_KEY`
 - `ANTHROPIC_API_KEY`
 - `NEXT_PUBLIC_SITE_URL`

@@ -1,7 +1,7 @@
 require("dotenv").config({ path: ".env.local" });
 const { createClient } = require("@supabase/supabase-js");
 const Anthropic = require("@anthropic-ai/sdk");
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
 const path = require("path");
 
@@ -179,12 +179,17 @@ Use the EXACT same CSS classes and HTML structure as the first half. Each week M
   console.log("Saved to Supabase");
 
   // 7. Email admin
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  const transporter = nodemailer.createTransport({
+    host: "smtpout.secureserver.net",
+    port: 465,
+    secure: true,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
   const reviewUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://planmetric.com.au") + "/admin/review/" + SUBMISSION_ID;
 
-  await resend.emails.send({
-    from: "Plan Metric <admin@planmetric.com.au>",
-    to: "admin@planmetric.com.au",
+  await transporter.sendMail({
+    from: "Plan Metric <pete@planmetric.com.au>",
+    to: "pete@planmetric.com.au",
     subject: "Review Plan: " + sub.full_name + " - " + (sub.plan || "").toUpperCase() + " - " + sub.training_for,
     html: `<html><body style="background:#0e0e0d;color:#e8e6e1;font-family:sans-serif;padding:32px;max-width:600px;margin:0 auto;">
       <div style="border-bottom:1px solid #D9C2B4;padding-bottom:20px;margin-bottom:24px;">

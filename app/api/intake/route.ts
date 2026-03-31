@@ -24,13 +24,11 @@ export async function POST(req: NextRequest) {
     errors.push("DB connection failed");
   }
 
-  /* ── 2. Send email via Resend ────────────────────────────── */
+  /* ── 2. Send email via Nodemailer ─────────────────────────── */
   try {
-    const { Resend } = await import("resend");
-    const resend = new Resend(process.env.RESEND_API_KEY!);
-    await resend.emails.send({
-      from:    "Plan Metric <admin@planmetric.com.au>",
-      to:      "admin@planmetric.com.au",
+    const { sendEmail } = await import("@/lib/email");
+    await sendEmail({
+      to:      "pete@planmetric.com.au",
       subject: `New Intake: ${data.fullName} — ${data.trainingFor || "Unknown event"}`,
       html:    buildEmail(data),
     });

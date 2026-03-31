@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -56,11 +56,9 @@ export async function GET(req: NextRequest) {
 
   /* ── Send admin email ────────────────────────────────────── */
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY!);
     const d = submission.data;
-    await resend.emails.send({
-      from:    "Plan Metric <admin@planmetric.com.au>",
-      to:      "admin@planmetric.com.au",
+    await sendEmail({
+      to:      "pete@planmetric.com.au",
       subject: `New Plan Metric Intake — ${submission.full_name}`,
       html:    buildEmail(d, submission.plan),
     });
@@ -68,8 +66,7 @@ export async function GET(req: NextRequest) {
     /* ── Send customer confirmation email ──────────────────── */
     if (submission.email) {
       const firstName = submission.full_name?.split(" ")[0] || submission.full_name || "there";
-      await resend.emails.send({
-        from:    "Plan Metric <admin@planmetric.com.au>",
+      await sendEmail({
         to:      submission.email,
         subject: "Your Plan Metric order is confirmed",
         html: `<!DOCTYPE html>

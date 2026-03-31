@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 
 /* ─── POST /api/approve-plan ──────────────────────────────────
    Body: { submission_id: string }
@@ -39,25 +39,22 @@ export async function POST(req: NextRequest) {
 
   /* ── Email plan to athlete ──────────────────────────────── */
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY!);
     const firstName = sub.full_name?.split(" ")[0] || sub.full_name || "there";
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://planmetric.com.au";
     const planUrl = `${siteUrl}/plan/${submission_id}`;
 
     // Send plan to athlete
-    await resend.emails.send({
-      from: "Plan Metric <admin@planmetric.com.au>",
+    await sendEmail({
       to: sub.email,
       subject: `Your ${sub.training_for || "Training"} Plan is Ready — Plan Metric`,
       html: wrapPlanEmail(firstName, planUrl),
     });
 
     // Send confirmation to admin
-    await resend.emails.send({
-      from: "Plan Metric <admin@planmetric.com.au>",
-      to: "admin@planmetric.com.au",
-      subject: `✅ Plan Delivered: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}`,
+    await sendEmail({
+      to: "pete@planmetric.com.au",
+      subject: `Plan Delivered: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}`,
       html: `<!DOCTYPE html>
 <html>
 <body style="background:#0e0e0d;color:#e8e6e1;font-family:sans-serif;padding:32px;max-width:600px;margin:0 auto;">

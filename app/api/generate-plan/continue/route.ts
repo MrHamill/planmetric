@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import { buildAthleteProfile, buildSystemPrompt, extractHtml } from "../route";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -109,14 +109,12 @@ Do NOT output \`\`\`html wrappers.`;
 
     /* ── Email admin with review link ────────────────────────── */
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY!);
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
       const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
 
-      await resend.emails.send({
-        from: "Plan Metric <admin@planmetric.com.au>",
-        to: "admin@planmetric.com.au",
-        subject: `🔍 Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${missing.length > 0 ? ` ⚠️ Missing weeks: ${missing.join(",")}` : ""}`,
+      await sendEmail({
+        to: "pete@planmetric.com.au",
+        subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${missing.length > 0 ? ` Missing weeks: ${missing.join(",")}` : ""}`,
         html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl),
       });
     } catch (e) {
