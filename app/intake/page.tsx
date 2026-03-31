@@ -281,29 +281,18 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
     ? `Pay ${selectedPlan.price} & Submit →`
     : "Pay & Submit →";
 
-  const STRIPE_LINKS: Record<string, string> = {
-    premium: "https://buy.stripe.com/aFa28s8xa7Vj7qxdFRaR20j",
-    elite:   "https://buy.stripe.com/7sYcN63cQcbz5ip9pBaR20k",
-  };
-
   async function handleSubmit() {
     setSubmitting(true);
     setError("");
     try {
-      // Save intake data and send admin email
-      await fetch("/api/intake", {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, plan }),
+        body: JSON.stringify({ plan, formData: form }),
       });
-
-      // Open Stripe payment link in new tab
-      const stripeUrl = STRIPE_LINKS[plan];
-      if (stripeUrl) {
-        window.open(stripeUrl, "_blank");
-      } else {
-        throw new Error("No payment link for this plan");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || data.error || "failed");
+      if (data.url) window.location.href = data.url;
     } catch {
       setError("Something went wrong. Please try again or email admin@planmetric.com.au");
     } finally {
