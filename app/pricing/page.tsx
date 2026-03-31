@@ -85,18 +85,15 @@ const PLANS = [
 
 /* ═══════════════════════════════════════════════════════════════ */
 export default function PricingPage() {
-  const [selected, setSelected] = useState<"premium" | "elite" | null>(null);
   const [showCompare, setShowCompare] = useState(false);
   const router = useRouter();
-
-  const planNames: Record<string, string> = { premium: "Premium", elite: "Elite" };
 
   function handleCardClick(plan: "starter" | "premium" | "elite") {
     if (plan === "starter") {
       router.push("/plans");
       return;
     }
-    setSelected(plan);
+    router.push(`/assessment?plan=${plan}`);
   }
 
   return (
@@ -163,9 +160,6 @@ export default function PricingPage() {
           {/* 3-col grid — Premium card is taller via extra py */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {PLANS.map((plan, i) => {
-              const isSelected = selected === plan.key;
-              const otherSelected = selected !== null && !isSelected && plan.key !== "starter";
-
               return (
                 <motion.div
                   key={plan.key}
@@ -174,12 +168,9 @@ export default function PricingPage() {
                   }`}
                   style={{
                     background: CARD_BG,
-                    border: isSelected
-                      ? `2px solid ${ACCENT}`
-                      : plan.featured
-                        ? `1.5px solid ${ACCENT}`
-                        : `1px solid ${CARD_BORDER}`,
-                    opacity: otherSelected ? 0.45 : 1,
+                    border: plan.featured
+                      ? `1.5px solid ${ACCENT}`
+                      : `1px solid ${CARD_BORDER}`,
                     boxShadow: plan.featured
                       ? `0 0 40px ${ACCENT_GLOW}, 0 20px 60px rgba(0,0,0,0.4)`
                       : "none",
@@ -258,12 +249,12 @@ export default function PricingPage() {
                     <span
                       className="block w-full py-4 text-xs font-label font-bold uppercase tracking-widest text-center rounded-sm transition-all duration-200 group-hover:scale-[1.01]"
                       style={
-                        plan.featured || isSelected
+                        plan.featured
                           ? { background: ACCENT, color: TEXT }
                           : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
                       }
                     >
-                      {isSelected ? "\u2713 Selected" : plan.cta}
+                      {plan.cta}
                     </span>
                   </div>
                 </motion.div>
@@ -271,26 +262,6 @@ export default function PricingPage() {
             })}
           </div>
 
-          {/* Confirm */}
-          <AnimatePresence>
-            {selected && (
-              <motion.div
-                className="flex justify-center mt-12"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 16 }}
-                transition={{ duration: 0.4, ease: "easeOut" as const }}
-              >
-                <Link
-                  href={`/assessment?plan=${selected}`}
-                  className="inline-block font-label text-sm font-bold tracking-widest uppercase px-12 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
-                  style={{ background: ACCENT, color: TEXT }}
-                >
-                  Continue with {planNames[selected]} &rarr;
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 
