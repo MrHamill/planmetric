@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   const event = String(d.trainingFor || sub.training_for || "").trim();
   const level = String(d.level || "Beginner").trim();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://planmetric.com.au";
-  const planUrl = `${siteUrl}/plans/${submission_id}`;
+  const planUrl = `${siteUrl}/plan/${submission_id}`;
 
   /* ── Email the plan link ─────────────────────────────────── */
   try {
