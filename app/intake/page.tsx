@@ -349,7 +349,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             {(isRace || isNoRace) && (
               <F label="What are you training for? *">
                 <SelectInput value={form.trainingFor} onChange={v => upd("trainingFor", v)}
-                  options={["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "Ultra Marathon", "10K", "5K", "Cycling Event", "Other"]} />
+                  options={["Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "10K", "5K"]} />
               </F>
             )}
             {isRace && (

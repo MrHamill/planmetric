@@ -35,6 +35,15 @@ export async function POST(req: NextRequest) {
   const d = sub.data as Record<string, unknown>;
   const event = String(d.trainingFor || sub.training_for || "").trim();
   const level = String(d.level || "Beginner").trim();
+
+  /* ── Map event name to file slug ────────────────────────── */
+  const EVENT_SLUGS: Record<string, string> = {
+    "5K": "5k", "10K": "10k", "Half Marathon": "half-marathon",
+    "Marathon": "marathon", "Olympic Tri": "olympic-tri",
+    "Olympic Triathlon": "olympic-tri", "70.3": "70-3",
+    "70.3 Ironman": "70-3", "Ironman": "ironman", "Full Ironman": "ironman",
+  };
+  const eventSlug = EVENT_SLUGS[event] || event.toLowerCase().replace(/[\s.]+/g, "-");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://planmetric.com.au";
   const planUrl = `${siteUrl}/plan/${submission_id}`;
 

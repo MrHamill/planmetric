@@ -48,10 +48,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, email: submission.email, alreadyProcessed: true });
   }
 
+  /* ── Pull customer info from Stripe (starter plans bought
+       from /plans don't have name/email in the submission) ── */
+  const stripeEmail = session.customer_details?.email || session.customer_email;
+  const stripeName = session.customer_details?.name;
+  const needsEmail = stripeEmail && !submission.email;
+  const needsName = stripeName && !submission.full_name;
+  if (needsEmail) submission.email = stripeEmail;
+  if (needsName) submission.full_name = stripeName;
+
   /* ── Update status to paid ──────────────────────────────── */
   await supabase
     .from("intake_submissions")
-    .update({ status: "paid", stripe_session_id: sessionId })
+    .update({
+      status: "paid",
+      stripe_session_id: sessionId,
+      ...(needsEmail ? { email: stripeEmail } : {}),
+      ...(needsName ? { full_name: stripeName } : {}),
+    })
     .eq("id", submissionId);
 
   /* ── Send admin email ────────────────────────────────────── */

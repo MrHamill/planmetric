@@ -5,8 +5,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: process.env.SMTP_USER!,
-    pass: process.env.SMTP_PASS!,
+    user: process.env.SMTP_USER?.trim(),
+    pass: process.env.SMTP_PASS?.trim(),
   },
 });
 
@@ -21,5 +21,18 @@ export async function sendEmail({
   html: string;
   from?: string;
 }) {
-  return transporter.sendMail({ from, to, subject, html });
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    const missing = [
+      !process.env.SMTP_USER && "SMTP_USER",
+      !process.env.SMTP_PASS && "SMTP_PASS",
+    ].filter(Boolean).join(", ");
+    throw new Error(`Missing SMTP env vars: ${missing}`);
+  }
+
+  try {
+    return await transporter.sendMail({ from, to, subject, html });
+  } catch (err) {
+    console.error(`SMTP error sending to ${to}:`, err);
+    throw err;
+  }
 }
