@@ -102,18 +102,21 @@ const hint = "font-label text-[10px] mt-1.5";
 const hintStyle: React.CSSProperties = { color: "rgba(245,245,240,0.3)" };
 
 /* ─── Primitive components (defined outside to prevent remounting) ── */
-function F({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) {
+const ERR_BORDER = "rgba(239,68,68,0.5)";
+const ERR_TEXT   = "#ef4444";
+
+function F({ label, note, children, error }: { label: string; note?: string; children: React.ReactNode; error?: boolean }) {
   return (
     <div>
-      <label className={lbl} style={lblStyle}>{label}</label>
+      <label className={lbl} style={error ? { color: ERR_TEXT } : lblStyle}>{label}</label>
       {children}
       {note && <p className={hint} style={hintStyle}>{note}</p>}
     </div>
   );
 }
 
-function TextInput({ value, onChange, type = "text", placeholder = "", disabled = false }: {
-  value: string; onChange: (v: string) => void; type?: string; placeholder?: string; disabled?: boolean;
+function TextInput({ value, onChange, type = "text", placeholder = "", disabled = false, error = false }: {
+  value: string; onChange: (v: string) => void; type?: string; placeholder?: string; disabled?: boolean; error?: boolean;
 }) {
   return (
     <input
@@ -123,24 +126,24 @@ function TextInput({ value, onChange, type = "text", placeholder = "", disabled 
       placeholder={placeholder}
       disabled={disabled}
       className={inp + (disabled ? " opacity-30 pointer-events-none" : "")}
-      style={inpStyle}
+      style={error ? { ...inpStyle, borderColor: ERR_BORDER } : inpStyle}
     />
   );
 }
 
-function SelectInput({ value, onChange, options, placeholder = "Select..." }: {
-  value: string; onChange: (v: string) => void; options: string[]; placeholder?: string;
+function SelectInput({ value, onChange, options, placeholder = "Select...", error = false }: {
+  value: string; onChange: (v: string) => void; options: string[]; placeholder?: string; error?: boolean;
 }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"} style={{ ...inpStyle, colorScheme: "dark" }}>
+    <select value={value} onChange={e => onChange(e.target.value)} className={inp + " appearance-none cursor-pointer"} style={error ? { ...inpStyle, borderColor: ERR_BORDER, colorScheme: "dark" } : { ...inpStyle, colorScheme: "dark" }}>
       <option value="" style={{ background: "#1a1a1a", color: TEXT }}>{placeholder}</option>
       {options.map(o => <option key={o} value={o} style={{ background: "#1a1a1a", color: TEXT }}>{o}</option>)}
     </select>
   );
 }
 
-function TextareaInput({ value, onChange, placeholder = "", rows = 3 }: {
-  value: string; onChange: (v: string) => void; placeholder?: string; rows?: number;
+function TextareaInput({ value, onChange, placeholder = "", rows = 3, error = false }: {
+  value: string; onChange: (v: string) => void; placeholder?: string; rows?: number; error?: boolean;
 }) {
   return (
     <textarea
@@ -149,7 +152,7 @@ function TextareaInput({ value, onChange, placeholder = "", rows = 3 }: {
       placeholder={placeholder}
       rows={rows}
       className={inp + " resize-none"}
-      style={inpStyle}
+      style={error ? { ...inpStyle, borderColor: ERR_BORDER } : inpStyle}
     />
   );
 }
@@ -168,8 +171,8 @@ function Checkbox({ checked, onChange, label }: { checked: boolean; onChange: (v
   );
 }
 
-function MultiSelect({ selected, onChange, options }: {
-  selected: string[]; onChange: (v: string[]) => void; options: string[];
+function MultiSelect({ selected, onChange, options, error = false }: {
+  selected: string[]; onChange: (v: string[]) => void; options: string[]; error?: boolean;
 }) {
   function toggle(o: string) {
     onChange(selected.includes(o) ? selected.filter(x => x !== o) : [...selected, o]);
@@ -183,7 +186,7 @@ function MultiSelect({ selected, onChange, options }: {
             className="flex items-center gap-3 px-4 py-3 text-sm font-body text-left border transition-colors rounded-sm"
             style={on
               ? { borderColor: ACCENT, background: "rgba(184,92,44,0.10)", color: TEXT }
-              : { borderColor: CARD_BORDER, background: INPUT_BG, color: DIM }
+              : { borderColor: error ? ERR_BORDER : CARD_BORDER, background: INPUT_BG, color: DIM }
             }>
             <span
               className="w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors"
@@ -281,6 +284,88 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
     ? `Pay ${selectedPlan.price} & Submit →`
     : "Pay & Submit →";
 
+  /* ── Per-step required-field validation ────────────────────── */
+  function stepValid(): boolean {
+    const s = (k: keyof FD) => typeof form[k] === "string" && (form[k] as string).trim() !== "";
+    const a = (k: keyof FD) => Array.isArray(form[k]) && (form[k] as string[]).length > 0;
+
+    switch (sec) {
+      case 1:
+        return s("fullName") && s("email") && s("age") && s("gender") && s("height") && s("weight") && s("location");
+
+      case 2: {
+        if (!s("hasRace")) return false;
+        if (!s("trainingFor")) return false;
+        const isRace = form.hasRace === "Yes";
+        const isNoRace = form.hasRace === "No";
+        if (isRace && !s("raceDate")) return false;
+        if (isNoRace && !s("planWeeks")) return false;
+        if (!s("mainGoal")) return false;
+        const showTarget = ["Hit a target time", "Podium", "Qualify for championships"].includes(form.mainGoal);
+        if (showTarget && !s("targetTime")) return false;
+        if (isRace && !s("completedRaceBefore")) return false;
+        return true;
+      }
+
+      case 3:
+        return s("trainingConsistency") && s("recentRaceResult");
+
+      case 4: // Swim (triathlon)
+        return s("weeklySwimVolume") && s("longestSwim") && s("bilateralBreathing") && s("poolAccess") && s("openWaterAccess") && s("wetsuit");
+
+      case 5: // Bike
+        return s("avgBikeSpeed") && s("weeklyBikeVolume") && s("longestRide") && s("bikeType") && s("powerMeter") && s("indoorTrainer");
+
+      case 6: // Run
+        return s("weeklyRunDistance") && s("longestRun") && s("easyRunPace") && s("treadmillAccess");
+
+      case 7: // Discipline ranking
+        return s("weakestDiscipline") && s("strongestDiscipline");
+
+      case 8: { // Schedule
+        const base = s("trainingDaysPerWeek") && s("restDaysPerWeek") && s("doubleDays")
+          && a("preferredTimes") && a("availableDays")
+          && s("maxWeekdaySession") && s("maxWeekendSession")
+          && s("preferredLongDay") && s("preferredRestDay") && s("workShifts");
+        const needsCombos = ["Yes", "Sometimes"].includes(form.doubleDays);
+        return base && (!needsCombos || a("doubleDayCombos"));
+      }
+
+      case 9: // Equipment
+        return s("gpsWatch") && s("gymAccess") && s("equipmentBudget");
+
+      case 10: { // Health
+        const base = s("currentInjuries") && s("avgSleep") && s("stressLevel") && s("raceNutrition") && s("strengthTraining");
+        if (form.currentInjuries === "Yes" && !s("injuryDescription")) return false;
+        return base;
+      }
+
+      case 11: // Motivation
+        return s("trainingPreference") && s("intensityFeeling") && s("trainingBlockers") && s("motivation") && s("successDefinition");
+
+      case 12: { // Other sports
+        if (!s("otherSports")) return false;
+        if (form.otherSports === "Yes") {
+          if (!s("otherSport1Name") || !a("otherSport1Days") || !s("otherSport1Time") || !s("otherSport1Duration") || !s("otherSport1Intensity")) return false;
+        }
+        return true;
+      }
+
+      case 13: // Final
+        return s("hasAnythingElse") && (form.hasAnythingElse !== "Yes" || s("anythingElse"));
+
+      default: return true;
+    }
+  }
+
+  const canProceed = stepValid();
+
+  /** mt = "missing" — true when a required string field is empty or array field has no items */
+  const mt = (k: keyof FD) => {
+    const v = form[k];
+    return Array.isArray(v) ? v.length === 0 : typeof v === "string" && v.trim() === "";
+  };
+
   async function handleSubmit() {
     setSubmitting(true);
     setError("");
@@ -308,29 +393,29 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 1: return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Full Name *">
-              <TextInput value={form.fullName} onChange={v => upd("fullName", v)} placeholder="Your full name" />
+            <F label="Full Name *" error={mt("fullName")}>
+              <TextInput value={form.fullName} onChange={v => upd("fullName", v)} placeholder="Your full name" error={mt("fullName")} />
             </F>
-            <F label="Email *">
-              <TextInput value={form.email} onChange={v => upd("email", v)} type="email" placeholder="you@email.com" />
+            <F label="Email *" error={mt("email")}>
+              <TextInput value={form.email} onChange={v => upd("email", v)} type="email" placeholder="you@email.com" error={mt("email")} />
             </F>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            <F label="Age *" note="Exact — used for zone calculations">
-              <TextInput value={form.age} onChange={v => upd("age", v)} type="number" placeholder="32" />
+            <F label="Age *" note="Exact — used for zone calculations" error={mt("age")}>
+              <TextInput value={form.age} onChange={v => upd("age", v)} type="number" placeholder="32" error={mt("age")} />
             </F>
-            <F label="Gender *">
-              <SelectInput value={form.gender} onChange={v => upd("gender", v)} options={["Male", "Female", "Non-binary", "Prefer not to say"]} />
+            <F label="Gender *" error={mt("gender")}>
+              <SelectInput value={form.gender} onChange={v => upd("gender", v)} options={["Male", "Female", "Non-binary", "Prefer not to say"]} error={mt("gender")} />
             </F>
-            <F label="Height (cm) *">
-              <TextInput value={form.height} onChange={v => upd("height", v)} type="number" placeholder="175" />
+            <F label="Height (cm) *" error={mt("height")}>
+              <TextInput value={form.height} onChange={v => upd("height", v)} type="number" placeholder="175" error={mt("height")} />
             </F>
-            <F label="Weight (kg) *">
-              <TextInput value={form.weight} onChange={v => upd("weight", v)} type="number" placeholder="72" />
+            <F label="Weight (kg) *" error={mt("weight")}>
+              <TextInput value={form.weight} onChange={v => upd("weight", v)} type="number" placeholder="72" error={mt("weight")} />
             </F>
           </div>
-          <F label="Location (city, country) *" note="Used for weather and terrain considerations">
-            <TextInput value={form.location} onChange={v => upd("location", v)} placeholder="e.g. Brisbane, Australia" />
+          <F label="Location (city, country) *" note="Used for weather and terrain considerations" error={mt("location")}>
+            <TextInput value={form.location} onChange={v => upd("location", v)} placeholder="e.g. Brisbane, Australia" error={mt("location")} />
           </F>
         </div>
       );
@@ -343,13 +428,13 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const showPrev   = form.completedRaceBefore === "Yes";
         return (
           <div className="space-y-6">
-            <F label="Are you training for a specific event or race? *">
-              <SelectInput value={form.hasRace} onChange={v => upd("hasRace", v)} options={["Yes", "No"]} />
+            <F label="Are you training for a specific event or race? *" error={mt("hasRace")}>
+              <SelectInput value={form.hasRace} onChange={v => upd("hasRace", v)} options={["Yes", "No"]} error={mt("hasRace")} />
             </F>
             {(isRace || isNoRace) && (
-              <F label="What are you training for? *">
+              <F label="What are you training for? *" error={mt("trainingFor")}>
                 <SelectInput value={form.trainingFor} onChange={v => upd("trainingFor", v)}
-                  options={["Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "10K", "5K"]} />
+                  options={["Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "10K", "5K"]} error={mt("trainingFor")} />
               </F>
             )}
             {isRace && (
@@ -357,39 +442,39 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                 <F label="Race name and location" note="Optional — e.g. Noosa Tri, QLD">
                   <TextInput value={form.raceName} onChange={v => upd("raceName", v)} placeholder="e.g. Challenge Roth, Germany" />
                 </F>
-                <F label="Race date *" note="Exact date — used to calculate your plan length">
-                  <TextInput value={form.raceDate} onChange={v => upd("raceDate", v)} type="date" />
+                <F label="Race date *" note="Exact date — used to calculate your plan length" error={mt("raceDate")}>
+                  <TextInput value={form.raceDate} onChange={v => upd("raceDate", v)} type="date" error={mt("raceDate")} />
                 </F>
               </>
             )}
             {isNoRace && (
-              <F label="How many weeks would you like your plan to be? *" note="Maximum 24 weeks">
+              <F label="How many weeks would you like your plan to be? *" note="Maximum 24 weeks" error={mt("planWeeks")}>
                 <TextInput value={form.planWeeks} onChange={v => {
                   const n = parseInt(v, 10);
                   if (v === "" || (n >= 1 && n <= 24)) upd("planWeeks", v);
-                }} type="number" placeholder="e.g. 12" />
+                }} type="number" placeholder="e.g. 12" error={mt("planWeeks")} />
               </F>
             )}
             {(isRace || isNoRace) && (
               <>
-                <F label="What is your main goal? *">
+                <F label="What is your main goal? *" error={mt("mainGoal")}>
                   <SelectInput value={form.mainGoal} onChange={v => upd("mainGoal", v)}
                     options={isRace
                       ? ["Just finish", "Finish strong", "Hit a target time", "Podium", "Qualify for championships"]
                       : ["General fitness", "Build endurance", "Get faster", "Hit a target time"]
-                    } />
+                    } error={mt("mainGoal")} />
                 </F>
                 {showTarget && (
-                  <F label="Target finish time *" note='e.g. "Sub 5 hours" or "3:30 marathon"'>
-                    <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. Sub 5:00" />
+                  <F label="Target finish time *" note='e.g. "Sub 5 hours" or "3:30 marathon"' error={mt("targetTime")}>
+                    <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. Sub 5:00" error={mt("targetTime")} />
                   </F>
                 )}
               </>
             )}
             {isRace && (
               <>
-                <F label="Have you completed a race at or longer than this distance before? *">
-                  <SelectInput value={form.completedRaceBefore} onChange={v => upd("completedRaceBefore", v)} options={["Yes", "No"]} />
+                <F label="Have you completed a race at or longer than this distance before? *" error={mt("completedRaceBefore")}>
+                  <SelectInput value={form.completedRaceBefore} onChange={v => upd("completedRaceBefore", v)} options={["Yes", "No"]} error={mt("completedRaceBefore")} />
                 </F>
                 {showPrev && (
                   <F label="Most recent finish time at that distance" note='e.g. "5:15 for 70.3" or "3:45 marathon"'>
@@ -405,12 +490,12 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       /* ── Section 3: Current Fitness ── */
       case 3: return (
         <div className="space-y-6">
-          <F label="How long have you been training consistently? *">
+          <F label="How long have you been training consistently? *" error={mt("trainingConsistency")}>
             <SelectInput value={form.trainingConsistency} onChange={v => upd("trainingConsistency", v)}
-              options={["< 3 months", "3–6 months", "6–12 months", "1–2 years", "2+ years"]} />
+              options={["< 3 months", "3–6 months", "6–12 months", "1–2 years", "2+ years"]} error={mt("trainingConsistency")} />
           </F>
-          <F label="Most recent race result *" note='e.g. "2:35 Olympic Tri" or "52 min 10K". Write "No recent race" if none.'>
-            <TextInput value={form.recentRaceResult} onChange={v => upd("recentRaceResult", v)} placeholder='e.g. "52 min 10K"' />
+          <F label="Most recent race result *" note='e.g. "2:35 Olympic Tri" or "52 min 10K". Write "No recent race" if none.' error={mt("recentRaceResult")}>
+            <TextInput value={form.recentRaceResult} onChange={v => upd("recentRaceResult", v)} placeholder='e.g. "52 min 10K"' error={mt("recentRaceResult")} />
           </F>
           {isTri && (
             <div>
@@ -453,25 +538,25 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               <TextInput value={form.swimPaceHard} onChange={v => upd("swimPaceHard", v)} placeholder="1:55" />
             </F>
           </div>
-          <F label="Current weekly swim volume *">
+          <F label="Current weekly swim volume *" error={mt("weeklySwimVolume")}>
             <SelectInput value={form.weeklySwimVolume} onChange={v => upd("weeklySwimVolume", v)}
-              options={["Not swimming", "1–2 km", "2–4 km", "4–6 km", "6+ km"]} />
+              options={["Not swimming", "1–2 km", "2–4 km", "4–6 km", "6+ km"]} error={mt("weeklySwimVolume")} />
           </F>
-          <F label="Longest continuous swim in last 4 weeks (metres) *" note="Determines where race-distance building starts">
-            <TextInput value={form.longestSwim} onChange={v => upd("longestSwim", v)} type="number" placeholder="e.g. 1500" />
+          <F label="Longest continuous swim in last 4 weeks (metres) *" note="Determines where race-distance building starts" error={mt("longestSwim")}>
+            <TextInput value={form.longestSwim} onChange={v => upd("longestSwim", v)} type="number" placeholder="e.g. 1500" error={mt("longestSwim")} />
           </F>
-          <F label="Bilateral breathing (every 3 strokes)? *">
-            <SelectInput value={form.bilateralBreathing} onChange={v => upd("bilateralBreathing", v)} options={["Yes", "No", "Learning"]} />
+          <F label="Bilateral breathing (every 3 strokes)? *" error={mt("bilateralBreathing")}>
+            <SelectInput value={form.bilateralBreathing} onChange={v => upd("bilateralBreathing", v)} options={["Yes", "No", "Learning"]} error={mt("bilateralBreathing")} />
           </F>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <F label="Pool access *">
-              <SelectInput value={form.poolAccess} onChange={v => upd("poolAccess", v)} options={["Year-round", "Seasonal", "No access"]} />
+            <F label="Pool access *" error={mt("poolAccess")}>
+              <SelectInput value={form.poolAccess} onChange={v => upd("poolAccess", v)} options={["Year-round", "Seasonal", "No access"]} error={mt("poolAccess")} />
             </F>
-            <F label="Open water access *">
-              <SelectInput value={form.openWaterAccess} onChange={v => upd("openWaterAccess", v)} options={["Yes — easy access", "Yes — but limited", "No"]} />
+            <F label="Open water access *" error={mt("openWaterAccess")}>
+              <SelectInput value={form.openWaterAccess} onChange={v => upd("openWaterAccess", v)} options={["Yes — easy access", "Yes — but limited", "No"]} error={mt("openWaterAccess")} />
             </F>
-            <F label="Wetsuit? *">
-              <SelectInput value={form.wetsuit} onChange={v => upd("wetsuit", v)} options={["Yes", "No"]} />
+            <F label="Wetsuit? *" error={mt("wetsuit")}>
+              <SelectInput value={form.wetsuit} onChange={v => upd("wetsuit", v)} options={["Yes", "No"]} error={mt("wetsuit")} />
             </F>
           </div>
         </div>
@@ -480,15 +565,15 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       /* ── Section 5: Bike ── */
       case 5: return (
         <div className="space-y-6">
-          <F label="Average speed on a 1hr+ ride (km/h) *" note="Your realistic sustained pace, not max effort">
-            <TextInput value={form.avgBikeSpeed} onChange={v => upd("avgBikeSpeed", v)} type="number" placeholder="e.g. 30" />
+          <F label="Average speed on a 1hr+ ride (km/h) *" note="Your realistic sustained pace, not max effort" error={mt("avgBikeSpeed")}>
+            <TextInput value={form.avgBikeSpeed} onChange={v => upd("avgBikeSpeed", v)} type="number" placeholder="e.g. 30" error={mt("avgBikeSpeed")} />
           </F>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Current weekly bike volume *" note='e.g. "80km" or "4 hours"'>
-              <TextInput value={form.weeklyBikeVolume} onChange={v => upd("weeklyBikeVolume", v)} placeholder="e.g. 80km" />
+            <F label="Current weekly bike volume *" note='e.g. "80km" or "4 hours"' error={mt("weeklyBikeVolume")}>
+              <TextInput value={form.weeklyBikeVolume} onChange={v => upd("weeklyBikeVolume", v)} placeholder="e.g. 80km" error={mt("weeklyBikeVolume")} />
             </F>
-            <F label="Longest ride in last 4 weeks *" note='e.g. "90km" or "3.5 hours"'>
-              <TextInput value={form.longestRide} onChange={v => upd("longestRide", v)} placeholder="e.g. 90km" />
+            <F label="Longest ride in last 4 weeks *" note='e.g. "90km" or "3.5 hours"' error={mt("longestRide")}>
+              <TextInput value={form.longestRide} onChange={v => upd("longestRide", v)} placeholder="e.g. 90km" error={mt("longestRide")} />
             </F>
           </div>
           <F label="FTP (Functional Threshold Power) — watts" note="Leave blank if no power meter">
@@ -498,14 +583,14 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             </div>
           </F>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <F label="Bike type *">
-              <SelectInput value={form.bikeType} onChange={v => upd("bikeType", v)} options={["Road bike", "TT/Tri bike", "Hybrid", "Mountain bike", "Gravel"]} />
+            <F label="Bike type *" error={mt("bikeType")}>
+              <SelectInput value={form.bikeType} onChange={v => upd("bikeType", v)} options={["Road bike", "TT/Tri bike", "Hybrid", "Mountain bike", "Gravel"]} error={mt("bikeType")} />
             </F>
-            <F label="Power meter? *">
-              <SelectInput value={form.powerMeter} onChange={v => upd("powerMeter", v)} options={["Yes", "No"]} />
+            <F label="Power meter? *" error={mt("powerMeter")}>
+              <SelectInput value={form.powerMeter} onChange={v => upd("powerMeter", v)} options={["Yes", "No"]} error={mt("powerMeter")} />
             </F>
-            <F label="Indoor trainer? *">
-              <SelectInput value={form.indoorTrainer} onChange={v => upd("indoorTrainer", v)} options={["Yes", "No"]} />
+            <F label="Indoor trainer? *" error={mt("indoorTrainer")}>
+              <SelectInput value={form.indoorTrainer} onChange={v => upd("indoorTrainer", v)} options={["Yes", "No"]} error={mt("indoorTrainer")} />
             </F>
           </div>
         </div>
@@ -515,21 +600,21 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 6: return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Current weekly running distance (km) *" note="Estimate is fine — e.g. 30km. Critical for planning safe volume progression.">
-              <TextInput value={form.weeklyRunDistance} onChange={v => upd("weeklyRunDistance", v)} type="number" placeholder="e.g. 35" />
+            <F label="Current weekly running distance (km) *" note="Estimate is fine — e.g. 30km. Critical for planning safe volume progression." error={mt("weeklyRunDistance")}>
+              <TextInput value={form.weeklyRunDistance} onChange={v => upd("weeklyRunDistance", v)} type="number" placeholder="e.g. 35" error={mt("weeklyRunDistance")} />
             </F>
-            <F label="Longest run in last 4 weeks (km) *">
-              <TextInput value={form.longestRun} onChange={v => upd("longestRun", v)} type="number" placeholder="e.g. 18" />
+            <F label="Longest run in last 4 weeks (km) *" error={mt("longestRun")}>
+              <TextInput value={form.longestRun} onChange={v => upd("longestRun", v)} type="number" placeholder="e.g. 18" error={mt("longestRun")} />
             </F>
           </div>
-          <F label="Current easy run pace (min:sec per km) *" note='e.g. "5:45" — sets your Zone 2 run targets'>
-            <TextInput value={form.easyRunPace} onChange={v => upd("easyRunPace", v)} placeholder="5:45" />
+          <F label="Current easy run pace (min:sec per km) *" note='e.g. "5:45" — sets your Zone 2 run targets' error={mt("easyRunPace")}>
+            <TextInput value={form.easyRunPace} onChange={v => upd("easyRunPace", v)} placeholder="5:45" error={mt("easyRunPace")} />
           </F>
           <F label="Recent standalone run race time" note='e.g. "5K in 22:30" or "Half marathon 1:48". Write "N/A" if none.'>
             <TextInput value={form.recentRunRace} onChange={v => upd("recentRunRace", v)} placeholder='e.g. "5K in 22:30"' />
           </F>
-          <F label="Treadmill access? *">
-            <SelectInput value={form.treadmillAccess} onChange={v => upd("treadmillAccess", v)} options={["Yes", "No"]} />
+          <F label="Treadmill access? *" error={mt("treadmillAccess")}>
+            <SelectInput value={form.treadmillAccess} onChange={v => upd("treadmillAccess", v)} options={["Yes", "No"]} error={mt("treadmillAccess")} />
           </F>
         </div>
       );
@@ -542,11 +627,11 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             body="Your weakest discipline gets 35% of training volume. Your strongest gets 25% (maintenance only). This balance is the core of your plan structure."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Your WEAKEST discipline *">
-              <SelectInput value={form.weakestDiscipline} onChange={v => upd("weakestDiscipline", v)} options={["Swim", "Bike", "Run"]} />
+            <F label="Your WEAKEST discipline *" error={mt("weakestDiscipline")}>
+              <SelectInput value={form.weakestDiscipline} onChange={v => upd("weakestDiscipline", v)} options={["Swim", "Bike", "Run"]} error={mt("weakestDiscipline")} />
             </F>
-            <F label="Your STRONGEST discipline *">
-              <SelectInput value={form.strongestDiscipline} onChange={v => upd("strongestDiscipline", v)} options={["Swim", "Bike", "Run"]} />
+            <F label="Your STRONGEST discipline *" error={mt("strongestDiscipline")}>
+              <SelectInput value={form.strongestDiscipline} onChange={v => upd("strongestDiscipline", v)} options={["Swim", "Bike", "Run"]} error={mt("strongestDiscipline")} />
             </F>
           </div>
         </div>
@@ -558,52 +643,52 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <F label="Training days per week *">
-                <SelectInput value={form.trainingDaysPerWeek} onChange={v => upd("trainingDaysPerWeek", v)} options={["3", "4", "5", "6", "7"]} />
+              <F label="Training days per week *" error={mt("trainingDaysPerWeek")}>
+                <SelectInput value={form.trainingDaysPerWeek} onChange={v => upd("trainingDaysPerWeek", v)} options={["3", "4", "5", "6", "7"]} error={mt("trainingDaysPerWeek")} />
               </F>
-              <F label="Rest days per week *">
-                <SelectInput value={form.restDaysPerWeek} onChange={v => upd("restDaysPerWeek", v)} options={["1", "2", "3"]} />
+              <F label="Rest days per week *" error={mt("restDaysPerWeek")}>
+                <SelectInput value={form.restDaysPerWeek} onChange={v => upd("restDaysPerWeek", v)} options={["1", "2", "3"]} error={mt("restDaysPerWeek")} />
               </F>
-              <F label="Double days? *" note="Two sessions in one day">
-                <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} />
+              <F label="Double days? *" note="Two sessions in one day" error={mt("doubleDays")}>
+                <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} error={mt("doubleDays")} />
               </F>
             </div>
-            <F label="Preferred training times *">
+            <F label="Preferred training times *" error={mt("preferredTimes")}>
               <MultiSelect selected={form.preferredTimes} onChange={v => upd("preferredTimes", v)}
-                options={["Before 6am", "6–8am", "Lunch (11am–1pm)", "Afternoon (3–5pm)", "Evening (5–8pm)"]} />
+                options={["Before 6am", "6–8am", "Lunch (11am–1pm)", "Afternoon (3–5pm)", "Evening (5–8pm)"]} error={mt("preferredTimes")} />
             </F>
-            <F label="Days consistently available *">
+            <F label="Days consistently available *" error={mt("availableDays")}>
               <MultiSelect selected={form.availableDays} onChange={v => upd("availableDays", v)}
-                options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} />
+                options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} error={mt("availableDays")} />
             </F>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <F label="Max session — weekdays *">
+              <F label="Max session — weekdays *" error={mt("maxWeekdaySession")}>
                 <SelectInput value={form.maxWeekdaySession} onChange={v => upd("maxWeekdaySession", v)}
-                  options={["30 min", "45 min", "60 min", "75 min", "90 min", "2 hours"]} />
+                  options={["30 min", "45 min", "60 min", "75 min", "90 min", "2 hours"]} error={mt("maxWeekdaySession")} />
               </F>
-              <F label="Max session — weekends *">
+              <F label="Max session — weekends *" error={mt("maxWeekendSession")}>
                 <SelectInput value={form.maxWeekendSession} onChange={v => upd("maxWeekendSession", v)}
-                  options={["1 hour", "90 min", "2 hours", "3 hours", "No limit"]} />
+                  options={["1 hour", "90 min", "2 hours", "3 hours", "No limit"]} error={mt("maxWeekendSession")} />
               </F>
             </div>
             {showCombos && (
-              <F label="Double-day combos that work for you *">
+              <F label="Double-day combos that work for you *" error={mt("doubleDayCombos")}>
                 <MultiSelect selected={form.doubleDayCombos} onChange={v => upd("doubleDayCombos", v)}
-                  options={["AM swim + PM run", "AM ride + PM swim", "AM run + PM swim", "AM ride + PM run", "Any combo"]} />
+                  options={["AM swim + PM run", "AM ride + PM swim", "AM run + PM swim", "AM ride + PM run", "Any combo"]} error={mt("doubleDayCombos")} />
               </F>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <F label="Preferred long session day *">
-                <SelectInput value={form.preferredLongDay} onChange={v => upd("preferredLongDay", v)} options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Flexible"]} />
+              <F label="Preferred long session day *" error={mt("preferredLongDay")}>
+                <SelectInput value={form.preferredLongDay} onChange={v => upd("preferredLongDay", v)} options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Flexible"]} error={mt("preferredLongDay")} />
               </F>
-              <F label="Preferred rest day *">
+              <F label="Preferred rest day *" error={mt("preferredRestDay")}>
                 <SelectInput value={form.preferredRestDay} onChange={v => upd("preferredRestDay", v)}
-                  options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Flexible"]} />
+                  options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Flexible"]} error={mt("preferredRestDay")} />
               </F>
             </div>
-            <F label="Work schedule *">
+            <F label="Work schedule *" error={mt("workShifts")}>
               <SelectInput value={form.workShifts} onChange={v => upd("workShifts", v)}
-                options={["No — standard hours", "Yes — rotating shifts", "Yes — night shifts", "Yes — FIFO or travel-based"]} />
+                options={["No — standard hours", "Yes — rotating shifts", "Yes — night shifts", "Yes — FIFO or travel-based"]} error={mt("workShifts")} />
             </F>
             <F label="Weeks you cannot train (holidays, travel)" note='Optional — e.g. "2 weeks in Bali in July" or "None"'>
               <TextareaInput value={form.unavailableWeeks} onChange={v => upd("unavailableWeeks", v)} placeholder='e.g. "2 weeks off in July" or "None"' rows={2} />
@@ -615,14 +700,14 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       /* ── Section 9: Equipment ── */
       case 9: return (
         <div className="space-y-6">
-          <F label="GPS watch / heart rate monitor *">
-            <SelectInput value={form.gpsWatch} onChange={v => upd("gpsWatch", v)} options={["GPS watch + HRM", "GPS watch only", "HRM only", "Neither"]} />
+          <F label="GPS watch / heart rate monitor *" error={mt("gpsWatch")}>
+            <SelectInput value={form.gpsWatch} onChange={v => upd("gpsWatch", v)} options={["GPS watch + HRM", "GPS watch only", "HRM only", "Neither"]} error={mt("gpsWatch")} />
           </F>
-          <F label="Gym / strength training access *">
-            <SelectInput value={form.gymAccess} onChange={v => upd("gymAccess", v)} options={["Full gym", "Home weights", "Bodyweight only", "None"]} />
+          <F label="Gym / strength training access *" error={mt("gymAccess")}>
+            <SelectInput value={form.gymAccess} onChange={v => upd("gymAccess", v)} options={["Full gym", "Home weights", "Bodyweight only", "None"]} error={mt("gymAccess")} />
           </F>
-          <F label="Equipment budget for upgrades *">
-            <SelectInput value={form.equipmentBudget} onChange={v => upd("equipmentBudget", v)} options={["None", "Under $200", "$200–500", "$500+"]} />
+          <F label="Equipment budget for upgrades *" error={mt("equipmentBudget")}>
+            <SelectInput value={form.equipmentBudget} onChange={v => upd("equipmentBudget", v)} options={["None", "Under $200", "$200–500", "$500+"]} error={mt("equipmentBudget")} />
           </F>
         </div>
       );
@@ -632,13 +717,13 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const hasInjury = form.currentInjuries === "Yes";
         return (
           <div className="space-y-6">
-            <F label="Current injuries or physical limitations? *">
-              <SelectInput value={form.currentInjuries} onChange={v => upd("currentInjuries", v)} options={["Yes", "No"]} />
+            <F label="Current injuries or physical limitations? *" error={mt("currentInjuries")}>
+              <SelectInput value={form.currentInjuries} onChange={v => upd("currentInjuries", v)} options={["Yes", "No"]} error={mt("currentInjuries")} />
             </F>
             {hasInjury && (
               <>
-                <F label="Describe your current injury *" note='e.g. "Rolled ankle, 2 weeks old"'>
-                  <TextareaInput value={form.injuryDescription} onChange={v => upd("injuryDescription", v)} placeholder="Describe your current injury or limitation..." rows={3} />
+                <F label="Describe your current injury *" note='e.g. "Rolled ankle, 2 weeks old"' error={mt("injuryDescription")}>
+                  <TextareaInput value={form.injuryDescription} onChange={v => upd("injuryDescription", v)} placeholder="Describe your current injury or limitation..." rows={3} error={mt("injuryDescription")} />
                 </F>
                 <F label="Recurring injury history (past 2 years)" note='e.g. "IT band flares every 3 months" or "None"'>
                   <TextareaInput value={form.injuryHistory} onChange={v => upd("injuryHistory", v)} placeholder="Any recurring issues to plan around?" rows={3} />
@@ -646,22 +731,22 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               </>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <F label="Average sleep per night *">
+              <F label="Average sleep per night *" error={mt("avgSleep")}>
                 <SelectInput value={form.avgSleep} onChange={v => upd("avgSleep", v)}
-                  options={["Less than 5 hrs", "5–6 hrs", "6–7 hrs", "7–8 hrs", "8+ hrs"]} />
+                  options={["Less than 5 hrs", "5–6 hrs", "6–7 hrs", "7–8 hrs", "8+ hrs"]} error={mt("avgSleep")} />
               </F>
-              <F label="Current life stress level *">
+              <F label="Current life stress level *" error={mt("stressLevel")}>
                 <SelectInput value={form.stressLevel} onChange={v => upd("stressLevel", v)}
-                  options={["Low — manageable", "Moderate — some pressure", "High — work or life is very demanding"]} />
+                  options={["Low — manageable", "Moderate — some pressure", "High — work or life is very demanding"]} error={mt("stressLevel")} />
               </F>
             </div>
-            <F label="Race nutrition experience *">
+            <F label="Race nutrition experience *" error={mt("raceNutrition")}>
               <SelectInput value={form.raceNutrition} onChange={v => upd("raceNutrition", v)}
-                options={["Yes — tested and dialled", "Yes — but still experimenting", "Never used race nutrition"]} />
+                options={["Yes — tested and dialled", "Yes — but still experimenting", "Never used race nutrition"]} error={mt("raceNutrition")} />
             </F>
-            <F label="Strength / gym training *">
+            <F label="Strength / gym training *" error={mt("strengthTraining")}>
               <SelectInput value={form.strengthTraining} onChange={v => upd("strengthTraining", v)}
-                options={["Yes — regularly (2+ times/week)", "Yes — occasionally", "No"]} />
+                options={["Yes — regularly (2+ times/week)", "Yes — occasionally", "No"]} error={mt("strengthTraining")} />
             </F>
             <F label="Dietary restrictions or allergies" note="Optional — e.g. Vegan, Gluten-free, or None">
               <TextInput value={form.dietaryRestrictions} onChange={v => upd("dietaryRestrictions", v)} placeholder='e.g. "Vegan" or "None"' />
@@ -674,23 +759,23 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 11: return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="How do you prefer to train? *">
+            <F label="How do you prefer to train? *" error={mt("trainingPreference")}>
               <SelectInput value={form.trainingPreference} onChange={v => upd("trainingPreference", v)}
-                options={["Alone", "With a partner", "In a group", "Mix of all"]} />
+                options={["Alone", "With a partner", "In a group", "Mix of all"]} error={mt("trainingPreference")} />
             </F>
-            <F label="How do you feel about hard sessions? *">
+            <F label="How do you feel about hard sessions? *" error={mt("intensityFeeling")}>
               <SelectInput value={form.intensityFeeling} onChange={v => upd("intensityFeeling", v)}
-                options={["Love them — bring it on", "Tolerate them — necessary evil", "Dread them — prefer easy volume"]} />
+                options={["Love them — bring it on", "Tolerate them — necessary evil", "Dread them — prefer easy volume"]} error={mt("intensityFeeling")} />
             </F>
           </div>
-          <F label="What has held your training back in the past? *" note='e.g. "Motivation", "Injuries", "Work schedule"'>
-            <TextareaInput value={form.trainingBlockers} onChange={v => upd("trainingBlockers", v)} placeholder="Be honest — this helps us plan around your real blockers" rows={3} />
+          <F label="What has held your training back in the past? *" note='e.g. "Motivation", "Injuries", "Work schedule"' error={mt("trainingBlockers")}>
+            <TextareaInput value={form.trainingBlockers} onChange={v => upd("trainingBlockers", v)} placeholder="Be honest — this helps us plan around your real blockers" rows={3} error={mt("trainingBlockers")} />
           </F>
-          <F label="What motivates you most? *">
-            <TextareaInput value={form.motivation} onChange={v => upd("motivation", v)} placeholder='e.g. "Feeling fit", "Racing friends", "Proving something to myself"' rows={3} />
+          <F label="What motivates you most? *" error={mt("motivation")}>
+            <TextareaInput value={form.motivation} onChange={v => upd("motivation", v)} placeholder='e.g. "Feeling fit", "Racing friends", "Proving something to myself"' rows={3} error={mt("motivation")} />
           </F>
-          <F label="What does success look like on race day? *" note="This is your voice — it shapes your coach notes">
-            <TextareaInput value={form.successDefinition} onChange={v => upd("successDefinition", v)} placeholder="Describe your ideal race day outcome in your own words..." rows={4} />
+          <F label="What does success look like on race day? *" note="This is your voice — it shapes your coach notes" error={mt("successDefinition")}>
+            <TextareaInput value={form.successDefinition} onChange={v => upd("successDefinition", v)} placeholder="Describe your ideal race day outcome in your own words..." rows={4} error={mt("successDefinition")} />
           </F>
         </div>
       );
@@ -714,16 +799,16 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                   className="py-4 font-label text-xs uppercase tracking-widest transition-colors rounded-sm cursor-pointer"
                   style={form.hasAnythingElse === opt
                     ? { background: "rgba(184,92,44,0.15)", border: `1px solid ${ACCENT}`, color: TEXT }
-                    : { background: INPUT_BG, border: `1px solid ${CARD_BORDER}`, color: DIM }
+                    : { background: INPUT_BG, border: `1px solid ${mt("hasAnythingElse") ? ERR_BORDER : CARD_BORDER}`, color: DIM }
                   }>
                   {opt === "No" ? "No — I'm good to go" : "Yes — I have something to add"}
                 </button>
               ))}
             </div>
             {wantsToAdd && (
-              <F label="Tell us anything" note="Training quirks, race-day fears, things you forgot to mention — anything goes.">
+              <F label="Tell us anything" note="Training quirks, race-day fears, things you forgot to mention — anything goes." error={mt("anythingElse")}>
                 <TextareaInput value={form.anythingElse} onChange={v => upd("anythingElse", v)}
-                  placeholder="Write as much or as little as you'd like..." rows={5} />
+                  placeholder="Write as much or as little as you'd like..." rows={5} error={mt("anythingElse")} />
               </F>
             )}
           </div>
@@ -736,30 +821,30 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const showSecond = hasOther && form.otherSport1Name.trim() !== "";
         return (
           <div className="space-y-6">
-            <F label="Do you play other sports or have regular physical commitments? *">
-              <SelectInput value={form.otherSports} onChange={v => upd("otherSports", v)} options={["Yes", "No"]} />
+            <F label="Do you play other sports or have regular physical commitments? *" error={mt("otherSports")}>
+              <SelectInput value={form.otherSports} onChange={v => upd("otherSports", v)} options={["Yes", "No"]} error={mt("otherSports")} />
             </F>
             {hasOther && (
               <>
                 <InfoBox title="Why this matters" body="Other sports count as training load. If you play soccer twice a week, that's high-intensity running your plan needs to account for — otherwise we'd overload you." />
                 <div className="p-5 space-y-4" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, borderRadius: "2px" }}>
                   <p className="font-label text-[10px] uppercase tracking-widest" style={{ color: ACCENT }}>Activity 1</p>
-                  <F label="Sport / activity name *" note='e.g. "Soccer", "Basketball", "CrossFit"'>
-                    <TextInput value={form.otherSport1Name} onChange={v => upd("otherSport1Name", v)} placeholder="e.g. Soccer" />
+                  <F label="Sport / activity name *" note='e.g. "Soccer", "Basketball", "CrossFit"' error={mt("otherSport1Name")}>
+                    <TextInput value={form.otherSport1Name} onChange={v => upd("otherSport1Name", v)} placeholder="e.g. Soccer" error={mt("otherSport1Name")} />
                   </F>
-                  <F label="Which days? *">
+                  <F label="Which days? *" error={mt("otherSport1Days")}>
                     <MultiSelect selected={form.otherSport1Days} onChange={v => upd("otherSport1Days", v)}
-                      options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} />
+                      options={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} error={mt("otherSport1Days")} />
                   </F>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <F label="Time of day *">
-                      <SelectInput value={form.otherSport1Time} onChange={v => upd("otherSport1Time", v)} options={["Morning", "Afternoon", "Evening"]} />
+                    <F label="Time of day *" error={mt("otherSport1Time")}>
+                      <SelectInput value={form.otherSport1Time} onChange={v => upd("otherSport1Time", v)} options={["Morning", "Afternoon", "Evening"]} error={mt("otherSport1Time")} />
                     </F>
-                    <F label="Typical duration *">
-                      <SelectInput value={form.otherSport1Duration} onChange={v => upd("otherSport1Duration", v)} options={["30 min", "1 hour", "1.5 hours", "2 hours", "2+ hours"]} />
+                    <F label="Typical duration *" error={mt("otherSport1Duration")}>
+                      <SelectInput value={form.otherSport1Duration} onChange={v => upd("otherSport1Duration", v)} options={["30 min", "1 hour", "1.5 hours", "2 hours", "2+ hours"]} error={mt("otherSport1Duration")} />
                     </F>
-                    <F label="Intensity level *">
-                      <SelectInput value={form.otherSport1Intensity} onChange={v => upd("otherSport1Intensity", v)} options={["Light", "Moderate", "High"]} />
+                    <F label="Intensity level *" error={mt("otherSport1Intensity")}>
+                      <SelectInput value={form.otherSport1Intensity} onChange={v => upd("otherSport1Intensity", v)} options={["Light", "Moderate", "High"]} error={mt("otherSport1Intensity")} />
                     </F>
                   </div>
                 </div>
@@ -941,7 +1026,8 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             <button
               type="button"
               onClick={() => setStep(s => s + 1)}
-              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm cursor-pointer"
+              disabled={!canProceed}
+              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
               style={{ background: ACCENT, color: TEXT }}
             >
               Continue &rarr;
@@ -950,8 +1036,8 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={submitting}
-              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-50 cursor-pointer"
+              disabled={submitting || !canProceed}
+              className="px-8 py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
               style={{ background: ACCENT, color: TEXT }}
             >
               {submitting ? "Opening payment..." : submitLabel}
