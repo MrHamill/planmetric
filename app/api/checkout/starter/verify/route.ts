@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
 
   const firstName = email.split("@")[0];
 
+  let emailSent = false;
   try {
     await sendEmail({
       to: email,
@@ -52,12 +53,13 @@ export async function GET(req: NextRequest) {
 <p><strong>Plan:</strong> ${event} ${level}</p>
 <p><strong>Link sent:</strong> <a href="${planUrl}">${planUrl}</a></p>`,
     });
+    emailSent = true;
   } catch (e) {
     console.error("Email error:", e);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    console.error("SMTP_USER set:", !!process.env.SMTP_USER, "SMTP_PASS set:", !!process.env.SMTP_PASS);
   }
 
-  return NextResponse.json({ ok: true, email });
+  return NextResponse.json({ ok: true, email, emailSent, planUrl });
 }
 
 function buildPlanEmail(name: string, event: string, level: string, planUrl: string): string {

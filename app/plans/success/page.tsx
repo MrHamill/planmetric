@@ -23,6 +23,7 @@ function SuccessContent() {
 
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [email, setEmail] = useState("");
+  const [planUrl, setPlanUrl] = useState("");
 
   useEffect(() => {
     if (!sessionId) { setStatus("error"); return; }
@@ -32,6 +33,7 @@ function SuccessContent() {
       .then(data => {
         if (data.ok) {
           setEmail(data.email || "");
+          setPlanUrl(data.planUrl || "");
           setStatus("success");
         } else {
           setStatus("error");
@@ -161,6 +163,25 @@ function SuccessContent() {
               </motion.div>
             ))}
           </motion.div>
+
+          {planUrl && (
+            <motion.div
+              className="mb-12"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" as const, delay: 1.0 }}
+            >
+              <a
+                href={planUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+                style={{ border: `1px solid ${ACCENT}`, color: ACCENT }}
+              >
+                View Your Plan Now &rarr;
+              </a>
+            </motion.div>
+          )}
 
           <motion.p
             className="font-label text-[10px] tracking-widest uppercase mb-10"
