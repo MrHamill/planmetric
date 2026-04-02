@@ -39,39 +39,12 @@ const catColor: Record<string, { text: string; bg: string }> = {
 };
 
 /* ─── Article data ───────────────────────────────────────────── */
-const FEATURED = [
-  {
-    title: "How to structure a triathlon training plan",
-    excerpt: "Breaking down the swim-bike-run balance across a 16-week block. Periodisation, brick sessions, and taper strategy explained.",
-    readTime: "8 min read",
-    category: "Training",
-  },
-  {
-    title: "The science of polarised training",
-    excerpt: "Why 80/20 intensity distribution produces faster endurance athletes. The research behind spending more time going slow.",
-    readTime: "6 min read",
-    category: "Training",
-  },
-  {
-    title: "Race day nutrition: a complete guide",
-    excerpt: "From carb loading to on-course fuelling. How to dial in your nutrition strategy for distances from 10K to Ironman.",
-    readTime: "10 min read",
-    category: "Nutrition",
-  },
-];
-
-const TOPICS = [
+const ARTICLES = [
   { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones" },
   { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition" },
   { title: "Why most training plans fail \u2014 and what to do instead", category: "Methodology", readTime: "7 min read", excerpt: "Standardised plans underperform individualised ones by half. The research behind adaptive training and the 10% rule.", href: "/blog/why-training-plans-fail" },
   { title: "Brick sessions explained \u2014 how to train your legs for the run off the bike", category: "Triathlon", readTime: "6 min read", excerpt: "What brick legs are, how many bricks you need before race day, and why your cycling cadence determines your run.", href: "/blog/brick-sessions-explained" },
   { title: "How to taper before race day without losing fitness", category: "Racing", readTime: "5 min read", excerpt: "Reduce volume, maintain intensity, and arrive at the start line sharp. The science of the pre-race taper.", href: "/blog/how-to-taper" },
-  { title: "Zone 2 training: the foundation of endurance", category: "Training", readTime: "5 min read", excerpt: "Why most of your training should feel easy. The aerobic base that underpins every distance from 5K to Ironman." },
-  { title: "Swim technique drills for triathletes", category: "Swim", readTime: "7 min read", excerpt: "Six drills that build efficiency in the water. Focus on catch, rotation, and breathing rhythm for open water." },
-  { title: "Power meter basics for cyclists", category: "Bike", readTime: "6 min read", excerpt: "Understanding watts, FTP, and how to use power zones to structure your bike training more effectively." },
-  { title: "Running economy: what it is and how to improve it", category: "Run", readTime: "8 min read", excerpt: "The hidden metric that separates good runners from great ones. Cadence, ground contact, and stride efficiency explained." },
-  { title: "Recovery protocols that actually work", category: "Training", readTime: "5 min read", excerpt: "Sleep, nutrition timing, and active recovery. What the research says about bouncing back faster between sessions." },
-  { title: "Strength training for endurance athletes", category: "Training", readTime: "7 min read", excerpt: "How to add gym work without compromising your endurance training. Exercises, frequency, and periodisation." },
 ];
 
 /* ═══════════════════════════════════════════════════════════════ */
@@ -135,7 +108,7 @@ export default function BlogPage() {
       {/* Divider */}
       <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
 
-      {/* ═══════════════ FEATURED ARTICLES ══════════════════ */}
+      {/* ═══════════════ ARTICLES ═══════════════════════════ */}
       <section className="py-24 md:py-32 px-8 md:px-24">
         <div className="max-w-6xl mx-auto">
           <motion.span
@@ -143,72 +116,12 @@ export default function BlogPage() {
             style={{ color: DIM }}
             {...fadeUp()}
           >
-            Featured
+            Articles
           </motion.span>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {FEATURED.map((article, i) => {
+            {ARTICLES.map((article, i) => {
               const cat = catColor[article.category] || catColor.Training;
-              return (
-                <motion.article
-                  key={article.title}
-                  className="rounded-sm overflow-hidden group cursor-pointer flex flex-col"
-                  style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
-                  {...fadeUp(i * 0.15)}
-                  whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="p-8 flex-1 flex flex-col">
-                    <div className="flex items-center gap-3 mb-6">
-                      <span
-                        className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
-                        style={{ color: cat.text, background: cat.bg }}
-                      >
-                        {article.category}
-                      </span>
-                      <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
-                        {article.readTime}
-                      </span>
-                    </div>
-                    <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
-                      {article.title}
-                    </h2>
-                    <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
-                      {article.excerpt}
-                    </p>
-                    <span
-                      className="font-label text-xs tracking-wider mt-6 inline-block"
-                      style={{ color: ACCENT }}
-                    >
-                      Read article &rarr;
-                    </span>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
-
-      {/* ═══════════════ MORE ARTICLES ══════════════════════ */}
-      <section className="py-24 md:py-32 px-8 md:px-24">
-        <div className="max-w-6xl mx-auto">
-          <motion.span
-            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
-            style={{ color: DIM }}
-            {...fadeUp()}
-          >
-            More Articles
-          </motion.span>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TOPICS.map((article, i) => {
-              const cat = catColor[article.category] || catColor.Training;
-              const Wrapper = article.href ? Link : "div";
-              const wrapperProps = article.href ? { href: article.href } : {};
               return (
                 <motion.article
                   key={article.title}
@@ -218,8 +131,7 @@ export default function BlogPage() {
                   whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
                   transition={{ duration: 0.2 }}
                 >
-                  {/* @ts-expect-error dynamic wrapper */}
-                  <Wrapper {...wrapperProps} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
+                  <Link href={article.href} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
                     <div className="flex items-center gap-3 mb-6">
                       <span
                         className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
@@ -243,7 +155,7 @@ export default function BlogPage() {
                     >
                       Read article &rarr;
                     </span>
-                  </Wrapper>
+                  </Link>
                 </motion.article>
               );
             })}

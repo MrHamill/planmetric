@@ -94,6 +94,22 @@ const PLANS = [
   },
 ];
 
+/* ─── Differentiators data ───────────────────────────────────── */
+const DIFFERENTIATORS = [
+  {
+    title: "vs. Training Platforms",
+    body: "TrainingPeaks and Intervals.icu give you tools \u2014 not a plan. You still build it yourself. We do the building.",
+  },
+  {
+    title: "vs. Algorithm Apps",
+    body: "TrainerRoad and Zwift offer structured workouts, but they\u2019re one-size-fits-all. No adaptation to your life, injuries, or race date.",
+  },
+  {
+    title: "vs. Hiring a Coach",
+    body: "A coach costs $200\u2013400/month. We deliver the same personalised, race-specific plan \u2014 once \u2014 for $99.99.",
+  },
+];
+
 /* ═══════════════════════════════════════════════════════════════ */
 /*  PAGE                                                          */
 /* ═══════════════════════════════════════════════════════════════ */
@@ -183,6 +199,7 @@ export default function HomePage() {
 
           {/* CTA */}
           <motion.div
+            className="flex flex-col sm:flex-row items-center gap-4"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" as const, delay: 1.3 }}
@@ -193,6 +210,13 @@ export default function HomePage() {
               style={{ background: ACCENT, color: TEXT }}
             >
               Start Your Plan &rarr;
+            </Link>
+            <Link
+              href="/plans"
+              className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-all duration-200 hover:scale-[1.02]"
+              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+            >
+              Try a Free 5K Plan
             </Link>
           </motion.div>
         </div>
@@ -341,6 +365,55 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ──────────────── SECTION 3.5 — HOW WE'RE DIFFERENT ── */}
+      <section className="py-32 md:py-44 px-8 md:px-24" style={{ background: BG }}>
+        <div className="max-w-6xl mx-auto">
+          <motion.span
+            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+            style={{ color: DIM }}
+            {...fadeUp()}
+          >
+            Why Plan Metric
+          </motion.span>
+          <motion.h2
+            className="font-headline text-3xl md:text-5xl font-bold mb-16"
+            {...fadeUp(0.05)}
+          >
+            How we&rsquo;re{" "}
+            <span style={{ color: ACCENT }}>different</span>.
+          </motion.h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {DIFFERENTIATORS.map((d, i) => (
+              <motion.div
+                key={d.title}
+                className="p-10 rounded-sm flex flex-col"
+                style={{
+                  background: CARD_BG,
+                  border: `1px solid ${CARD_BORDER}`,
+                }}
+                {...fadeUp(i * 0.15)}
+                whileHover={{
+                  y: -6,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <h3 className="font-headline text-lg font-bold tracking-wide mb-4">
+                  {d.title}
+                </h3>
+                <p
+                  className="font-body text-sm leading-relaxed"
+                  style={{ color: DIM }}
+                >
+                  {d.body}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ──────────────── SECTION 4 — THE PLANS ───────────── */}
       <section className="relative overflow-hidden">
         {/* Top image band */}
@@ -481,8 +554,8 @@ export default function HomePage() {
             style={{ color: DIM }}
             {...fadeUp(0.1)}
           >
-            Your next race starts here. Initial assessment takes
-            8&ndash;10 minutes.
+            Tell us about your goals, your schedule, and your race.
+            It takes about 10 minutes &mdash; and it&rsquo;s where your plan starts.
           </motion.p>
           <motion.div {...fadeUp(0.2)}>
             <Link

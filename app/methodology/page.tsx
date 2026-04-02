@@ -419,7 +419,7 @@ export default function MethodologyPage() {
           style={{ color: DIM }}
           {...fadeUp(0.1)}
         >
-          Initial assessment takes 8&ndash;10 minutes.
+          Tell us about yourself. Your plan starts here.
         </motion.p>
         <motion.div {...fadeUp(0.2)}>
           <Link

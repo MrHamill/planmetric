@@ -44,7 +44,7 @@ function AssessmentContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" as const, delay: 0.35 }}
         >
-          This takes 8&ndash;10 minutes. The more detail you give us, the more accurate your plan.
+          Tell us about your training, your goals, and your life. We use every detail to build a plan that fits &mdash; not the other way around.
         </motion.p>
       </div>
 

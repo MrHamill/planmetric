@@ -11,12 +11,13 @@ const links = [
   { href: "/process", label: "PROCESS" },
   { href: "/methodology", label: "METHODOLOGY" },
   { href: "/pricing", label: "PRICING" },
+  { href: "/about", label: "ABOUT" },
   { href: "/blog", label: "BLOG" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const darkPages = ["/", "/process", "/methodology", "/pricing", "/blog", "/plans"];
+  const darkPages = ["/", "/process", "/methodology", "/pricing", "/about", "/blog", "/plans"];
   const isDark = darkPages.some(p => pathname === p || pathname.startsWith(p + "/"));
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
