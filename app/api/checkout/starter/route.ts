@@ -3,7 +3,7 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const STARTER_PRICE_ID = "price_1TFP7aEt0xoOVcMAjQJQHEfl";
+const STARTER_PRICE_ID = "price_1THZszIvKrc1hDGjvr36p9bP";
 
 export async function POST(req: NextRequest) {
   const { event, level } = await req.json();
