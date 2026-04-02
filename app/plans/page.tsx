@@ -95,23 +95,39 @@ const DESCRIPTIONS: Record<string, Record<string, string>> = {
   },
 };
 
-/* ─── Checkout helper ────────────────────────────────────────── */
-async function startCheckout(eventName: string, level: string): Promise<string | null> {
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      plan: "starter",
-      formData: { trainingFor: eventName, level },
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    alert(data.detail || data.error || "Something went wrong. Please try again.");
-    return null;
-  }
-  return data.url;
-}
+/* ─── Stripe checkout URLs per event + level ─────────────────── */
+const STRIPE_URLS: Record<string, Record<string, string>> = {
+  "10K": {
+    Beginner:     "https://buy.stripe.com/cNi7sM14I1wVfX3fNZaR200",
+    Intermediate: "https://buy.stripe.com/fZu3cw3cQejH26dfNZaR201",
+    Elite:        "https://buy.stripe.com/28E14o3cQ2AZ26d9pBaR202",
+  },
+  "Half Marathon": {
+    Beginner:     "https://buy.stripe.com/eVq9AU5kYgrP3ah9pBaR204",
+    Intermediate: "https://buy.stripe.com/3cI4gA28MdfDbGNfNZaR205",
+    Elite:        "https://buy.stripe.com/cNi3cw6p20sR3ah7htaR206",
+  },
+  "Marathon": {
+    Beginner:     "https://buy.stripe.com/eVq9AU8xafnLdOVeJVaR207",
+    Intermediate: "https://buy.stripe.com/7sY9AU6p2fnL4elgS3aR208",
+    Elite:        "https://buy.stripe.com/eVqeVecNq8Zn6mt1X9aR209",
+  },
+  "Olympic Tri": {
+    Beginner:     "https://buy.stripe.com/eVqfZiaFi6RfcKR59laR20a",
+    Intermediate: "https://buy.stripe.com/3cI00k8xaa3reSZbxJaR20b",
+    Elite:        "https://buy.stripe.com/aFa6oI00E1wV26datFaR20c",
+  },
+  "70.3": {
+    Beginner:     "https://buy.stripe.com/3cI9AU7t64J7aCJ7htaR20d",
+    Intermediate: "https://buy.stripe.com/14A9AU9Be7Vj26d8lxaR20e",
+    Elite:        "https://buy.stripe.com/8x200k00E3F3aCJ1X9aR20f",
+  },
+  "Ironman": {
+    Beginner:     "https://buy.stripe.com/cNi28s14I5NbfX3fNZaR20g",
+    Intermediate: "https://buy.stripe.com/9B68wQcNqdfD7qx8lxaR20h",
+    Elite:        "https://buy.stripe.com/cNifZi6p23F3bGN0T5aR20i",
+  },
+};
 
 const PREVIEW_WEEKS: Record<string, string[]> = {
   "5K": [
@@ -208,19 +224,8 @@ function PreviewModal({
   level: string;
   onClose: () => void;
 }) {
-  const [loading, setLoading] = useState(false);
   const week = PREVIEW_WEEKS[event] || PREVIEW_WEEKS["5K"];
   const isFree = event === "5K";
-
-  async function handlePurchase() {
-    setLoading(true);
-    const url = await startCheckout(event, level);
-    if (url) {
-      window.location.href = url;
-    } else {
-      setLoading(false);
-    }
-  }
 
   return (
     <motion.div
@@ -286,14 +291,15 @@ function PreviewModal({
             Download Free Plan
           </Link>
         ) : (
-          <button
-            onClick={handlePurchase}
-            disabled={loading}
-            className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02] cursor-pointer disabled:opacity-50"
+          <Link
+            href={STRIPE_URLS[event]?.[level] || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-4 text-xs font-label font-bold tracking-widest uppercase text-center rounded-sm transition-transform duration-200 hover:scale-[1.02]"
             style={{ background: ACCENT, color: TEXT }}
           >
-            {loading ? "Redirecting to checkout…" : "Purchase \u2014 $29.99"}
-          </button>
+            Purchase &mdash; $29.99
+          </Link>
         )}
       </motion.div>
     </motion.div>
@@ -304,18 +310,6 @@ function PreviewModal({
 export default function PlansPage() {
   const [preview, setPreview] = useState<{ event: string; level: string } | null>(null);
   const [filter, setFilter] = useState<"All" | "Running" | "Triathlon">("All");
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-
-  async function handlePurchase(eventName: string, level: string) {
-    const key = `${eventName}-${level}`;
-    setPurchasing(key);
-    const url = await startCheckout(eventName, level);
-    if (url) {
-      window.location.href = url;
-    } else {
-      setPurchasing(null);
-    }
-  }
 
   const filteredEvents = filter === "All"
     ? EVENTS
@@ -511,14 +505,15 @@ export default function PlansPage() {
                                 Download
                               </Link>
                             ) : (
-                              <button
-                                onClick={() => handlePurchase(event.name, level)}
-                                disabled={purchasing === `${event.name}-${level}`}
-                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center cursor-pointer disabled:opacity-50"
+                              <Link
+                                href={STRIPE_URLS[event.name]?.[level] || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
                                 style={{ background: ACCENT, color: TEXT }}
                               >
-                                {purchasing === `${event.name}-${level}` ? "..." : "Purchase"}
-                              </button>
+                                Purchase
+                              </Link>
                             )}
                           </div>
 
