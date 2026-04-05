@@ -114,7 +114,7 @@ End your output right after the last day-card of Week ${endWeek}.`;
     if (isFinal) {
       /* ── Stitch all parts + finalize ──────────────────────── */
       let stitched = stitchParts(sub.generated_plan_part1, chunkHtml);
-      stitched = injectCss(stitched);
+      stitched = await injectCss(stitched);
 
       const missing = validateWeeks(stitched, totalWeeks);
       if (missing.length > 0) {
@@ -194,15 +194,23 @@ function stitchParts(pass1: string, pass2: string): string {
   return p1 + "\n\n" + p2;
 }
 
-function injectCss(html: string): string {
-  const fs = require("fs");
-  const path = require("path");
+async function injectCss(html: string): Promise<string> {
   let css = "";
+
+  // Try filesystem first (works locally), then fetch from public URL (works on Vercel)
   try {
+    const fs = require("fs");
+    const path = require("path");
     const cssPath = path.resolve(process.cwd(), "public/plans/plan-styles.css");
     css = fs.readFileSync(cssPath, "utf-8");
   } catch {
-    console.error("Could not read plan-styles.css");
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      const res = await fetch(`${siteUrl}/plans/plan-styles.css`);
+      if (res.ok) css = await res.text();
+    } catch {
+      console.error("Could not load plan-styles.css from filesystem or URL");
+    }
   }
 
   if (css && html.includes("</head>")) {
