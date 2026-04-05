@@ -108,26 +108,25 @@ export async function GET(req: NextRequest) {
   }
 
   /* ── Auto-deliver/generate plan ─────────────────────────── */
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
   if (submission.plan === "starter") {
     try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      fetch(`${siteUrl}/api/deliver-starter-plan`, {
+      await fetch(`${siteUrl}/api/deliver-starter-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ submission_id: submissionId }),
-      }).catch(e => console.error("Starter plan delivery error:", e));
+      });
     } catch (e) {
       console.error("Starter plan delivery error:", e);
     }
   } else if (submission.plan === "premium" || submission.plan === "elite") {
     try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      fetch(`${siteUrl}/api/generate-plan`, {
+      await fetch(`${siteUrl}/api/generate-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ submission_id: submissionId }),
-      }).catch(e => console.error("Plan generation trigger error:", e));
-      // Fire-and-forget — don't block the verify response
+      });
     } catch (e) {
       console.error("Plan generation trigger error:", e);
     }
