@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
-
-export const maxDuration = 300;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -109,29 +107,33 @@ export async function GET(req: NextRequest) {
     console.error("Email error:", e);
   }
 
-  /* ── Auto-deliver/generate plan ─────────────────────────── */
+  /* ── Auto-deliver/generate plan (runs after response) ───── */
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   if (submission.plan === "starter") {
-    try {
-      await fetch(`${siteUrl}/api/deliver-starter-plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ submission_id: submissionId }),
-      });
-    } catch (e) {
-      console.error("Starter plan delivery error:", e);
-    }
+    after(async () => {
+      try {
+        await fetch(`${siteUrl}/api/deliver-starter-plan`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ submission_id: submissionId }),
+        });
+      } catch (e) {
+        console.error("Starter plan delivery error:", e);
+      }
+    });
   } else if (submission.plan === "premium" || submission.plan === "elite") {
-    try {
-      await fetch(`${siteUrl}/api/generate-plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ submission_id: submissionId }),
-      });
-    } catch (e) {
-      console.error("Plan generation trigger error:", e);
-    }
+    after(async () => {
+      try {
+        await fetch(`${siteUrl}/api/generate-plan`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ submission_id: submissionId }),
+        });
+      } catch (e) {
+        console.error("Plan generation trigger error:", e);
+      }
+    });
   }
 
   return NextResponse.json({ ok: true, email: submission.email });

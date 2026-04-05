@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
@@ -107,13 +107,19 @@ End your output right after the last day-card of Week ${endWeek}.`;
       .update({ generated_plan_part1: pass1Html })
       .eq("id", submission_id);
 
-    /* ── Trigger next chunk ──────────────────────────────────── */
+    /* ── Trigger next chunk (runs after response is sent) ───── */
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    fetch(`${siteUrl}/api/generate-plan/continue`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
-    }).catch(e => console.error("Failed to trigger next chunk:", e));
+    after(async () => {
+      try {
+        await fetch(`${siteUrl}/api/generate-plan/continue`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
+        });
+      } catch (e) {
+        console.error("Failed to trigger next chunk:", e);
+      }
+    });
 
     return NextResponse.json({ ok: true, status: "generating", pass: 1, weeksGenerated: endWeek });
   } catch (e: unknown) {
