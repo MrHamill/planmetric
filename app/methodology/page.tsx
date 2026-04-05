@@ -269,80 +269,6 @@ export default function MethodologyPage() {
 
       <Divider />
 
-      {/* ───────── SECTION 3 — HOW WE BUILD YOUR PLAN ─────── */}
-      <section className="py-32 md:py-44 px-8 md:px-24">
-        <div className="max-w-6xl mx-auto">
-          <motion.span
-            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
-            style={{ color: DIM }}
-            {...fadeUp()}
-          >
-            From Data to Design
-          </motion.span>
-
-          <motion.h2
-            className="font-headline text-3xl md:text-4xl font-bold mb-24"
-            {...fadeUp(0.05)}
-          >
-            From data to <span style={{ color: ACCENT }}>design</span>.
-          </motion.h2>
-
-          {/* Timeline connector + cards */}
-          <div className="relative">
-            {/* Horizontal connecting line (desktop only) */}
-            <div
-              className="hidden md:block absolute top-[52px] left-[calc(12.5%+16px)] right-[calc(12.5%+16px)] h-px"
-              style={{ background: RULE }}
-              aria-hidden="true"
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {BUILD_STEPS.map((step, i) => (
-                <motion.div
-                  key={step.number}
-                  className="relative pt-0"
-                  {...fadeUp(i * 0.15)}
-                >
-                  {/* Dot on the timeline */}
-                  <div className="flex justify-center mb-6">
-                    <div
-                      className="w-3 h-3 rounded-full relative z-10"
-                      style={{ background: ACCENT, boxShadow: `0 0 12px rgba(184,92,44,0.3)` }}
-                    />
-                  </div>
-
-                  {/* Card */}
-                  <motion.div
-                    className="p-8 rounded-sm text-center"
-                    style={{
-                      background: CARD_BG,
-                      border: `1px solid ${CARD_BORDER}`,
-                    }}
-                    whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span
-                      className="font-headline text-3xl font-extrabold block mb-4"
-                      style={{ color: ACCENT }}
-                    >
-                      {step.number}
-                    </span>
-                    <h3 className="font-headline text-lg font-bold mb-3">
-                      {step.title}
-                    </h3>
-                    <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
-                      {step.body}
-                    </p>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <Divider />
-
       {/* ───────── SECTION 4 — THE PLAN FORMAT ────────────── */}
       <section className="py-32 md:py-44 px-8 md:px-24">
         <div className="max-w-4xl mx-auto">
@@ -442,6 +368,8 @@ export default function MethodologyPage() {
         </span>
         <div className="flex gap-8">
           {[
+            ["About", "/about"],
+            ["Plans", "/plans"],
             ["Terms", "/terms"],
             ["Privacy", "/privacy"],
             ["Instagram", "https://www.instagram.com/planmetric"],

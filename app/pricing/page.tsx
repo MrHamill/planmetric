@@ -163,6 +163,7 @@ export default function PricingPage() {
               return (
                 <motion.div
                   key={plan.key}
+                  id={plan.key}
                   className={`relative rounded-sm flex flex-col cursor-pointer group ${
                     plan.featured ? "p-10 md:p-12 md:-my-4 z-10" : "p-10"
                   }`}
@@ -373,30 +374,41 @@ export default function PricingPage() {
       {/* Divider */}
       <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
 
-      {/* ═══════════════ BOTTOM CTA ════════════════════════ */}
+      {/* ═══════════════ DECISION HELPER ══════════════════ */}
       <section className="py-32 md:py-40 px-8 md:px-24 text-center">
         <motion.h2
-          className="font-headline text-4xl md:text-5xl font-bold mb-5"
+          className="font-headline text-3xl md:text-4xl font-bold mb-12"
           {...fadeUp()}
         >
-          Not sure which <span style={{ color: ACCENT }}>plan</span>?
+          Not sure which level is right for <span style={{ color: ACCENT }}>you</span>?
         </motion.h2>
-        <motion.p
-          className="font-body text-base mb-12 max-w-md mx-auto"
-          style={{ color: DIM }}
-          {...fadeUp(0.1)}
-        >
-          Not sure which plan? Take the assessment and we&rsquo;ll recommend the right one.
-        </motion.p>
-        <motion.div {...fadeUp(0.2)}>
-          <Link
-            href="/process"
-            className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
-            style={{ background: ACCENT, color: TEXT }}
-          >
-            Take Assessment &rarr;
-          </Link>
-        </motion.div>
+
+        <div className="max-w-xl mx-auto space-y-4">
+          {[
+            { text: "This is my first structured plan", tier: "Starter", anchor: "starter" },
+            { text: "I\u2019m training for a specific race with a specific goal", tier: "Premium", anchor: "premium" },
+            { text: "I want a coach in my corner month to month", tier: "Elite", anchor: "elite" },
+          ].map((item, i) => (
+            <motion.button
+              key={item.anchor}
+              onClick={() => document.getElementById(item.anchor)?.scrollIntoView({ behavior: "smooth" })}
+              className="w-full flex items-center justify-between py-5 px-6 rounded-sm cursor-pointer transition-all duration-200 hover:scale-[1.01] text-left group"
+              style={{
+                background: CARD_BG,
+                border: `1px solid ${CARD_BORDER}`,
+              }}
+              {...fadeUp(i * 0.1)}
+              whileHover={{ borderColor: ACCENT }}
+            >
+              <span className="font-body text-base" style={{ color: "rgba(245,245,240,0.75)" }}>
+                {item.text}
+              </span>
+              <span className="font-label text-sm font-bold tracking-widest uppercase shrink-0 ml-4 transition-colors duration-200 group-hover:text-white" style={{ color: ACCENT }}>
+                &rarr; {item.tier}
+              </span>
+            </motion.button>
+          ))}
+        </div>
       </section>
 
       {/* ═══════════════ FOOTER ═════════════════════════════ */}
@@ -407,6 +419,8 @@ export default function PricingPage() {
         <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">Plan Metric</span>
         <div className="flex gap-8">
           {[
+            ["About", "/about"],
+            ["Plans", "/plans"],
             ["Terms", "/terms"],
             ["Privacy", "/privacy"],
             ["Instagram", "https://www.instagram.com/planmetric"],

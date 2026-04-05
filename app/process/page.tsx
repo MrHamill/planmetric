@@ -45,8 +45,8 @@ const STEPS = [
   {
     number: "02",
     phase: "Phase: Data Integration",
-    title: "8\u201310 Min Intake",
-    body: "Precision starts with data. We analyse your injury history, heart rate zones, and current weekly volume in KM. Your plan is engineered around your exact thresholds, availability, and race date.",
+    title: "Tell Us About You",
+    body: "Tell us about your current fitness, weekly availability, race goals, injury history, and what motivates you. We use every detail to build a plan that fits your life \u2014 not the other way around.",
   },
   {
     number: "03",
@@ -170,19 +170,6 @@ export default function ProcessPage() {
                 {step.body}
               </p>
 
-              {/* CTA on last step */}
-              {i === STEPS.length - 1 && (
-                <div className="mt-12">
-                  <Link
-                    href="/assessment"
-                    className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
-                    style={{ background: ACCENT, color: TEXT }}
-                  >
-                    Start Your Intake &rarr;
-                  </Link>
-                </div>
-              )}
-
               {/* Subtle divider between steps */}
               {i < STEPS.length - 1 && (
                 <div
@@ -213,11 +200,11 @@ export default function ProcessPage() {
         </motion.p>
         <motion.div {...fadeUp(0.2)}>
           <Link
-            href="/assessment"
+            href="/intake"
             className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
             style={{ background: ACCENT, color: TEXT }}
           >
-            Start Your Assessment &rarr;
+            Start Your Intake &rarr;
           </Link>
         </motion.div>
       </section>
@@ -232,6 +219,8 @@ export default function ProcessPage() {
         </span>
         <div className="flex gap-8">
           {[
+            ["About", "/about"],
+            ["Plans", "/plans"],
             ["Terms", "/terms"],
             ["Privacy", "/privacy"],
             ["Instagram", "https://www.instagram.com/planmetric"],

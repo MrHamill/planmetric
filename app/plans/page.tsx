@@ -288,6 +288,16 @@ export default function PlansPage() {
   const [preview, setPreview] = useState<{ event: string; level: string } | null>(null);
   const [filter, setFilter] = useState<"All" | "Running" | "Triathlon">("All");
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+
+  function toggleSection(name: string) {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  }
 
   async function handlePurchase(event: string, level: string) {
     const key = `${event}-${level}`;
@@ -355,7 +365,7 @@ export default function PlansPage() {
           >
             Pre-built plans.{" "}
             <br className="hidden md:block" />
-            Proven <span style={{ color: ACCENT }}>results</span>.
+            Ready to <span style={{ color: ACCENT }}>train</span>.
           </motion.h1>
 
           <motion.p
@@ -384,8 +394,19 @@ export default function PlansPage() {
       <section className="py-24 md:py-32 px-8 md:px-24">
         <div className="max-w-6xl mx-auto">
 
+          {/* Personalised plan CTA */}
+          <motion.div className="mb-16" {...fadeUp()}>
+            <Link
+              href="/intake"
+              className="inline-flex items-center gap-3 font-label text-sm font-bold tracking-wider px-8 py-4 rounded-sm transition-all duration-200 hover:scale-[1.02]"
+              style={{ background: ACCENT, color: TEXT }}
+            >
+              Want a plan built just for you? &rarr; Start Your Intake
+            </Link>
+          </motion.div>
+
           {/* Filter pills */}
-          <div className="flex gap-4 mb-20">
+          <div className="flex gap-4 mb-16">
             {(["All", "Running", "Triathlon"] as const).map((tab) => (
               <button
                 key={tab}
@@ -402,129 +423,155 @@ export default function PlansPage() {
             ))}
           </div>
 
-          {/* Event groups */}
-          {filteredEvents.map((event) => {
-            const isFree = event.name === "5K";
-            return (
-              <div key={event.name} className="mb-24">
-                {/* Group header with orange hairline */}
-                <motion.div className="mb-10" {...fadeUp()}>
-                  <div className="flex items-center gap-4 mb-3">
-                    <h2 className="font-headline text-3xl md:text-4xl font-bold">
-                      {event.name}
-                    </h2>
-                    <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
-                      {event.category}
-                    </span>
-                    {isFree && (
-                      <span
-                        className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-                        style={{ background: ACCENT, color: TEXT }}
-                      >
-                        FREE
+          {/* Event groups — collapsible accordions */}
+          <div className="space-y-4">
+            {filteredEvents.map((event) => {
+              const isFree = event.name === "5K";
+              const isOpen = openSections.has(event.name);
+              return (
+                <div key={event.name}>
+                  {/* Accordion header */}
+                  <button
+                    onClick={() => toggleSection(event.name)}
+                    className="w-full flex items-center justify-between py-6 px-6 rounded-sm cursor-pointer transition-all duration-200 group"
+                    style={{
+                      background: isOpen ? "rgba(245,245,240,0.05)" : CARD_BG,
+                      border: `1px solid ${isOpen ? ACCENT : CARD_BORDER}`,
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <h2 className="font-headline text-2xl md:text-3xl font-bold">
+                        {event.name}
+                      </h2>
+                      <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                        {event.category}
                       </span>
-                    )}
-                  </div>
-                  <div className="w-16 h-px" style={{ background: ACCENT }} />
-                </motion.div>
+                      {isFree && (
+                        <span
+                          className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                          style={{ background: ACCENT, color: TEXT }}
+                        >
+                          FREE
+                        </span>
+                      )}
+                    </div>
+                    <motion.svg
+                      width="20" height="20" viewBox="0 0 20 20" fill="none"
+                      stroke="currentColor" strokeWidth="1.5"
+                      style={{ color: DIM }}
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <path d="M5 8l5 5 5-5" />
+                    </motion.svg>
+                  </button>
 
-                {/* Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {LEVELS.map((level, i) => {
-                    const lc = LEVEL_COLORS[level];
-                    return (
+                  {/* Accordion content */}
+                  <AnimatePresence>
+                    {isOpen && (
                       <motion.div
-                        key={level}
-                        className="relative rounded-sm flex flex-col group"
-                        style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
-                        {...fadeUp(i * 0.1)}
-                        whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
-                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.35, ease: "easeOut" as const }}
                       >
-                        {/* FREE badge */}
-                        {isFree && (
-                          <div
-                            className="absolute top-3 right-3 font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full z-10"
-                            style={{ background: ACCENT, color: TEXT }}
-                          >
-                            FREE
-                          </div>
-                        )}
-
-                        <div className="p-8 flex-1 flex flex-col">
-                          {/* Distance — large at top */}
-                          <span className="font-headline text-2xl font-bold tracking-tight mb-1">
-                            {event.name}
-                          </span>
-
-                          {/* Level tag — small */}
-                          <span
-                            className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full self-start mb-6"
-                            style={{ color: lc.text, background: lc.bg }}
-                          >
-                            {level}
-                          </span>
-
-                          {/* Description — muted */}
-                          <p className="font-body text-sm leading-relaxed mb-4 min-h-[48px]" style={{ color: DIM }}>
-                            {DESCRIPTIONS[event.name]?.[level]}
-                          </p>
-
-                          {/* Duration */}
-                          <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
-                            {DURATIONS[event.name]?.[level]}
-                          </span>
-                        </div>
-
-                        <div className="px-8 pb-8">
-                          {/* Price — bold and clear */}
-                          <div className="font-headline text-3xl font-extrabold mb-6" style={{ color: isFree ? ACCENT : TEXT }}>
-                            {isFree ? "FREE" : "$29.99"}
-                          </div>
-
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => setPreview({ event: event.name, level })}
-                              className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] cursor-pointer text-center"
-                              style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
-                            >
-                              Preview
-                            </button>
-                            {isFree ? (
-                              <Link
-                                href={FREE_PLAN_FILES[level] || "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
-                                style={{ background: ACCENT, color: TEXT }}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 pb-8">
+                          {LEVELS.map((level, i) => {
+                            const lc = LEVEL_COLORS[level];
+                            return (
+                              <motion.div
+                                key={level}
+                                className="relative rounded-sm flex flex-col group"
+                                style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: i * 0.08 }}
+                                whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
                               >
-                                Download
-                              </Link>
-                            ) : (
-                              <button
-                                onClick={() => handlePurchase(event.name, level)}
-                                disabled={purchasing === `${event.name}-${level}`}
-                                className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center cursor-pointer disabled:opacity-50"
-                                style={{ background: ACCENT, color: TEXT }}
-                              >
-                                {purchasing === `${event.name}-${level}` ? "Loading..." : "Purchase"}
-                              </button>
-                            )}
-                          </div>
+                                {/* FREE badge */}
+                                {isFree && (
+                                  <div
+                                    className="absolute top-3 right-3 font-label text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full z-10"
+                                    style={{ background: ACCENT, color: TEXT }}
+                                  >
+                                    FREE
+                                  </div>
+                                )}
 
-                          {isFree && (
-                            <p className="font-label text-[10px] text-center mt-3 tracking-wide" style={{ color: DIM }}>
-                              See what a Plan Metric plan looks like
-                            </p>
-                          )}
+                                <div className="p-8 flex-1 flex flex-col">
+                                  <span className="font-headline text-2xl font-bold tracking-tight mb-1">
+                                    {event.name}
+                                  </span>
+
+                                  <span
+                                    className="font-label text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full self-start mb-6"
+                                    style={{ color: lc.text, background: lc.bg }}
+                                  >
+                                    {level}
+                                  </span>
+
+                                  <p className="font-body text-sm leading-relaxed mb-4 min-h-[48px]" style={{ color: DIM }}>
+                                    {DESCRIPTIONS[event.name]?.[level]}
+                                  </p>
+
+                                  <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                                    {DURATIONS[event.name]?.[level]}
+                                  </span>
+                                </div>
+
+                                <div className="px-8 pb-8">
+                                  <div className="font-headline text-3xl font-extrabold mb-6" style={{ color: isFree ? ACCENT : TEXT }}>
+                                    {isFree ? "FREE" : "$29.99"}
+                                  </div>
+
+                                  <div className="flex gap-3">
+                                    <button
+                                      onClick={() => setPreview({ event: event.name, level })}
+                                      className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] cursor-pointer text-center"
+                                      style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+                                    >
+                                      Preview
+                                    </button>
+                                    {isFree ? (
+                                      <Link
+                                        href={FREE_PLAN_FILES[level] || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center"
+                                        style={{ background: ACCENT, color: TEXT }}
+                                      >
+                                        Download
+                                      </Link>
+                                    ) : (
+                                      <button
+                                        onClick={() => handlePurchase(event.name, level)}
+                                        disabled={purchasing === `${event.name}-${level}`}
+                                        className="flex-1 py-3 text-xs font-label font-bold tracking-widest uppercase rounded-sm transition-all duration-200 hover:scale-[1.01] text-center cursor-pointer disabled:opacity-50"
+                                        style={{ background: ACCENT, color: TEXT }}
+                                      >
+                                        {purchasing === `${event.name}-${level}` ? "Loading..." : "Purchase"}
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  {isFree && (
+                                    <p className="font-label text-[10px] text-center mt-3 tracking-wide" style={{ color: DIM }}>
+                                      See what a Plan Metric plan looks like
+                                    </p>
+                                  )}
+                                </div>
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       </motion.div>
-                    );
-                  })}
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -547,6 +594,8 @@ export default function PlansPage() {
         <span className="font-label text-[11px] tracking-[0.3em] uppercase font-bold">Plan Metric</span>
         <div className="flex gap-8">
           {[
+            ["About", "/about"],
+            ["Plans", "/plans"],
             ["Terms", "/terms"],
             ["Privacy", "/privacy"],
             ["Instagram", "https://www.instagram.com/planmetric"],

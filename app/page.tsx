@@ -284,14 +284,14 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Tagline */}
+          {/* Brand statement */}
           <motion.p
-            className="font-body text-sm italic mt-20 max-w-2xl mx-auto text-center leading-relaxed"
-            style={{ color: DIM }}
+            className="font-headline text-xl md:text-2xl font-bold mt-20 max-w-2xl mx-auto text-center leading-relaxed tracking-tight"
+            style={{ color: "rgba(245,245,240,0.65)" }}
             {...fadeUp(0.3)}
           >
-            &ldquo;Built from your data, your lifestyle, your schedule, your
-            goals. This plan is made for you&nbsp;&mdash; not anyone else.&rdquo;
+            Built from your data, your lifestyle, your schedule, your
+            goals. This plan is made for you&nbsp;&mdash; not anyone else.
           </motion.p>
         </div>
       </section>
@@ -580,6 +580,8 @@ export default function HomePage() {
 
         <div className="flex gap-8">
           {[
+            ["About", "/about"],
+            ["Plans", "/plans"],
             ["Terms", "/terms"],
             ["Privacy", "/privacy"],
             ["Instagram", "https://www.instagram.com/planmetric"],

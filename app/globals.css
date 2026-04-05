@@ -17,55 +17,55 @@
   --color-primary:           #A0522D;  /* Chestnut brown — buttons, accents */
   --color-primary-dim:       #6B3A2A;  /* Darker chestnut — hover on primary */
   --color-primary-container: #C4734F;  /* Burnt sienna */
-  --color-on-primary:        #F0E6D4;  /* Cream — text on primary buttons */
-  --color-on-primary-container: #F5EDE0;
-  --color-primary-fixed:     #F5EDE0;
-  --color-primary-fixed-dim: #EDE3D0;
-  --color-on-primary-fixed:  #1C1614;
-  --color-on-primary-fixed-variant: #3A2E28;
+  --color-on-primary:        #F5F5F0;  /* Off-white — text on primary buttons */
+  --color-on-primary-container: #F5F5F0;
+  --color-primary-fixed:     #F5F5F0;
+  --color-primary-fixed-dim: rgba(245,245,240,0.7);
+  --color-on-primary-fixed:  #F5F5F0;
+  --color-on-primary-fixed-variant: rgba(245,245,240,0.7);
   --color-inverse-primary:   #D8CDB8;
   --color-surface-tint:      #A0522D;
 
   /* ── Surface palette ────────────────────────────────── */
-  --color-background:              #F0E6D4;  /* Main page background — warm cream */
-  --color-surface:                 #F0E6D4;  /* Same as background */
-  --color-surface-dim:             #EDE3D0;
-  --color-surface-bright:          #F5EDE0;
-  --color-surface-variant:         #E4DAC8;
-  --color-surface-container-lowest:  #F5EDE0;  /* Lightest surface */
-  --color-surface-container-low:     #EDE3D0;  /* Light surface */
-  --color-surface-container:         #E4DAC8;  /* Cards, nav background */
-  --color-surface-container-high:    #DBD0BC;  /* Hover states, active cards */
-  --color-surface-container-highest: #D8CDB8;  /* Footer, deepest cream */
-  --color-inverse-surface:         #1C1614;
-  --color-inverse-on-surface:      #F0E6D4;
+  --color-background:              #0F0F0F;  /* Main page background — black */
+  --color-surface:                 #0F0F0F;  /* Same as background */
+  --color-surface-dim:             #1A1A1A;
+  --color-surface-bright:          #222222;
+  --color-surface-variant:         #2A2A2A;
+  --color-surface-container-lowest:  #141414;  /* Darkest surface */
+  --color-surface-container-low:     #1A1A1A;  /* Dark surface */
+  --color-surface-container:         #1E1E1E;  /* Cards, nav background */
+  --color-surface-container-high:    #252525;  /* Hover states, active cards */
+  --color-surface-container-highest: #1A1A1A;  /* Footer */
+  --color-inverse-surface:         #F5F5F0;
+  --color-inverse-on-surface:      #0F0F0F;
 
   /* ── Text palette ───────────────────────────────────── */
-  --color-on-surface:         #1C1614;  /* Headings, strong text — near black */
-  --color-on-background:      #1C1614;
-  --color-on-surface-variant: #3A2E28;  /* Body text — dark brown */
+  --color-on-surface:         #F5F5F0;  /* Headings, strong text — off-white */
+  --color-on-background:      #F5F5F0;
+  --color-on-surface-variant: rgba(245,245,240,0.7);  /* Body text — muted cream */
 
   /* ── Secondary ──────────────────────────────────────── */
   --color-secondary:               #C4734F;  /* Burnt sienna — eyebrow, labels */
   --color-secondary-dim:           #A0522D;
-  --color-secondary-container:     #EDE3D0;
-  --color-on-secondary:            #1C1614;
-  --color-on-secondary-container:  #3A2E28;
-  --color-secondary-fixed:         #F5EDE0;
-  --color-secondary-fixed-dim:     #EDE3D0;
-  --color-on-secondary-fixed:      #1C1614;
-  --color-on-secondary-fixed-variant: #3A2E28;
+  --color-secondary-container:     #1E1E1E;
+  --color-on-secondary:            #F5F5F0;
+  --color-on-secondary-container:  rgba(245,245,240,0.7);
+  --color-secondary-fixed:         #F5F5F0;
+  --color-secondary-fixed-dim:     rgba(245,245,240,0.7);
+  --color-on-secondary-fixed:      #F5F5F0;
+  --color-on-secondary-fixed-variant: rgba(245,245,240,0.7);
 
   /* ── Tertiary ───────────────────────────────────────── */
   --color-tertiary:                #8B4513;
   --color-tertiary-dim:            #6B3A2A;
-  --color-tertiary-container:      #EDE3D0;
-  --color-tertiary-fixed:          #EDE3D0;
-  --color-tertiary-fixed-dim:      #DBD0BC;
-  --color-on-tertiary:             #F0E6D4;
-  --color-on-tertiary-container:   #1C1614;
-  --color-on-tertiary-fixed:       #1C1614;
-  --color-on-tertiary-fixed-variant: #3A2E28;
+  --color-tertiary-container:      #1E1E1E;
+  --color-tertiary-fixed:          rgba(245,245,240,0.7);
+  --color-tertiary-fixed-dim:      #2A2A2A;
+  --color-on-tertiary:             #F5F5F0;
+  --color-on-tertiary-container:   #F5F5F0;
+  --color-on-tertiary-fixed:       #F5F5F0;
+  --color-on-tertiary-fixed-variant: rgba(245,245,240,0.7);
 
   /* ── Outline ────────────────────────────────────────── */
   --color-outline:         #A0522D;  /* Use with opacity modifiers e.g. /18 */
@@ -88,18 +88,18 @@
 
 /* ── Base ───────────────────────────────────────────────── */
 html {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #F0E6D4;
-  color: #1C1614;
+  background-color: #0F0F0F;
+  color: #F5F5F0;
   font-family: var(--font-inter), sans-serif;
 }
 
 ::selection {
   background-color: #A0522D;
-  color: #F0E6D4;
+  color: #F5F5F0;
 }
 
 .material-symbols-outlined {
