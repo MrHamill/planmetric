@@ -11,8 +11,8 @@ paths:
 
 | Plan | Price ID | Mode | Price |
 |---|---|---|---|
-| `starter` | `price_1TFP7aEt0xoOVcMAjQJQHEfl` | `payment` | $29.99 one-time |
-| `premium` | `price_1TFP8eEt0xoOVcMAJWL3g0IF` | `payment` | $99.99 one-time |
+| `starter` | `price_1THZszIvKrc1hDGjvr36p9bP` | `payment` | $29.99 one-time |
+| `premium` | `price_1TEQtsIvKrc1hDGjoQgyaUQN` | `payment` | $99.99 one-time |
 | `elite` | `price_1TEQtrIvKrc1hDGjPQjhulVk` | `subscription` | $99/month |
 
 Do not change price IDs without verifying they exist in the Stripe dashboard.
