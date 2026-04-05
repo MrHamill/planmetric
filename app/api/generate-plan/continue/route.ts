@@ -113,7 +113,8 @@ End your output right after the last day-card of Week ${endWeek}.`;
 
     if (isFinal) {
       /* ── Stitch all parts + finalize ──────────────────────── */
-      let stitched = stitchParts(sub.generated_plan_part1, chunkHtml);
+      const repairedPart1 = repairTrailingHtml(sub.generated_plan_part1);
+      let stitched = stitchParts(repairedPart1, chunkHtml);
       stitched = await injectCss(stitched);
 
       const missing = validateWeeks(stitched, totalWeeks);
@@ -152,7 +153,8 @@ End your output right after the last day-card of Week ${endWeek}.`;
       });
     } else {
       /* ── Append chunk to part1 and trigger next chunk ─────── */
-      const updatedPart1 = sub.generated_plan_part1 + "\n\n" + chunkHtml;
+      const repairedPart1 = repairTrailingHtml(sub.generated_plan_part1);
+      const updatedPart1 = repairedPart1 + "\n\n" + chunkHtml;
 
       await supabase
         .from("intake_submissions")
@@ -182,6 +184,33 @@ End your output right after the last day-card of Week ${endWeek}.`;
 }
 
 /* ─── Helpers ──────────────────────────────────────────────────── */
+
+/** Close any orphaned HTML tags left when Claude gets cut off mid-week */
+function repairTrailingHtml(html: string): string {
+  // Track open tags (simplified — only cares about div, details, summary, section, span)
+  const openTags: string[] = [];
+  const tagRegex = /<\/?(\w+)[^>]*>/g;
+  const selfClosing = new Set(["br", "hr", "img", "input", "meta", "link"]);
+  let match;
+
+  while ((match = tagRegex.exec(html)) !== null) {
+    const [full, tag] = match;
+    const tagLower = tag.toLowerCase();
+    if (selfClosing.has(tagLower)) continue;
+    if (full.startsWith("</")) {
+      // Closing tag — pop matching open tag
+      const idx = openTags.lastIndexOf(tagLower);
+      if (idx !== -1) openTags.splice(idx, 1);
+    } else if (!full.endsWith("/>")) {
+      openTags.push(tagLower);
+    }
+  }
+
+  // Close orphaned tags in reverse order (skip html, body, head — those are structural)
+  const structural = new Set(["html", "body", "head"]);
+  const toClose = openTags.filter(t => !structural.has(t)).reverse();
+  return html + toClose.map(t => `</${t}>`).join("\n");
+}
 
 function stitchParts(pass1: string, pass2: string): string {
   let p1 = pass1.replace(/<\/body>\s*<\/html>\s*$/i, "");
