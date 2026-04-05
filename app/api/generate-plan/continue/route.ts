@@ -201,12 +201,12 @@ async function injectCss(html: string): Promise<string> {
   try {
     const fs = require("fs");
     const path = require("path");
-    const cssPath = path.resolve(process.cwd(), "public/plans/plan-styles.css");
+    const cssPath = path.resolve(process.cwd(), "public/assets/plan-styles.css");
     css = fs.readFileSync(cssPath, "utf-8");
   } catch {
     try {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      const res = await fetch(`${siteUrl}/plans/plan-styles.css`);
+      const res = await fetch(`${siteUrl}/assets/plan-styles.css`);
       if (res.ok) css = await res.text();
     } catch {
       console.error("Could not load plan-styles.css from filesystem or URL");
