@@ -63,11 +63,12 @@ ${athleteProfile}
 
 This plan has ${totalWeeks} total weeks. Generate ONLY:
 1. Phase banners and DETAILED week-by-week content for Weeks ${startWeek} through ${totalWeeks} (the final week is race week)
-2. Race Day Protocol section (race-protocol class) with THREE collapsible <details class="protocol-section"> sub-sections: <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default), <details class="protocol-section"><summary>Your Race Strategy</summary>, <details class="protocol-section"><summary>Mental Strategy</summary>
-3. Glossary section (glossary class)
-4. Coach Tips section (coach-tips class, 6-8 tips — use <span class="material-symbols-outlined"> icons in .tip-icon, NEVER emojis)
-5. Footer (plan-footer class)
-6. Close all remaining tags: </div></body></html>
+2. Training Phases Breakdown section (phase-breakdown class — coach-style explanation of each phase). The week ranges in each phase card MUST exactly match the actual weeks in the plan. Use only four phases: BASE, BUILD, PEAK, TAPER.
+3. Race Day Protocol section (race-protocol class) with THREE collapsible <details class="protocol-section"> sub-sections: <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default), <details class="protocol-section"><summary>Your Race Strategy</summary>, <details class="protocol-section"><summary>Mental Strategy</summary>
+4. Glossary section (glossary class)
+5. Coach Tips section (coach-tips class, 6-8 tips — use <span class="material-symbols-outlined"> icons in .tip-icon, NEVER emojis)
+6. Footer (plan-footer class)
+7. Close all remaining tags: </div></body></html>
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
 CRITICAL: You MUST complete ALL 7 days of every week before moving to the next. Do not cut off mid-week.

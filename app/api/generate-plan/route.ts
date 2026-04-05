@@ -70,8 +70,9 @@ This plan has ${totalWeeks} total weeks. In this response, generate:
 4. Training Zones section
 5. How To Use This Plan section
 6. Disclaimer (disclaimer class — use the exact disclaimer text from the system prompt, do not alter it)
-7. Training Phases Breakdown (phase-breakdown class — coach-style explanation of each phase, NOT a week-by-week grid)
-8. Phase banners and DETAILED week-by-week content for Weeks 1 through ${endWeek}
+7. Phase banners and DETAILED week-by-week content for Weeks 1 through ${endWeek}
+
+Do NOT include the Training Phases Breakdown section yet — it will be generated later once all weeks are complete.
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
 CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
@@ -356,6 +357,7 @@ RACE DAY: <section class="race-protocol"> with <details class="protocol-section"
   1. <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default) — use .timeline and .time-block inside
   2. <details class="protocol-section"><summary>Your Race Strategy</summary>
   3. <details class="protocol-section"><summary>Mental Strategy</summary>
+— If the athlete has a target finish time, all split estimates MUST add up to LESS than that target. Double-check the arithmetic. If you cannot confidently calculate accurate splits, describe the STRATEGY without specific time predictions.
 
 GLOSSARY: <section class="glossary"> with .glossary-grid → .term
 
@@ -377,8 +379,6 @@ HEAD TEMPLATE (use this exact <head>, no <style>):
 </head>
 
 COACHING KNOWLEDGE:
-- Intensity: 80-90% Z1-Z2, 5-10% threshold, 5% VO2max
-- Periodisation: Base → Build → Peak → Taper (2-3 wks). Recovery every 4th week at 50-60%.
 - Zones: Karvonen for HR. Cycling HR 5-10 BPM lower. Swimming HR 10-15 BPM lower.
 - CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, CSS ±3s, VO2max CSS-5-10s
 - FTP: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%
@@ -389,6 +389,32 @@ COACHING KNOWLEDGE:
 - Brick: 2-4 sessions in final 6 weeks. 60-90min bike → 15-30min run.
 - Nutrition: <60min 0-30g/hr, 60-90min 30-60g/hr, >2.5hr 80-90g/hr
 - All units: KM, min/km, BPM, Celsius
+
+PHASES — use EXACTLY four phases, no sub-phases:
+- BASE: Aerobic endurance at low intensity, technique focus, volume building. ~40% of plan.
+- BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. ~30% of plan.
+- PEAK: Race-specific sessions, brick workouts, simulations. Highest intensity. ~15% of plan.
+- TAPER: Reduce volume 30-50%, maintain intensity with short sharp efforts. 2-3 weeks before race.
+- Recovery weeks every 3rd or 4th week at 50-60% volume (within any phase).
+- Do NOT create sub-phases like "Build 1" and "Build 2" or "Pre-Base". Only the four above.
+
+WEEKLY CONSISTENCY — CRITICAL:
+- Assign each training day a consistent role across the entire plan (e.g., Monday = easy run + distance swim, Tuesday = morning bike, Wednesday = threshold run, etc.)
+- Keep the same day-to-session mapping throughout all phases as much as possible. Do NOT shuffle session types between days from week to week unless the athlete has shift work or rotating schedules that require it.
+- If the athlete has shift work or variable availability, adjust session placement to fit their schedule but maintain the same SESSION TYPES each week (e.g., always 1 threshold run, 1 long bike, 2 technique swims per week — even if the days shift).
+- Progress through phases by increasing VOLUME first (Base), then INTENSITY (Build/Peak), NOT by changing which days do what.
+- Follow the 80/20 rule: 80% low-intensity (Z1-Z2), 20% high-intensity across each week.
+- Increase weekly volume by max 10% per week. Swim/run: max +5 min/week. Bike: max +10 min/week.
+
+SESSION DISTRIBUTION:
+- Do NOT schedule the same discipline at high intensity on consecutive days (e.g., no bike threshold Tuesday + bike intervals Wednesday).
+- Brick sessions (bike→run) and AM/PM doubles of different disciplines on the same day are fine.
+- Alternate hard and easy days. After a high-intensity session, the next day should be easy/recovery or a different discipline.
+
+WEEK TITLES:
+- Format: "Week [N] — [PHASE]" (e.g., "Week 9 — BUILD", "Week 22 — TAPER")
+- Do NOT add creative subtitles or descriptions to week titles. Keep them short and scannable.
+- Only add extra context if it's a recovery week: "Week 4 — BASE (Recovery)"
 
 PERSONALISATION:
 - Sessions ONLY on athlete's available days
