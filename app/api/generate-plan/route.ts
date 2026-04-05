@@ -321,6 +321,7 @@ DISCLAIMER: <div class="disclaimer"><span class="material-symbols-outlined">info
 
 PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> → <div class="phase-breakdown"> → <div class="phase-card"> with <div class="phase-card-header">(<span class="material-symbols-outlined"> + <h3>[Phase Name] <span class="phase-weeks">Weeks X-Y</span></h3>) + <p>2-3 sentence coaching explanation of what the phase does, why it matters, and what the athlete will gain</p>
 — Cover every phase in the plan. Do NOT generate a week-by-week overview grid.
+— Phase week ranges MUST match the actual weeks you generate. Do NOT assign weeks to a phase that don't exist in the plan.
 
 PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
 
@@ -382,6 +383,8 @@ COACHING KNOWLEDGE:
 - CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, CSS ±3s, VO2max CSS-5-10s
 - FTP: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%
 - Every swim needs drills. Every session needs specific numbers. No vague sessions.
+- Swimming: ALL distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). Never use 75m, 125m, or other non-50m distances. Plans must work in both 25m and 50m pools.
+- Swimming: Freestyle (front crawl) only unless the athlete specifically requests other strokes. Do NOT include backstroke, breaststroke, or butterfly in regular training sessions.
 - Running: Conservative build. 80% easy pace. Long run 25-35% weekly volume.
 - Brick: 2-4 sessions in final 6 weeks. 60-90min bike → 15-30min run.
 - Nutrition: <60min 0-30g/hr, 60-90min 30-60g/hr, >2.5hr 80-90g/hr
