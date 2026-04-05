@@ -6,7 +6,7 @@ import { buildAthleteProfile, buildSystemPrompt, extractHtml } from "../route";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 /* ─── POST /api/generate-plan/continue ────────────────────────────
    Body: { submission_id, totalWeeks, halfWeek }

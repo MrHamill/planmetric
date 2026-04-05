@@ -6,7 +6,7 @@ import path from "path";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 /* ─── POST /api/generate-plan ─────────────────────────────────────
    Body: { submission_id: string }

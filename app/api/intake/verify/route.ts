@@ -3,6 +3,8 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 
+export const maxDuration = 300;
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function GET(req: NextRequest) {
