@@ -8,7 +8,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export const maxDuration = 300;
 
-const CHUNK_SIZE = 6;
+const CHUNK_SIZE = 5;
 
 /* ─── POST /api/generate-plan/continue ────────────────────────────
    Body: { submission_id, totalWeeks, startWeek }
@@ -70,6 +70,7 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 6. Close all remaining tags: </div></body></html>
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+CRITICAL: You MUST complete ALL 7 days of every week before moving to the next. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${startWeek - 1}. Start directly from the phase banner for Week ${startWeek}.
 Do NOT output \`\`\`html wrappers.`;
     } else {
@@ -81,6 +82,7 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 1. Phase banners (if a new phase starts in this range) and DETAILED week-by-week content for Weeks ${startWeek} through ${endWeek}
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks before ${startWeek}. Start directly from Week ${startWeek}.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
 Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.

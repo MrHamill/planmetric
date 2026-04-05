@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       ? Math.ceil((raceDate.getTime() - today.getTime()) / (7 * 24 * 60 * 60 * 1000))
       : (d.planWeeks ? parseInt(d.planWeeks as string) : 12);
 
-    const CHUNK_SIZE = 6;
+    const CHUNK_SIZE = 5;
     const endWeek = Math.min(CHUNK_SIZE, totalWeeks);
 
     console.log(`Plan: ${totalWeeks} weeks, chunk 1: weeks 1-${endWeek}`);
@@ -74,6 +74,7 @@ This plan has ${totalWeeks} total weeks. In this response, generate:
 8. Phase banners and DETAILED week-by-week content for Weeks 1 through ${endWeek}
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
 Do NOT output any <style> block or CSS — only use the class names. CSS is injected server-side.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
 Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
