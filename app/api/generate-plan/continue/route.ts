@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
 
     const d = sub.data as Record<string, unknown>;
     const athleteProfile = buildAthleteProfile(d, sub);
-    const systemPrompt = buildSystemPrompt();
+    const age = d.age ? parseInt(String(d.age), 10) : undefined;
+    const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
 
     /* ── Pass 2: remaining weeks + race day + footer ──────────── */
     const pass2Prompt = `Generate the SECOND HALF of a personalised training plan for this athlete. Weeks 1-${halfWeek} were already generated in a previous call — you are continuing from where that left off.
@@ -51,9 +52,9 @@ ${athleteProfile}
 
 This plan has ${totalWeeks} total weeks. Generate ONLY:
 1. Phase banners and DETAILED week-by-week content for Weeks ${halfWeek + 1} through ${totalWeeks} (the final week is race week)
-2. Race Day Protocol section (race-protocol class)
+2. Race Day Protocol section (race-protocol class) with THREE collapsible <details class="protocol-section"> sub-sections: <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default), <details class="protocol-section"><summary>Your Race Strategy</summary>, <details class="protocol-section"><summary>Mental Strategy</summary>
 3. Glossary section (glossary class)
-4. Coach Tips section (coach-tips class, 6-8 tips)
+4. Coach Tips section (coach-tips class, 6-8 tips — use <span class="material-symbols-outlined"> icons in .tip-icon, NEVER emojis)
 5. Footer (plan-footer class)
 6. Close all remaining tags: </div></body></html>
 
@@ -154,12 +155,10 @@ function injectCss(html: string): string {
   const path = require("path");
   let css = "";
   try {
-    const refPath = path.resolve(process.cwd(), "public/plans/custom/pete-hamill-703-v2.html");
-    const refHtml = fs.readFileSync(refPath, "utf-8");
-    const cssMatch = refHtml.match(/<style>([\s\S]*?)<\/style>/);
-    if (cssMatch) css = cssMatch[1];
+    const cssPath = path.resolve(process.cwd(), "public/plans/plan-styles.css");
+    css = fs.readFileSync(cssPath, "utf-8");
   } catch {
-    console.error("Could not read CSS from reference plan");
+    console.error("Could not read plan-styles.css");
   }
 
   if (css && html.includes("</head>")) {

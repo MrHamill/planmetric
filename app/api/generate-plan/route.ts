@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -52,7 +54,8 @@ export async function POST(req: NextRequest) {
     console.log(`Plan: ${totalWeeks} weeks, splitting at week ${halfWeek}`);
 
     /* ── Pass 1: header + zones + overview + weeks 1-${halfWeek} ── */
-    const systemPrompt = buildSystemPrompt();
+    const age = d.age ? parseInt(String(d.age), 10) : undefined;
+    const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
 
     const pass1Prompt = `Generate the FIRST HALF of a personalised training plan for this athlete.
 
@@ -64,8 +67,9 @@ This plan has ${totalWeeks} total weeks. In this response, generate:
 3. Hero section (name, race, date, goal, stats)
 4. Training Zones section
 5. How To Use This Plan section
-6. Week Overview Grid (ALL ${totalWeeks} weeks)
-7. Phase banners and DETAILED week-by-week content for Weeks 1 through ${halfWeek}
+6. Disclaimer (disclaimer class — use the exact disclaimer text from the system prompt, do not alter it)
+7. Training Phases Breakdown (phase-breakdown class — coach-style explanation of each phase, NOT a week-by-week grid)
+8. Phase banners and DETAILED week-by-week content for Weeks 1 through ${halfWeek}
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
 Do NOT output any <style> block or CSS — only use the class names. CSS is injected server-side.
@@ -246,7 +250,49 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   return lines.join("\n");
 }
 
-function buildSystemPrompt(): string {
+function loadResearchContent(trainingFor: string, athleteAge?: number): string {
+  const researchDir = path.resolve(process.cwd(), "docs/research");
+  const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
+  const CYCLING = ["Cycling Event"];
+
+  // Always include these
+  const files = [
+    "nutrition.md", "recovery.md", "general-triathlon.md",
+    "periodisation.md", "strength-conditioning.md", "training-load.md", "race-psychology.md",
+  ];
+
+  // Add sport-specific files
+  if (TRIATHLON.includes(trainingFor)) {
+    files.push("swim.md", "bike.md", "run.md");
+  } else if (CYCLING.includes(trainingFor)) {
+    files.push("bike.md");
+  } else {
+    // Running events (marathon, 5K, 10K, half marathon, ultra, etc.)
+    files.push("run.md");
+  }
+
+  // Masters athlete research for 40+
+  if (athleteAge && athleteAge >= 40) {
+    files.push("masters-athletes.md");
+  }
+
+  const sections: string[] = [];
+  for (const file of files) {
+    try {
+      const content = fs.readFileSync(path.join(researchDir, file), "utf-8");
+      const label = file.replace(".md", "").replace(/-/g, " ").toUpperCase();
+      sections.push(`--- ${label} ---\n${content}`);
+    } catch {
+      // File doesn't exist yet — skip silently
+    }
+  }
+
+  return sections.join("\n\n");
+}
+
+function buildSystemPrompt(trainingFor?: string, athleteAge?: number): string {
+  const research = trainingFor ? loadResearchContent(trainingFor, athleteAge) : "";
+
   return `You are an elite endurance coach at Plan Metric creating a personalised HTML training plan for a paying customer.
 
 OUTPUT: Return ONLY valid HTML. No markdown, no explanation, no \`\`\`html wrapper. Do NOT output any <style> block or CSS — the CSS will be injected server-side. Just use the correct class names.
@@ -261,7 +307,11 @@ ZONES: <section class="section"> with <div class="zones-grid"> → <div class="z
 
 HOW TO USE: <section class="section"> with <ul class="instructions-list"> → <li> with <span class="material-symbols-outlined"> icon
 
-OVERVIEW: <section class="section"> with <div class="weeks-grid"> → <div class="week-card"> with .week-header (.week-number + .week-hours) + .phase-name
+DISCLAIMER: <div class="disclaimer"><span class="material-symbols-outlined">info</span><p>[exact text]</p></div>
+— Always use this exact text: "This training plan is provided as a general guide only and does not constitute medical advice, professional coaching, or a substitute for consultation with qualified healthcare or fitness professionals. Plan Metric and its creators are not qualified coaches, medical practitioners, or dietitians. You should consult your doctor before starting any new exercise program. By using this plan, you acknowledge that you do so entirely at your own risk. Plan Metric accepts no liability for injury, illness, or loss arising from the use of this plan."
+
+PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> → <div class="phase-breakdown"> → <div class="phase-card"> with <div class="phase-card-header">(<span class="material-symbols-outlined"> + <h3>[Phase Name] <span class="phase-weeks">Weeks X-Y</span></h3>) + <p>2-3 sentence coaching explanation of what the phase does, why it matters, and what the athlete will gain</p>
+— Cover every phase in the plan. Do NOT generate a week-by-week overview grid.
 
 PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
 
@@ -291,11 +341,17 @@ DAY CARD:
 
 BADGES: badge-swim, badge-bike, badge-run, badge-brick, badge-accent, badge-red, badge-rest
 
-RACE DAY: <section class="race-protocol"> with .protocol-section, .timeline, .time-block
+RACE DAY: <section class="race-protocol"> with <details class="protocol-section"><summary>[heading]</summary>[content]</details>
+— Three collapsible sub-sections:
+  1. <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default) — use .timeline and .time-block inside
+  2. <details class="protocol-section"><summary>Your Race Strategy</summary>
+  3. <details class="protocol-section"><summary>Mental Strategy</summary>
 
 GLOSSARY: <section class="glossary"> with .glossary-grid → .term
 
 COACH TIPS: <section class="coach-tips"> with .tips-grid → .tip (.tip-icon + .tip-content)
+— .tip-icon MUST contain <span class="material-symbols-outlined">[icon_name]</span> — NEVER use emojis
+— Use relevant icons: track_changes, local_cafe, directions_run, psychology, bolt, celebration, health_and_safety, trending_up, pool, directions_bike, etc.
 
 FOOTER: <footer class="plan-footer"> with .footer-content (.footer-brand + .footer-contact) + .footer-bottom
 
@@ -333,7 +389,11 @@ PLAN DURATION — CRITICAL:
 Calculate exact weeks from TODAY's date to race date. Today's date is in the athlete profile.
 - Taper always 2-3 weeks before race
 - Recovery weeks every 3-4 weeks
-- Distribute Base/Build/Peak proportionally`;
+- Distribute Base/Build/Peak proportionally${research ? `
+
+COACHING RESEARCH LIBRARY — use the following curated research to inform your coaching decisions, session design, and coaching notes. Apply insights where relevant to the athlete's sport, level, and goals:
+
+${research}` : ""}`;
 }
 
 function extractHtml(text: string): string {
