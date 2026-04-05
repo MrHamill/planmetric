@@ -43,21 +43,23 @@ export async function POST(req: NextRequest) {
     const d = sub.data as Record<string, unknown>;
     const athleteProfile = buildAthleteProfile(d, sub);
 
-    /* ── Calculate week split ────────────────────────────────── */
+    /* ── Calculate weeks and chunks ─────────────────────────── */
     const today = new Date();
     const raceDate = d.raceDate ? new Date(d.raceDate as string) : null;
     const totalWeeks = raceDate
       ? Math.ceil((raceDate.getTime() - today.getTime()) / (7 * 24 * 60 * 60 * 1000))
       : (d.planWeeks ? parseInt(d.planWeeks as string) : 12);
-    const halfWeek = Math.ceil(totalWeeks / 2);
 
-    console.log(`Plan: ${totalWeeks} weeks, splitting at week ${halfWeek}`);
+    const CHUNK_SIZE = 6;
+    const endWeek = Math.min(CHUNK_SIZE, totalWeeks);
 
-    /* ── Pass 1: header + zones + overview + weeks 1-${halfWeek} ── */
+    console.log(`Plan: ${totalWeeks} weeks, chunk 1: weeks 1-${endWeek}`);
+
+    /* ── Pass 1: header + zones + overview + weeks 1-${endWeek} ── */
     const age = d.age ? parseInt(String(d.age), 10) : undefined;
     const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
 
-    const pass1Prompt = `Generate the FIRST HALF of a personalised training plan for this athlete.
+    const pass1Prompt = `Generate the FIRST PART of a personalised training plan for this athlete.
 
 ${athleteProfile}
 
@@ -69,19 +71,19 @@ This plan has ${totalWeeks} total weeks. In this response, generate:
 5. How To Use This Plan section
 6. Disclaimer (disclaimer class — use the exact disclaimer text from the system prompt, do not alter it)
 7. Training Phases Breakdown (phase-breakdown class — coach-style explanation of each phase, NOT a week-by-week grid)
-8. Phase banners and DETAILED week-by-week content for Weeks 1 through ${halfWeek}
+8. Phase banners and DETAILED week-by-week content for Weeks 1 through ${endWeek}
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
 Do NOT output any <style> block or CSS — only use the class names. CSS is injected server-side.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
 Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
-End your output right after the last day-card of Week ${halfWeek}.`;
+End your output right after the last day-card of Week ${endWeek}.`;
 
     let pass1Html: string;
     try {
       const stream = anthropic.messages.stream({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 32000,
+        max_tokens: 16000,
         system: [
           { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
         ],
@@ -99,21 +101,21 @@ End your output right after the last day-card of Week ${halfWeek}.`;
       return NextResponse.json({ error: "Failed to generate plan (pass 1)" }, { status: 500 });
     }
 
-    /* ── Save pass 1 + metadata to DB ────────────────────────── */
+    /* ── Save pass 1 to DB ───────────────────────────────────── */
     await supabase
       .from("intake_submissions")
       .update({ generated_plan_part1: pass1Html })
       .eq("id", submission_id);
 
-    /* ── Fire-and-forget pass 2 ──────────────────────────────── */
+    /* ── Trigger next chunk ──────────────────────────────────── */
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     fetch(`${siteUrl}/api/generate-plan/continue`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ submission_id, totalWeeks, halfWeek }),
-    }).catch(e => console.error("Failed to trigger pass 2:", e));
+      body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
+    }).catch(e => console.error("Failed to trigger next chunk:", e));
 
-    return NextResponse.json({ ok: true, status: "generating", pass: 1 });
+    return NextResponse.json({ ok: true, status: "generating", pass: 1, weeksGenerated: endWeek });
   } catch (e: unknown) {
     console.error("Unhandled error in generate-plan:", e);
     const message = e instanceof Error ? e.message : String(e);

@@ -8,18 +8,26 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export const maxDuration = 300;
 
+const CHUNK_SIZE = 6;
+
 /* ─── POST /api/generate-plan/continue ────────────────────────────
-   Body: { submission_id, totalWeeks, halfWeek }
-   Pass 2 of 2: generates remaining weeks + race day + footer.
-   Stitches with pass 1, injects CSS, validates, saves final plan.
+   Body: { submission_id, totalWeeks, startWeek }
+   Generates one chunk of weeks (up to CHUNK_SIZE). If more weeks
+   remain, calls itself recursively. On the final chunk, also
+   generates race day + footer, stitches everything, and finalizes.
    ────────────────────────────────────────────────────────────────── */
 export async function POST(req: NextRequest) {
   try {
-    const { submission_id, totalWeeks, halfWeek } = await req.json();
+    const { submission_id, totalWeeks, startWeek } = await req.json();
 
-    if (!submission_id || !totalWeeks || !halfWeek) {
+    if (!submission_id || !totalWeeks || !startWeek) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    const endWeek = Math.min(startWeek + CHUNK_SIZE - 1, totalWeeks);
+    const isFinal = endWeek >= totalWeeks;
+
+    console.log(`Continue: weeks ${startWeek}-${endWeek} of ${totalWeeks}${isFinal ? " (FINAL)" : ""}`);
 
     const supabase = createClient(
       process.env.SUPABASE_URL!,
@@ -37,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!sub.generated_plan_part1) {
-      return NextResponse.json({ error: "Pass 1 not found — generate-plan must run first" }, { status: 400 });
+      return NextResponse.json({ error: "No partial plan found — generate-plan must run first" }, { status: 400 });
     }
 
     const d = sub.data as Record<string, unknown>;
@@ -45,13 +53,16 @@ export async function POST(req: NextRequest) {
     const age = d.age ? parseInt(String(d.age), 10) : undefined;
     const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
 
-    /* ── Pass 2: remaining weeks + race day + footer ──────────── */
-    const pass2Prompt = `Generate the SECOND HALF of a personalised training plan for this athlete. Weeks 1-${halfWeek} were already generated in a previous call — you are continuing from where that left off.
+    /* ── Build prompt for this chunk ─────────────────────────── */
+    let chunkPrompt: string;
+
+    if (isFinal) {
+      chunkPrompt = `Generate the FINAL PART of a personalised training plan for this athlete. Weeks 1-${startWeek - 1} were already generated — you are continuing from where that left off.
 
 ${athleteProfile}
 
 This plan has ${totalWeeks} total weeks. Generate ONLY:
-1. Phase banners and DETAILED week-by-week content for Weeks ${halfWeek + 1} through ${totalWeeks} (the final week is race week)
+1. Phase banners and DETAILED week-by-week content for Weeks ${startWeek} through ${totalWeeks} (the final week is race week)
 2. Race Day Protocol section (race-protocol class) with THREE collapsible <details class="protocol-section"> sub-sections: <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default), <details class="protocol-section"><summary>Your Race Strategy</summary>, <details class="protocol-section"><summary>Mental Strategy</summary>
 3. Glossary section (glossary class)
 4. Coach Tips section (coach-tips class, 6-8 tips — use <span class="material-symbols-outlined"> icons in .tip-icon, NEVER emojis)
@@ -59,20 +70,34 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 6. Close all remaining tags: </div></body></html>
 
 Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
-Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${halfWeek}. Start directly from the phase banner for Week ${halfWeek + 1}.
+Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${startWeek - 1}. Start directly from the phase banner for Week ${startWeek}.
 Do NOT output \`\`\`html wrappers.`;
+    } else {
+      chunkPrompt = `Generate the NEXT PART of a personalised training plan for this athlete. Weeks 1-${startWeek - 1} were already generated — you are continuing from where that left off.
 
-    let pass2Html: string;
+${athleteProfile}
+
+This plan has ${totalWeeks} total weeks. Generate ONLY:
+1. Phase banners (if a new phase starts in this range) and DETAILED week-by-week content for Weeks ${startWeek} through ${endWeek}
+
+Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks before ${startWeek}. Start directly from Week ${startWeek}.
+Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
+Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
+Do NOT output \`\`\`html wrappers.
+End your output right after the last day-card of Week ${endWeek}.`;
+    }
+
+    /* ── Call Claude API ─────────────────────────────────────── */
+    let chunkHtml: string;
     try {
       const stream = anthropic.messages.stream({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 32000,
+        max_tokens: 16000,
         system: [
           { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
         ],
-        messages: [
-          { role: "user", content: pass2Prompt },
-        ],
+        messages: [{ role: "user", content: chunkPrompt }],
       });
 
       const message = await stream.finalMessage();
@@ -80,54 +105,69 @@ Do NOT output \`\`\`html wrappers.`;
       if (!textBlock || textBlock.type !== "text") {
         throw new Error("No text response from Claude");
       }
-      pass2Html = extractHtml(textBlock.text);
+      chunkHtml = extractHtml(textBlock.text);
     } catch (e) {
-      console.error("Claude API error (pass 2):", e);
-      return NextResponse.json({ error: "Failed to generate plan (pass 2)" }, { status: 500 });
+      console.error(`Claude API error (weeks ${startWeek}-${endWeek}):`, e);
+      return NextResponse.json({ error: `Failed to generate weeks ${startWeek}-${endWeek}` }, { status: 500 });
     }
 
-    /* ── Stitch pass 1 + pass 2 ──────────────────────────────── */
-    let stitched = stitchParts(sub.generated_plan_part1, pass2Html);
+    if (isFinal) {
+      /* ── Stitch all parts + finalize ──────────────────────── */
+      let stitched = stitchParts(sub.generated_plan_part1, chunkHtml);
+      stitched = injectCss(stitched);
 
-    /* ── Inject CSS server-side ──────────────────────────────── */
-    stitched = injectCss(stitched);
+      const missing = validateWeeks(stitched, totalWeeks);
+      if (missing.length > 0) {
+        console.warn(`Plan for ${sub.full_name}: missing weeks ${missing.join(", ")}`);
+      }
 
-    /* ── Validate all weeks present ──────────────────────────── */
-    const missing = validateWeeks(stitched, totalWeeks);
-    if (missing.length > 0) {
-      console.warn(`Plan for ${sub.full_name}: missing weeks ${missing.join(", ")}`);
-    }
+      await supabase
+        .from("intake_submissions")
+        .update({
+          status: "plan_generated",
+          generated_plan: stitched,
+          generated_plan_part1: null,
+        })
+        .eq("id", submission_id);
 
-    /* ── Save final plan + clear part1 ───────────────────────── */
-    await supabase
-      .from("intake_submissions")
-      .update({
-        status: "plan_generated",
-        generated_plan: stitched,
-        generated_plan_part1: null,
-      })
-      .eq("id", submission_id);
+      /* ── Email admin with review link ─────────────────────── */
+      try {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+        const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
 
-    /* ── Email admin with review link ────────────────────────── */
-    try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
+        await sendEmail({
+          to: "pete@planmetric.com.au",
+          subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${missing.length > 0 ? ` Missing weeks: ${missing.join(",")}` : ""}`,
+          html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl),
+        });
+      } catch (e) {
+        console.error("Email error:", e);
+      }
 
-      await sendEmail({
-        to: "pete@planmetric.com.au",
-        subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${missing.length > 0 ? ` Missing weeks: ${missing.join(",")}` : ""}`,
-        html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl),
+      return NextResponse.json({
+        ok: true,
+        status: "complete",
+        planLength: stitched.length,
+        missingWeeks: missing,
       });
-    } catch (e) {
-      console.error("Email error:", e);
-    }
+    } else {
+      /* ── Append chunk to part1 and trigger next chunk ─────── */
+      const updatedPart1 = sub.generated_plan_part1 + "\n\n" + chunkHtml;
 
-    return NextResponse.json({
-      ok: true,
-      pass: 2,
-      planLength: stitched.length,
-      missingWeeks: missing,
-    });
+      await supabase
+        .from("intake_submissions")
+        .update({ generated_plan_part1: updatedPart1 })
+        .eq("id", submission_id);
+
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      fetch(`${siteUrl}/api/generate-plan/continue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
+      }).catch(e => console.error("Failed to trigger next chunk:", e));
+
+      return NextResponse.json({ ok: true, status: "generating", weeksGenerated: endWeek });
+    }
   } catch (e: unknown) {
     console.error("Unhandled error in generate-plan/continue:", e);
     const message = e instanceof Error ? e.message : String(e);
@@ -138,9 +178,7 @@ Do NOT output \`\`\`html wrappers.`;
 /* ─── Helpers ──────────────────────────────────────────────────── */
 
 function stitchParts(pass1: string, pass2: string): string {
-  // Remove accidental closing tags from pass 1
   let p1 = pass1.replace(/<\/body>\s*<\/html>\s*$/i, "");
-  // Remove accidental document-level tags from pass 2
   let p2 = pass2
     .replace(/^<!DOCTYPE[^>]*>/i, "")
     .replace(/<html[^>]*>/i, "")
@@ -164,7 +202,6 @@ function injectCss(html: string): string {
   if (css && html.includes("</head>")) {
     return html.replace("</head>", `<style>${css}</style>\n</head>`);
   }
-  // Fallback: inject after opening <html> tag
   if (css) {
     return html.replace(/<html[^>]*>/i, (match) => `${match}\n<head><style>${css}</style></head>`);
   }
