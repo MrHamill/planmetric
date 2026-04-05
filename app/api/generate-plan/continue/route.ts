@@ -119,9 +119,21 @@ End your output right after the last day-card of Week ${endWeek}.`;
       let stitched = stitchParts(repairedPart1, chunkHtml);
       stitched = await injectCss(stitched);
 
+      /* ── Validate final plan ────────────────────────────────── */
       const missing = validateWeeks(stitched, totalWeeks);
-      if (missing.length > 0) {
-        console.warn(`Plan for ${sub.full_name}: missing weeks ${missing.join(", ")}`);
+      const dayCardCount = (stitched.match(/class="day-card"/g) || []).length;
+      const expectedDayCards = totalWeeks * 7;
+      const coachingNoteCount = (stitched.match(/class="coaching-note"/g) || []).length;
+
+      const warnings: string[] = [];
+      if (missing.length > 0) warnings.push(`Missing weeks: ${missing.join(", ")}`);
+      if (dayCardCount < expectedDayCards) warnings.push(`Day cards: ${dayCardCount}/${expectedDayCards}`);
+      if (coachingNoteCount < dayCardCount - 2) warnings.push(`Coaching notes: ${coachingNoteCount}/${dayCardCount}`);
+
+      if (warnings.length > 0) {
+        console.warn(`Plan QA for ${sub.full_name}: ${warnings.join(" | ")}`);
+      } else {
+        console.log(`Plan QA for ${sub.full_name}: PASS — ${dayCardCount} day cards, ${coachingNoteCount} coaching notes, all ${totalWeeks} weeks present`);
       }
 
       await supabase
@@ -137,10 +149,11 @@ End your output right after the last day-card of Week ${endWeek}.`;
       try {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
         const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
+        const qaStatus = warnings.length > 0 ? ` ⚠ ${warnings.join(" | ")}` : " ✓ QA passed";
 
         await sendEmail({
           to: "pete@planmetric.com.au",
-          subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${missing.length > 0 ? ` Missing weeks: ${missing.join(",")}` : ""}`,
+          subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${qaStatus}`,
           html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl),
         });
       } catch (e) {
@@ -151,7 +164,10 @@ End your output right after the last day-card of Week ${endWeek}.`;
         ok: true,
         status: "complete",
         planLength: stitched.length,
+        dayCards: dayCardCount,
+        expectedDayCards,
         missingWeeks: missing,
+        warnings,
       });
     } else {
       /* ── Append chunk to part1 and trigger next chunk ─────── */
