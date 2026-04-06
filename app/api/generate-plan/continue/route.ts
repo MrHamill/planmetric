@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { buildAthleteProfile, buildSystemPrompt, extractHtml } from "../route";
+import { validatePlan, ValidationResult } from "@/lib/validate-plan";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -70,7 +71,16 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 6. Footer (plan-footer class)
 7. Close all remaining tags: </div></body></html>
 
-Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+MANDATORY CHECKLIST — every single week MUST have:
+- Minimum 3 swim sessions, 3 bike sessions, 3 run sessions (for 70.3/Ironman)
+- 1 long ride (title must include "Long")
+- 1 long run (title must include "Long")
+- All 7 days with full day-cards (session structure + coaching notes)
+- All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
+- Freestyle only — no backstroke, breaststroke, or butterfly
+- No same-discipline high intensity on consecutive days
+- Coaching notes must be 3+ sentences per day
+
 CRITICAL: You MUST complete ALL 7 days of every week before moving to the next. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${startWeek - 1}. Start directly from the phase banner for Week ${startWeek}.
 Do NOT output \`\`\`html wrappers.`;
@@ -82,7 +92,16 @@ ${athleteProfile}
 This plan has ${totalWeeks} total weeks. Generate ONLY:
 1. Phase banners (if a new phase starts in this range) and DETAILED week-by-week content for Weeks ${startWeek} through ${endWeek}
 
-Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
+MANDATORY CHECKLIST — every single week MUST have:
+- Minimum 3 swim sessions, 3 bike sessions, 3 run sessions (for 70.3/Ironman)
+- 1 long ride (title must include "Long")
+- 1 long run (title must include "Long")
+- All 7 days with full day-cards (session structure + coaching notes)
+- All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
+- Freestyle only — no backstroke, breaststroke, or butterfly
+- No same-discipline high intensity on consecutive days
+- Coaching notes must be 3+ sentences per day
+
 CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks before ${startWeek}. Start directly from Week ${startWeek}.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
@@ -121,20 +140,24 @@ End your output right after the last day-card of Week ${endWeek}.`;
       stitched = await injectCss(stitched);
 
       /* ── Validate final plan ────────────────────────────────── */
-      const missing = validateWeeks(stitched, totalWeeks);
-      const dayCardCount = (stitched.match(/class="day-card"/g) || []).length;
-      const expectedDayCards = totalWeeks * 7;
-      const coachingNoteCount = (stitched.match(/class="coaching-note"/g) || []).length;
+      const age = d.age ? parseInt(String(d.age), 10) : undefined;
+      const validationResults = validatePlan(stitched, {
+        totalWeeks,
+        eventType: d.trainingFor as string || sub.training_for || "",
+        athleteAge: isNaN(age as number) ? undefined : age,
+      });
 
-      const warnings: string[] = [];
-      if (missing.length > 0) warnings.push(`Missing weeks: ${missing.join(", ")}`);
-      if (dayCardCount < expectedDayCards) warnings.push(`Day cards: ${dayCardCount}/${expectedDayCards}`);
-      if (coachingNoteCount < dayCardCount - 2) warnings.push(`Coaching notes: ${coachingNoteCount}/${dayCardCount}`);
+      const criticals = validationResults.filter(r => r.severity === "critical");
+      const warnings = validationResults.filter(r => r.severity === "warning");
 
+      if (criticals.length > 0) {
+        console.warn(`Plan QA CRITICAL for ${sub.full_name}:`, criticals.map(r => r.message));
+      }
       if (warnings.length > 0) {
-        console.warn(`Plan QA for ${sub.full_name}: ${warnings.join(" | ")}`);
-      } else {
-        console.log(`Plan QA for ${sub.full_name}: PASS — ${dayCardCount} day cards, ${coachingNoteCount} coaching notes, all ${totalWeeks} weeks present`);
+        console.warn(`Plan QA warnings for ${sub.full_name}:`, warnings.map(r => r.message));
+      }
+      if (validationResults.length === 0) {
+        console.log(`Plan QA for ${sub.full_name}: ALL PASSED`);
       }
 
       await supabase
@@ -150,12 +173,16 @@ End your output right after the last day-card of Week ${endWeek}.`;
       try {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
         const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
-        const qaStatus = warnings.length > 0 ? ` ⚠ ${warnings.join(" | ")}` : " ✓ QA passed";
+        const qaStatus = criticals.length > 0
+          ? ` !! ${criticals.length} CRITICAL`
+          : warnings.length > 0
+          ? ` ⚠ ${warnings.length} warnings`
+          : " ✓ QA passed";
 
         await sendEmail({
           to: "pete@planmetric.com.au",
           subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${qaStatus}`,
-          html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl),
+          html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl, validationResults),
         });
       } catch (e) {
         console.error("Email error:", e);
@@ -165,10 +192,12 @@ End your output right after the last day-card of Week ${endWeek}.`;
         ok: true,
         status: "complete",
         planLength: stitched.length,
-        dayCards: dayCardCount,
-        expectedDayCards,
-        missingWeeks: missing,
-        warnings,
+        validation: {
+          passed: validationResults.length === 0,
+          criticals: criticals.length,
+          warnings: warnings.length,
+          results: validationResults,
+        },
       });
     } else {
       /* ── Append chunk to part1 and trigger next chunk ─────── */
@@ -270,18 +299,42 @@ async function injectCss(html: string): Promise<string> {
   return html;
 }
 
-function validateWeeks(html: string, expectedWeeks: number): number[] {
-  const missing: number[] = [];
-  for (let i = 1; i <= expectedWeeks; i++) {
-    const pattern = new RegExp(`Week\\s+${i}\\b`);
-    if (!pattern.test(html)) {
-      missing.push(i);
-    }
-  }
-  return missing;
-}
 
-function buildAdminReviewEmail(name: string, event: string, plan: string, reviewUrl: string): string {
+function buildAdminReviewEmail(name: string, event: string, plan: string, reviewUrl: string, results?: ValidationResult[]): string {
+  const criticals = results?.filter(r => r.severity === "critical") || [];
+  const warnings = results?.filter(r => r.severity === "warning") || [];
+
+  let qaSection = "";
+  if (!results || results.length === 0) {
+    qaSection = `<div style="background:#1a1a18;border-radius:4px;padding:20px;margin:0 0 24px;">
+      <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#D9C2B4;margin:0 0 12px;">Plan QA Results</p>
+      <p style="color:#4ade80;font-size:14px;font-weight:700;margin:0;">✓ All checks passed</p>
+    </div>`;
+  } else {
+    let criticalHtml = "";
+    if (criticals.length > 0) {
+      criticalHtml = `<p style="color:#ef4444;font-size:13px;font-weight:700;margin:0 0 8px;">!! CRITICAL ISSUES (${criticals.length})</p>` +
+        criticals.map(r => {
+          const detailLines = r.details?.slice(0, 5).map(d => `<br/>&nbsp;&nbsp;- ${d}`).join("") || "";
+          return `<p style="color:#fca5a5;font-size:12px;margin:0 0 6px;padding-left:12px;border-left:2px solid #ef4444;">${r.message}${detailLines}</p>`;
+        }).join("");
+    }
+
+    let warningHtml = "";
+    if (warnings.length > 0) {
+      warningHtml = `<p style="color:#fbbf24;font-size:13px;font-weight:700;margin:${criticals.length > 0 ? "16px" : "0"} 0 8px;">⚠ Warnings (${warnings.length})</p>` +
+        warnings.map(r => {
+          const detailLines = r.details?.slice(0, 3).map(d => `<br/>&nbsp;&nbsp;- ${d}`).join("") || "";
+          return `<p style="color:#fde68a;font-size:12px;margin:0 0 6px;padding-left:12px;border-left:2px solid #fbbf24;">${r.message}${detailLines}</p>`;
+        }).join("");
+    }
+
+    qaSection = `<div style="background:#1a1a18;border-radius:4px;padding:20px;margin:0 0 24px;">
+      <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#D9C2B4;margin:0 0 12px;">Plan QA Results</p>
+      ${criticalHtml}${warningHtml}
+    </div>`;
+  }
+
   return `<!DOCTYPE html>
 <html>
 <body style="background:#0e0e0d;color:#e8e6e1;font-family:sans-serif;padding:32px;max-width:600px;margin:0 auto;">
@@ -292,9 +345,10 @@ function buildAdminReviewEmail(name: string, event: string, plan: string, review
   <p style="font-size:16px;line-height:1.7;margin:0 0 8px;">
     <strong>${name}</strong>'s ${plan?.toUpperCase()} ${event} plan is ready for review.
   </p>
-  <p style="font-size:14px;color:#9b9b8a;margin:0 0 32px;">
+  <p style="font-size:14px;color:#9b9b8a;margin:0 0 24px;">
     Review the plan, make any edits, then approve to send it to the athlete.
   </p>
+  ${qaSection}
   <a href="${reviewUrl}" style="display:inline-block;background:#A0522D;color:#F0E6D4;padding:16px 32px;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-radius:2px;">
     Review &amp; Approve Plan
   </a>
