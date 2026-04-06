@@ -246,6 +246,7 @@ const PLANS = [
     price: "$99",
     billing: "/ month",
     features: ["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited email support"],
+    soldOut: true,
   },
 ];
 
@@ -928,13 +929,22 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                     <span className="font-headline text-4xl font-bold">{p.price}</span>
                     <span className="font-label text-xs uppercase ml-2 tracking-widest" style={{ color: DIM }}>{p.billing}</span>
                   </div>
-                  <button
-                    onClick={() => setPlan(p.id)}
-                    className="w-full py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm cursor-pointer"
-                    style={{ background: ACCENT, color: TEXT }}
-                  >
-                    Select {p.name}
-                  </button>
+                  {p.soldOut ? (
+                    <span
+                      className="block w-full py-4 text-center font-label text-xs uppercase tracking-widest rounded-sm opacity-40 cursor-default"
+                      style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+                    >
+                      Sold Out
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => setPlan(p.id)}
+                      className="w-full py-4 font-label text-xs uppercase tracking-widest hover:opacity-90 transition-all rounded-sm cursor-pointer"
+                      style={{ background: ACCENT, color: TEXT }}
+                    >
+                      Select {p.name}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

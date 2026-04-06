@@ -89,8 +89,9 @@ const PLANS = [
     price: "$99",
     freq: "/month",
     body: "Dynamic monthly adjustments with 1:1 coaching.",
-    cta: "Join Elite",
+    cta: "Sold Out",
     featured: false,
+    soldOut: true,
   },
 ];
 
@@ -499,17 +500,26 @@ export default function HomePage() {
                 >
                   {plan.body}
                 </p>
-                <Link
-                  href="/pricing"
-                  className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm transition-all duration-200 hover:scale-[1.02]"
-                  style={
-                    plan.featured
-                      ? { background: ACCENT, color: TEXT }
-                      : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
-                  }
-                >
-                  {plan.cta}
-                </Link>
+                {plan.soldOut ? (
+                  <span
+                    className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm opacity-40 cursor-default"
+                    style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+                  >
+                    {plan.cta}
+                  </span>
+                ) : (
+                  <Link
+                    href="/pricing"
+                    className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm transition-all duration-200 hover:scale-[1.02]"
+                    style={
+                      plan.featured
+                        ? { background: ACCENT, color: TEXT }
+                        : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
+                    }
+                  >
+                    {plan.cta}
+                  </Link>
+                )}
               </motion.div>
             ))}
           </div>

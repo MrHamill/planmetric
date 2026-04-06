@@ -1,6 +1,13 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend;
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("Missing RESEND_API_KEY env var");
+  }
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 export async function sendEmail({
   to,
@@ -13,12 +20,8 @@ export async function sendEmail({
   html: string;
   from?: string;
 }) {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("Missing RESEND_API_KEY env var");
-  }
-
   try {
-    const { error } = await resend.emails.send({ from, to, subject, html });
+    const { error } = await getResend().emails.send({ from, to, subject, html });
     if (error) {
       throw new Error(error.message);
     }

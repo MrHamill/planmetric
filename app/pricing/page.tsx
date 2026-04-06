@@ -78,8 +78,9 @@ const PLANS = [
     features: ["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited email support"],
     price: "$99",
     freq: "/month",
-    cta: "Join Elite",
+    cta: "Sold Out",
     featured: false,
+    soldOut: true,
   },
 ];
 
@@ -164,9 +165,9 @@ export default function PricingPage() {
                 <motion.div
                   key={plan.key}
                   id={plan.key}
-                  className={`relative rounded-sm flex flex-col cursor-pointer group ${
-                    plan.featured ? "p-10 md:p-12 md:-my-4 z-10" : "p-10"
-                  }`}
+                  className={`relative rounded-sm flex flex-col group ${
+                    plan.soldOut ? "cursor-default opacity-50" : "cursor-pointer"
+                  } ${plan.featured ? "p-10 md:p-12 md:-my-4 z-10" : "p-10"}`}
                   style={{
                     background: CARD_BG,
                     border: plan.featured
@@ -176,9 +177,9 @@ export default function PricingPage() {
                       ? `0 0 40px ${ACCENT_GLOW}, 0 20px 60px rgba(0,0,0,0.4)`
                       : "none",
                   }}
-                  onClick={() => handleCardClick(plan.key)}
+                  onClick={() => !plan.soldOut && handleCardClick(plan.key)}
                   {...fadeUp(i * 0.15)}
-                  whileHover={{
+                  whileHover={plan.soldOut ? {} : {
                     y: -8,
                     boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 35px ${ACCENT_GLOW}`,
                     borderColor: ACCENT,
