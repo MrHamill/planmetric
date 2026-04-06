@@ -320,9 +320,10 @@ HOW TO USE: <section class="section"> with <ul class="instructions-list"> → <l
 DISCLAIMER: <div class="disclaimer"><span class="material-symbols-outlined">info</span><p>[exact text]</p></div>
 — Always use this exact text: "This training plan is provided as a general guide only and does not constitute medical advice, professional coaching, or a substitute for consultation with qualified healthcare or fitness professionals. Plan Metric and its creators are not qualified coaches, medical practitioners, or dietitians. You should consult your doctor before starting any new exercise program. By using this plan, you acknowledge that you do so entirely at your own risk. Plan Metric accepts no liability for injury, illness, or loss arising from the use of this plan."
 
-PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> → <div class="phase-breakdown"> → <div class="phase-card"> with <div class="phase-card-header">(<span class="material-symbols-outlined"> + <h3>[Phase Name] <span class="phase-weeks">Weeks X-Y</span></h3>) + <p>2-3 sentence coaching explanation of what the phase does, why it matters, and what the athlete will gain</p>
+PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> → <div class="phase-breakdown"> → <div class="phase-card"> with <div class="phase-card-header">(<span class="material-symbols-outlined">[icon_name]</span> + <h3>[Phase Name] <span class="phase-weeks">Weeks X-Y</span></h3>) + <p>2-3 sentence coaching explanation of what the phase does, why it matters, and what the athlete will gain</p>
 — Cover every phase in the plan. Do NOT generate a week-by-week overview grid.
 — Phase week ranges MUST match the actual weeks you generate. Do NOT assign weeks to a phase that don't exist in the plan.
+— Icon names MUST always be inside <span class="material-symbols-outlined">icon_name</span>. Never output the icon name as plain text.
 
 PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
 
@@ -422,6 +423,7 @@ PERSONALISATION:
 - Double sessions only if explicitly allowed
 - Work around injuries with safe alternatives
 - Account for other sports as training load
+- WEAKEST DISCIPLINE PRIORITY: If the athlete identifies a weakest discipline, give it MORE frequency. For swimming specifically: 1x/week = no improvement, 2x = maintenance only, 3x = improvement, 4x = significant improvement. A weak swimmer needs minimum 3 swim sessions per week.
 
 PLAN DURATION — CRITICAL:
 Calculate exact weeks from TODAY's date to race date. Today's date is in the athlete profile.
