@@ -1,14 +1,6 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  host: "smtpout.secureserver.net",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER?.trim(),
-    pass: process.env.SMTP_PASS?.trim(),
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendEmail({
   to,
@@ -21,18 +13,17 @@ export async function sendEmail({
   html: string;
   from?: string;
 }) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    const missing = [
-      !process.env.SMTP_USER && "SMTP_USER",
-      !process.env.SMTP_PASS && "SMTP_PASS",
-    ].filter(Boolean).join(", ");
-    throw new Error(`Missing SMTP env vars: ${missing}`);
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("Missing RESEND_API_KEY env var");
   }
 
   try {
-    return await transporter.sendMail({ from, to, subject, html });
+    const { error } = await resend.emails.send({ from, to, subject, html });
+    if (error) {
+      throw new Error(error.message);
+    }
   } catch (err) {
-    console.error(`SMTP error sending to ${to}:`, err);
+    console.error(`Email error sending to ${to}:`, err);
     throw err;
   }
 }
