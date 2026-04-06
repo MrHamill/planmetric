@@ -41,7 +41,7 @@ No test suite is configured.
 - **Framer Motion 12** for animations
 - **Supabase** — database (`intake_submissions` table)
 - **Stripe** — payments (one-time for Starter/Premium, subscription for Elite)
-- **Nodemailer + GoDaddy SMTP** — transactional email (shared helper in `lib/email.ts`)
+- **Resend** — transactional email API (shared helper in `lib/email.ts`)
 - **Anthropic SDK** — Claude Sonnet for AI plan generation (Premium/Elite)
 
 ### Key User Flow
@@ -90,7 +90,7 @@ Supabase table `intake_submissions`:
 
 Required in `.env.local`:
 - `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`
-- `SMTP_USER`, `SMTP_PASS` (GoDaddy email credentials)
+- `RESEND_API_KEY`
 - `STRIPE_SECRET_KEY`
 - `ANTHROPIC_API_KEY`
 - `NEXT_PUBLIC_SITE_URL`

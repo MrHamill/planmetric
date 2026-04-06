@@ -77,8 +77,7 @@ Static imports are fine for Stripe (already at module scope).
 |---|---|
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_SERVICE_KEY` | Service role key — server only |
-| `SMTP_USER` | GoDaddy email address (pete@planmetric.com.au) |
-| `SMTP_PASS` | GoDaddy email password |
+| `RESEND_API_KEY` | Resend email API key |
 | `STRIPE_SECRET_KEY` | Stripe server SDK |
 | `NEXT_PUBLIC_SITE_URL` | Used in Stripe success/cancel redirect URLs |
 
@@ -86,7 +85,13 @@ Always use non-null assertion (`!`) for env vars — they're expected to be set 
 
 ## Email
 
-- Emails sent via Nodemailer + GoDaddy SMTP from `"Plan Metric <pete@planmetric.com.au>"` to `"pete@planmetric.com.au"` (admin)
-- Shared `sendEmail()` helper in `lib/email.ts` — all routes import from there
-- HTML emails use the `row()` / `section()` helper pattern — maintain this when adding new email templates
-- Empty/undefined/false/null values are suppressed with the `row()` helper (returns `""`)
+- Emails sent via Resend API from `"Plan Metric <pete@planmetric.com.au>"` — domain verified on Resend
+- Shared `sendEmail()` helper in `lib/email.ts` — Resend client is lazily instantiated to avoid build-time errors
+- HTML emails use inline styles for email client compatibility
+
+## Plan Validation
+
+- `lib/validate-plan.ts` — Post-generation validation with 19 rules (9 critical, 7 warning, 3 masters-only)
+- Runs after final plan stitching in `/api/generate-plan/continue`
+- Results shown in admin review email with red (critical) / yellow (warning) highlights
+- Never blocks email delivery — admin can manually fix via review page
