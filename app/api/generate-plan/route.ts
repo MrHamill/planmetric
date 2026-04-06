@@ -379,43 +379,90 @@ HEAD TEMPLATE (use this exact <head>, no <style>):
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
-COACHING KNOWLEDGE:
-- Zones: Karvonen for HR. Cycling HR 5-10 BPM lower. Swimming HR 10-15 BPM lower.
-- CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, CSS ±3s, VO2max CSS-5-10s
-- FTP: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%
-- Every swim needs drills. Every session needs specific numbers. No vague sessions.
-- Swimming: ALL distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). Never use 75m, 125m, or other non-50m distances. Plans must work in both 25m and 50m pools.
-- Swimming: Freestyle (front crawl) only unless the athlete specifically requests other strokes. Do NOT include backstroke, breaststroke, or butterfly in regular training sessions.
-- Running: Conservative build. 80% easy pace. Long run 25-35% weekly volume.
-- Brick: 2-4 sessions in final 6 weeks. 60-90min bike → 15-30min run.
-- Nutrition: <60min 0-30g/hr, 60-90min 30-60g/hr, >2.5hr 80-90g/hr
+ZONES:
+- HR zones: Karvonen formula. Cycling HR 5-10 BPM lower than running. Swimming HR 10-15 BPM lower than running.
+- CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, Threshold CSS±3s, VO2max CSS-5-10s, Anaerobic CSS-15+s
+- FTP zones: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%, Z6>121%
 - All units: KM, min/km, BPM, Celsius
 
-PHASES — use EXACTLY four phases, no sub-phases:
-- BASE: Aerobic endurance at low intensity, technique focus, volume building. ~40% of plan.
-- BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. ~30% of plan.
-- PEAK: Race-specific sessions, brick workouts, simulations. Highest intensity. ~15% of plan.
-- TAPER: Reduce volume 30-50%, maintain intensity with short sharp efforts. 2-3 weeks before race.
+SESSION FREQUENCY — MANDATORY MINIMUMS:
+- 70.3/Ironman triathlon: minimum 3 swim, 3 bike, 3 run per week
+- Olympic triathlon: 2-3 per discipline + strength + 1 rest day
+- Swim frequency: 1x/week = no improvement, 2x = maintenance only, 3x = improvement, 4x = significant improvement
+- Weakest discipline gets +1 session above minimum (e.g., weak swimmer gets 4 swims/week)
+- Max 2-3 quality (hard) sessions per week; all remaining sessions must be low-intensity (Z1-Z2)
+- Strength: 2x/week in Base, 1-2x in Build, 1x in Peak, 0 in race week
+
+SWIMMING RULES:
+- Every swim needs drills. Every session needs specific numbers. No vague sessions.
+- ALL distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). Never use 75m, 125m, or other non-50m distances. Plans must work in both 25m and 50m pools.
+- Freestyle (front crawl) only unless the athlete specifically requests other strokes. Do NOT include backstroke, breaststroke, or butterfly.
+- Session duration: 45-60 min for most triathletes; 20-30 min for beginners
+
+RUNNING RULES:
+- Conservative build. Long run = 25-35% of weekly run volume, no more.
+- Easy run pace: 60-75 sec/km slower than goal race pace
+- Max 2 quality run sessions/week (tempo/intervals). 3 only for advanced runners.
+
+CYCLING RULES:
+- Optimal cadence: 85-100 RPM for triathletes (preserves run legs)
+- 60-min indoor trainer session ≈ 90-min outdoor ride for adaptation
+
+BRICK SESSIONS:
+- Minimum 2-4 brick sessions in final 6 weeks before race
+- Protocol: 60-90 min bike at race power → immediate 15-30 min run at race pace
+- Weekly brick during Build and Peak for 70.3/Ironman
+- Vary brick run speeds: rotate easy pace, strides, race-pace runs
+
+VOLUME PROGRESSION — HARD LIMITS:
+- Max 10% weekly volume increase
+- Swim/run: max +5 min/week increase
+- Bike: max +10 min/week increase
+- 10% rule for long rides: don't increase long ride distance by more than 10%/week
+- Never back-to-back hard sessions (hard = high intensity OR high duration)
+
+PHASES — EXACTLY four phases, no sub-phases:
+- BASE: Aerobic endurance at low intensity, technique focus, volume building. Intensity: ~80% Z1-Z2, ~20% above.
+- BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. Intensity: ~65% Z1-Z2, ~35% above.
+- PEAK: Race-specific sessions, brick workouts, race simulations. Highest intensity.
+- TAPER: Reduce volume 20-50%, maintain intensity with short sharp efforts. Duration: 8-14 days optimal.
 - Recovery weeks every 3rd or 4th week at 50-60% volume (within any phase).
 - Do NOT create sub-phases like "Build 1" and "Build 2" or "Pre-Base". Only the four above.
 
-WEEKLY CONSISTENCY — CRITICAL:
-- Assign each training day a consistent role across the entire plan (e.g., Monday = easy run + distance swim, Tuesday = morning bike, Wednesday = threshold run, etc.)
-- Keep the same day-to-session mapping throughout all phases as much as possible. Do NOT shuffle session types between days from week to week unless the athlete has shift work or rotating schedules that require it.
-- If the athlete has shift work or variable availability, adjust session placement to fit their schedule but maintain the same SESSION TYPES each week (e.g., always 1 threshold run, 1 long bike, 2 technique swims per week — even if the days shift).
-- Progress through phases by increasing VOLUME first (Base), then INTENSITY (Build/Peak), NOT by changing which days do what.
-- Follow the 80/20 rule: 80% low-intensity (Z1-Z2), 20% high-intensity across each week.
-- Increase weekly volume by max 10% per week. Swim/run: max +5 min/week. Bike: max +10 min/week.
+PHASE PROPORTIONS BY DISTANCE:
+- 70.3 (20-week): Base ~8wks, Build ~6wks, Peak ~4wks, Taper ~2wks
+- Ironman (24-week): Base ~8wks, Build ~8wks, Peak ~6wks, Taper ~2wks
+- Olympic (12-week): Base ~4wks, Build ~4wks, Peak ~3wks, Taper ~1wk
+- Scale proportionally for other plan lengths
 
 SESSION DISTRIBUTION:
-- Do NOT schedule the same discipline at high intensity on consecutive days (e.g., no bike threshold Tuesday + bike intervals Wednesday).
-- Brick sessions (bike→run) and AM/PM doubles of different disciplines on the same day are fine.
-- Alternate hard and easy days. After a high-intensity session, the next day should be easy/recovery or a different discipline.
+- 80/20 rule: ~80% low intensity (Z1-Z2), ~20% high intensity across each week
+- Do NOT schedule same discipline at high intensity on consecutive days
+- T4/T5 sessions require 48-72 hrs recovery before next quality session
+- Brick sessions (bike→run) and AM/PM doubles of different disciplines on same day are fine
+- Alternate hard and easy days
+
+WEEKLY CONSISTENCY — CRITICAL:
+- Assign each training day a consistent role across the entire plan (e.g., Monday = easy run + swim, Tuesday = morning bike, etc.)
+- Keep the same day-to-session mapping throughout all phases. Do NOT shuffle session types between days week to week unless athlete has shift work.
+- If shift work: adjust session placement but maintain same SESSION TYPES each week (e.g., always 1 threshold run, 1 long bike, 2 technique swims — even if days shift).
+- Progress via VOLUME first (Base), then INTENSITY (Build/Peak), NOT by changing which days do what.
 
 WEEK TITLES:
 - Format: "Week [N] — [PHASE]" (e.g., "Week 9 — BUILD", "Week 22 — TAPER")
-- Do NOT add creative subtitles or descriptions to week titles. Keep them short and scannable.
-- Only add extra context if it's a recovery week: "Week 4 — BASE (Recovery)"
+- Do NOT add creative subtitles. Keep them short and scannable.
+- Only add extra context for recovery weeks: "Week 4 — BASE (Recovery)"
+
+MASTERS ATHLETES (40+) — apply when athlete age >= 40:
+- Scale total weekly hours down 10-15% vs younger equivalent
+- 2 rest days/week minimum (vs 1 for younger)
+- Strength training 2-3x/week non-negotiable (sarcopenia prevention)
+- At least 1 VO2max interval session/week to defend aerobic capacity
+- 40-49: max 2-3 high-intensity sessions/week
+- 50-59: max 2-3, hard ceiling, separate hard days by 48+ hrs
+- 60+: 1-2 high-intensity sessions/week
+- Age 45+: use 2-on/1-off recovery cycle instead of 3-on/1-off
+- Female 45+: further reduce intensity ceiling, increase recovery, prioritise bone-loading strength
 
 PERSONALISATION:
 - Sessions ONLY on athlete's available days
@@ -423,13 +470,12 @@ PERSONALISATION:
 - Double sessions only if explicitly allowed
 - Work around injuries with safe alternatives
 - Account for other sports as training load
-- WEAKEST DISCIPLINE PRIORITY: If the athlete identifies a weakest discipline, give it MORE frequency. For swimming specifically: 1x/week = no improvement, 2x = maintenance only, 3x = improvement, 4x = significant improvement. A weak swimmer needs minimum 3 swim sessions per week.
 
 PLAN DURATION — CRITICAL:
 Calculate exact weeks from TODAY's date to race date. Today's date is in the athlete profile.
 - Taper always 2-3 weeks before race
 - Recovery weeks every 3-4 weeks
-- Distribute Base/Build/Peak proportionally${research ? `
+- Distribute Base/Build/Peak proportionally using the phase proportions above${research ? `
 
 COACHING RESEARCH LIBRARY — use the following curated research to inform your coaching decisions, session design, and coaching notes. Apply insights where relevant to the athlete's sport, level, and goals:
 
