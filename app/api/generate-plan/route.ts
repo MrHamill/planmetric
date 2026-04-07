@@ -74,8 +74,8 @@ This plan has ${totalWeeks} total weeks. In this response, generate:
 
 Do NOT include the Training Phases Breakdown section yet — it will be generated later once all weeks are complete.
 
-Each week MUST have all 7 days with full day-cards (session structure + coaching notes).
-CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
+Each week MUST have day-cards ONLY for the athlete's available days (see SCHEDULE section in profile). Do NOT generate day-cards for days the athlete is unavailable.
+CRITICAL: You MUST complete ALL available days of Week ${endWeek} before stopping. Do not cut off mid-week.
 Do NOT output any <style> block or CSS — only use the class names. CSS is injected server-side.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
 Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
@@ -201,11 +201,22 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Weakest", d.weakestDiscipline);
   add("Strongest", d.strongestDiscipline);
 
-  lines.push("\n=== SCHEDULE ===");
+  lines.push("\n=== SCHEDULE — READ CAREFULLY ===");
+  const availDays = Array.isArray(d.availableDays) ? d.availableDays as string[] : [];
+  const allDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const unavailDays = allDays.filter(day => !availDays.includes(day));
   add("Training Days/Week", d.trainingDaysPerWeek);
   add("Rest Days/Week", d.restDaysPerWeek);
   add("Preferred Times", d.preferredTimes);
-  add("Available Days", d.availableDays);
+  if (availDays.length > 0) {
+    lines.push(`AVAILABLE DAYS: ${availDays.join(", ")} ONLY`);
+    if (unavailDays.length > 0) {
+      lines.push(`⚠️ DO NOT SCHEDULE ANY SESSIONS ON: ${unavailDays.join(", ")} — these days must NOT appear in the plan at all`);
+    }
+    lines.push(`TRAINING SESSIONS PER WEEK: ${d.trainingDaysPerWeek} (pick ${d.trainingDaysPerWeek} of the ${availDays.length} available days for training, remaining = rest)`);
+  } else {
+    add("Available Days", d.availableDays);
+  }
   add("Max Weekday Session", d.maxWeekdaySession);
   add("Max Weekend Session", d.maxWeekendSession);
   add("Double Days OK", d.doubleDays);
@@ -309,6 +320,14 @@ function buildSystemPrompt(trainingFor?: string, athleteAge?: number): string {
 
   return `You are an elite endurance coach at Plan Metric creating a personalised HTML training plan for a paying customer.
 
+HARD CONSTRAINTS — VIOLATION OF ANY MAKES THE PLAN INVALID:
+1. AVAILABLE DAYS ONLY: Generate day-cards ONLY for the athlete's specified available days. If they are available Mon-Fri, there must be ZERO Saturday or Sunday day-cards. Omit unavailable days entirely — no rest cards, no day-cards, nothing.
+2. TRAINING DAY COUNT IS ABSOLUTE: If the athlete says 4 days/week, exactly 4 of their available days get training sessions. The remaining available day(s) are rest. Never exceed this number.
+3. ONE BANNER PER PHASE: Exactly ONE phase banner per phase. Four phases only: BASE, BUILD, PEAK, TAPER. No sub-phases like "Build 1"/"Build 2" or "BUILD PHASE — Weeks X-Y" variants.
+4. TAPER VOLUME MUST DROP: Each taper week must have 30-50% less volume than peak week. Volume should decrease progressively through the taper.
+5. CONSISTENT WEEKLY STRUCTURE: Same days train, same days rest, every week. The long run day stays the same throughout the plan.
+6. NO PHASE OVERLAP: Each week belongs to exactly one phase. Week ranges in phase cards and banners must not overlap.
+
 OUTPUT: Return ONLY valid HTML. No markdown, no explanation, no \`\`\`html wrapper. Do NOT output any <style> block or CSS — the CSS will be injected server-side. Just use the correct class names.
 
 REQUIRED HTML CLASSES AND STRUCTURE:
@@ -331,6 +350,8 @@ PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> �
 
 PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
 — Generate exactly ONE phase banner per phase. NEVER duplicate banners for the same phase.
+— Phase title format: "Phase N: [NAME]" where NAME is exactly one of: Foundation Build, Aerobic Development, Strength Endurance, Marathon Specific, Taper and Race Preparation. Do NOT append week ranges to the banner title.
+— NEVER create two banners with the same phase name or similar names like "BUILD" and "BUILD — Weeks X-Y".
 
 WEEK: <div class="weekly-accordion"><details><summary><span>[title]</span><div class="week-meta"><span class="badge badge-accent">[hours]</span><span>[dates]</span></div></summary><div class="week-content"><div class="weekly-summary">[overview]</div><div class="days-grid">[day cards]</div></div></details></div>
 
@@ -453,7 +474,7 @@ PHASES — EXACTLY four phases, no sub-phases:
 - BASE: Aerobic endurance at low intensity, technique focus, volume building. Intensity: ~80% Z1-Z2, ~20% above.
 - BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. Intensity: ~65% Z1-Z2, ~35% above.
 - PEAK: Race-specific sessions, brick workouts, race simulations. Highest intensity.
-- TAPER: Reduce volume 30-50%, maintain some intensity with short sharp efforts to keep legs fresh. Reduced-length long runs and shorter intervals. Duration: 2-3 weeks for marathon/70.3/Ironman, 1-2 weeks for shorter distances. NEVER compress taper into a single "race week."
+- TAPER: Reduce volume 30-50% from peak week. Each successive taper week should be lower than the previous. Maintain some intensity with short sharp efforts to keep legs fresh. Reduced-length long runs and shorter intervals. Duration: 2-3 weeks for marathon/70.3/Ironman, 1-2 weeks for shorter distances. NEVER compress taper into a single "race week." Example: if peak is 70km, taper week 1 ≈ 45km, taper week 2 ≈ 30km.
 - Recovery weeks every 3rd or 4th week at 50-60% volume (within any phase).
 - Do NOT create sub-phases like "Build 1" and "Build 2" or "Pre-Base". Only the four above.
 

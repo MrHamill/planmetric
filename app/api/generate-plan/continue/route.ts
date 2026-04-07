@@ -72,16 +72,16 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 7. Close all remaining tags: </div></body></html>
 
 MANDATORY CHECKLIST — every single week MUST have:
-- Minimum 3 swim sessions, 3 bike sessions, 3 run sessions (for 70.3/Ironman)
-- 1 long ride (title must include "Long")
-- 1 long run (title must include "Long")
-- All 7 days with full day-cards (session structure + coaching notes)
+- Day-cards ONLY for the athlete's available days (see SCHEDULE in profile). Do NOT generate day-cards for unavailable days.
+- Exactly the number of training sessions specified by the athlete. Remaining available days = rest.
+- 1 long run (title must include "Long") — for multi-sport plans also 1 long ride
+- For 70.3/Ironman: minimum 3 swim, 3 bike, 3 run sessions
 - All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
 - Freestyle only — no backstroke, breaststroke, or butterfly
 - No same-discipline high intensity on consecutive days
 - Coaching notes must be 3+ sentences per day
 
-CRITICAL: You MUST complete ALL 7 days of every week before moving to the next. Do not cut off mid-week.
+CRITICAL: You MUST complete ALL available days of every week before moving to the next. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${startWeek - 1}. Start directly from the phase banner for Week ${startWeek}.
 Do NOT output \`\`\`html wrappers.`;
     } else {
@@ -93,16 +93,16 @@ This plan has ${totalWeeks} total weeks. Generate ONLY:
 1. Phase banners (if a new phase starts in this range) and DETAILED week-by-week content for Weeks ${startWeek} through ${endWeek}
 
 MANDATORY CHECKLIST — every single week MUST have:
-- Minimum 3 swim sessions, 3 bike sessions, 3 run sessions (for 70.3/Ironman)
-- 1 long ride (title must include "Long")
-- 1 long run (title must include "Long")
-- All 7 days with full day-cards (session structure + coaching notes)
+- Day-cards ONLY for the athlete's available days (see SCHEDULE in profile). Do NOT generate day-cards for unavailable days.
+- Exactly the number of training sessions specified by the athlete. Remaining available days = rest.
+- 1 long run (title must include "Long") — for multi-sport plans also 1 long ride
+- For 70.3/Ironman: minimum 3 swim, 3 bike, 3 run sessions
 - All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
 - Freestyle only — no backstroke, breaststroke, or butterfly
 - No same-discipline high intensity on consecutive days
 - Coaching notes must be 3+ sentences per day
 
-CRITICAL: You MUST complete ALL 7 days of Week ${endWeek} before stopping. Do not cut off mid-week.
+CRITICAL: You MUST complete ALL available days of Week ${endWeek} before stopping. Do not cut off mid-week.
 Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks before ${startWeek}. Start directly from Week ${startWeek}.
 Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
 Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
