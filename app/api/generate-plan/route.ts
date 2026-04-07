@@ -286,10 +286,14 @@ function loadResearchContent(trainingFor: string, athleteAge?: number): string {
     files.push("masters-athletes.md");
   }
 
+  const MAX_CHARS_PER_FILE = 2000;
   const sections: string[] = [];
   for (const file of files) {
     try {
-      const content = fs.readFileSync(path.join(researchDir, file), "utf-8");
+      let content = fs.readFileSync(path.join(researchDir, file), "utf-8");
+      if (content.length > MAX_CHARS_PER_FILE) {
+        content = content.slice(0, MAX_CHARS_PER_FILE) + "\n[…truncated]";
+      }
       const label = file.replace(".md", "").replace(/-/g, " ").toUpperCase();
       sections.push(`--- ${label} ---\n${content}`);
     } catch {
