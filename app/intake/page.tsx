@@ -302,8 +302,6 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         if (isRace && !s("raceDate")) return false;
         if (isNoRace && !s("planWeeks")) return false;
         if (!s("mainGoal")) return false;
-        const showTarget = ["Hit a target time", "Podium", "Qualify for championships"].includes(form.mainGoal);
-        if (showTarget && !s("targetTime")) return false;
         if (isRace && !s("completedRaceBefore")) return false;
         return true;
       }
@@ -425,7 +423,6 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 2: {
         const isRace     = form.hasRace === "Yes";
         const isNoRace   = form.hasRace === "No";
-        const showTarget = ["Hit a target time", "Podium", "Qualify for championships"].includes(form.mainGoal);
         const showPrev   = form.completedRaceBefore === "Yes";
         return (
           <div className="space-y-6">
@@ -465,11 +462,9 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                       : ["General fitness", "Build endurance", "Get faster", "Hit a target time"]
                     } error={mt("mainGoal")} />
                 </F>
-                {showTarget && (
-                  <F label="Target finish time *" note='e.g. "Sub 5 hours" or "3:30 marathon"' error={mt("targetTime")}>
-                    <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. Sub 5:00" error={mt("targetTime")} />
-                  </F>
-                )}
+                <F label="Target finish time (optional)" note="Leave blank if you don't have one — e.g. 3:30 marathon, Sub 5 hours">
+                  <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. 3:30" />
+                </F>
               </>
             )}
             {isRace && (

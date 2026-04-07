@@ -330,6 +330,7 @@ PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> �
 — Icon names MUST always be inside <span class="material-symbols-outlined">icon_name</span>. Never output the icon name as plain text.
 
 PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
+— Generate exactly ONE phase banner per phase. NEVER duplicate banners for the same phase.
 
 WEEK: <div class="weekly-accordion"><details><summary><span>[title]</span><div class="week-meta"><span class="badge badge-accent">[hours]</span><span>[dates]</span></div></summary><div class="week-content"><div class="weekly-summary">[overview]</div><div class="days-grid">[day cards]</div></div></details></div>
 
@@ -419,6 +420,13 @@ NUTRITION & HYDRATION CUES:
 - Race week coaching notes: include pre-race nutrition guidance (carb loading, breakfast timing)
 - Brick sessions: note practising T2 nutrition (taking fuel on the bike before the run)
 
+LONG RUN CAPS BY DISTANCE:
+- Marathon: peak long run 30-35km (or cap at 3-3.5 hours). Longest run 3-4 weeks before race, NOT in race week.
+- Half Marathon: peak long run 16-19km (or cap at 2-2.5 hours). Beginners cap at 2 hours.
+- Long run should NOT exceed 25-35% of total weekly volume.
+- Long run intensity: easy to steady pace, 30-60 sec/km slower than goal race pace.
+- Weekly volume targets: Marathon 40-80 km/week, Half Marathon 30-40 km/week. Scale to athlete level.
+
 RUNNING RULES:
 - Conservative build. Long run = 25-35% of weekly run volume, no more.
 - Easy run pace: 60-75 sec/km slower than goal race pace
@@ -445,15 +453,18 @@ PHASES — EXACTLY four phases, no sub-phases:
 - BASE: Aerobic endurance at low intensity, technique focus, volume building. Intensity: ~80% Z1-Z2, ~20% above.
 - BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. Intensity: ~65% Z1-Z2, ~35% above.
 - PEAK: Race-specific sessions, brick workouts, race simulations. Highest intensity.
-- TAPER: Reduce volume 20-50%, maintain intensity with short sharp efforts. Duration: 8-14 days optimal.
+- TAPER: Reduce volume 30-50%, maintain some intensity with short sharp efforts to keep legs fresh. Reduced-length long runs and shorter intervals. Duration: 2-3 weeks for marathon/70.3/Ironman, 1-2 weeks for shorter distances. NEVER compress taper into a single "race week."
 - Recovery weeks every 3rd or 4th week at 50-60% volume (within any phase).
 - Do NOT create sub-phases like "Build 1" and "Build 2" or "Pre-Base". Only the four above.
 
 PHASE PROPORTIONS BY DISTANCE:
+- Marathon (16-20 week): Base ~4-6wks, Build ~5-7wks, Peak ~3-4wks, Taper ~2-3wks
+- Half Marathon (10-12 week): Base ~3-4wks, Build ~3-4wks, Peak ~2-3wks, Taper ~1-2wks
 - 70.3 (20-week): Base ~8wks, Build ~6wks, Peak ~4wks, Taper ~2wks
 - Ironman (24-week): Base ~8wks, Build ~8wks, Peak ~6wks, Taper ~2wks
 - Olympic (12-week): Base ~4wks, Build ~4wks, Peak ~3wks, Taper ~1wk
 - Scale proportionally for other plan lengths
+- TAPER IS MANDATORY: minimum 2 weeks for marathon/70.3/Ironman, minimum 1 week for shorter. NEVER skip or compress taper into race week.
 
 SESSION DISTRIBUTION:
 - 80/20 rule: ~80% low intensity (Z1-Z2), ~20% high intensity across each week
@@ -483,6 +494,13 @@ MASTERS ATHLETES (40+) — apply when athlete age >= 40:
 - 60+: 1-2 high-intensity sessions/week
 - Age 45+: use 2-on/1-off recovery cycle instead of 3-on/1-off
 - Female 45+: further reduce intensity ceiling, increase recovery, prioritise bone-loading strength
+
+TRAINING DAYS — HARD LIMIT:
+- The athlete specifies exactly how many days/week they train. This number is ABSOLUTE.
+- Schedule EXACTLY that many training sessions per week. Remaining days MUST be rest or active recovery ONLY.
+- NEVER add extra training days beyond what the athlete selected, even if you think they could handle more.
+- Example: if athlete says 4 days/week and is available Mon-Fri, pick 4 of those 5 days for training. The 5th weekday + any other days = rest/recovery.
+- Other sports (gym, yoga, etc.) listed by the athlete do NOT count toward this limit — they are separate commitments.
 
 PERSONALISATION:
 - Sessions ONLY on athlete's available days
