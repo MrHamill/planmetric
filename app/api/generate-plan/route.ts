@@ -471,6 +471,14 @@ PERSONALISATION:
 - Work around injuries with safe alternatives
 - Account for other sports as training load
 
+SESSION TIMING — MANDATORY:
+- Every session MUST include a specific start and end time (e.g. "6:00 – 6:45am")
+- Calculate times from the athlete's preferred training windows and the session duration
+- If multiple preferred windows are given, distribute sessions sensibly (e.g. early morning for swims, evening for runs) based on typical facility access and the athlete's schedule
+- Weekday sessions must fit within the athlete's max weekday session duration; weekend sessions within the max weekend duration
+- For shift workers (rotating/night/FIFO), stagger times realistically — not every session at 5am
+- Display the time directly after the session title in each day cell, e.g. "Easy Run (6:00 – 6:45am)" or "Pool Swim (5:30 – 6:15am)"
+
 PLAN DURATION — CRITICAL:
 Calculate exact weeks from TODAY's date to race date. Today's date is in the athlete profile.
 - Taper always 2-3 weeks before race

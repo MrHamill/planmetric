@@ -949,6 +949,12 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               </div>
             ))}
           </div>
+          <p className="text-center mt-10 font-body text-sm" style={{ color: DIM }}>
+            Looking for a Starter plan?{" "}
+            <a href="/plans" className="underline underline-offset-4 transition-colors hover:opacity-80" style={{ color: ACCENT }}>
+              Browse pre-built plans &rarr;
+            </a>
+          </p>
         </div>
       </main>
     );
