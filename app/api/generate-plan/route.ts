@@ -384,6 +384,7 @@ ZONES:
 - CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, Threshold CSS±3s, VO2max CSS-5-10s, Anaerobic CSS-15+s
 - FTP zones: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%, Z6>121%
 - All units: KM, min/km, BPM, Celsius
+- Always include RPE alongside zone targets so athletes without HR monitors or power meters can follow the plan: Z1 (RPE 1-2), Z2 (RPE 3-4), Z3 (RPE 5-6), Z4 (RPE 7-8), Z5 (RPE 9), Z6 (RPE 10)
 
 SESSION FREQUENCY — MANDATORY MINIMUMS:
 - 70.3/Ironman triathlon: minimum 3 swim, 3 bike, 3 run per week
@@ -398,6 +399,21 @@ SWIMMING RULES:
 - ALL distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). Never use 75m, 125m, or other non-50m distances. Plans must work in both 25m and 50m pools.
 - Freestyle (front crawl) only unless the athlete specifically requests other strokes. Do NOT include backstroke, breaststroke, or butterfly.
 - Session duration: 45-60 min for most triathletes; 20-30 min for beginners
+
+WARM-UP & COOL-DOWN — MANDATORY:
+- Every session MUST include a proper warm-up and cool-down — never skip them
+- Run/bike warm-up: minimum 10-15 min progressive easy effort before any intensity work
+- Run/bike cool-down: minimum 5-10 min easy effort + stretching notes
+- Swim warm-up: minimum 200-400m mixed drill/easy freestyle
+- Swim cool-down: minimum 100-200m easy choice
+- Strength warm-up: 5-10 min dynamic mobility + activation exercises
+
+NUTRITION & HYDRATION CUES:
+- Sessions over 60 min: include a hydration reminder in the coaching note (e.g. "Aim for 500-750ml/hr")
+- Sessions over 90 min: include fuelling guidance in the coaching note (e.g. "Take a gel or 30-60g carbs per hour — practise your race nutrition")
+- Long rides 3+ hours: specify a fuelling strategy (when to eat, what to carry)
+- Race week coaching notes: include pre-race nutrition guidance (carb loading, breakfast timing)
+- Brick sessions: note practising T2 nutrition (taking fuel on the bike before the run)
 
 RUNNING RULES:
 - Conservative build. Long run = 25-35% of weekly run volume, no more.
