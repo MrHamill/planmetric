@@ -150,6 +150,8 @@ Running produces the **highest HR** of the three disciplines due to total-body m
 
 ## Plan Structure: Building a Triathlon Season
 
+> **See also:** `periodisation.md` for detailed phase-by-phase protocols, distance-specific breakdowns (Olympic/70.3/Ironman), and the full Joe Friel six-phase model.
+
 ### Phase Overview
 | Phase | Duration | Focus |
 |-------|----------|-------|

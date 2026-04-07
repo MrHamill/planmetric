@@ -12,6 +12,12 @@
 - Treadmill vs outdoor running — differences in training effect
 - Race-specific pacing strategies — 5K, 10K, half marathon, marathon
 - Running form cues — posture, arm drive, foot strike, forward lean
+- Gymshark / YouTube — Half marathon volume progression (beginner and intermediate)
+- Runner's World / coaching panel (Morrow, Accetta, Ng) — Lactate threshold speed work protocols
+- General search — 12-week half marathon training block structure
+- Jack Daniels, Daniels' Running Formula — VDOT tables for race equivalences and training paces
+- McMillan Running / The Running Channel / The 1% Better Runner — 8-week 5K VO2max interval plan
+- General search — 10K training plan sessions and weekly structure
 
 > **Note:** TrainingGround.com.au running event guide was JavaScript-rendered and returned no article content.
 
@@ -464,3 +470,256 @@ After a 130–145 km ride: 6 × 1.6 km repeats. Start each interval on goal pace
 - Under-fuelled, sleep-deprived, or fatigued states warrant pivoting to low-intensity work
 - Protecting consistency is more important than forcing intensity
 - Applies to: All
+
+---
+
+## Half Marathon Training Volume Progression
+
+### Beginner (Goal: Finish)
+- Frequency: 3–4 days/week
+- Starting volume: 15–20 km/week
+- Peak volume: 30–40 km/week
+- Peak long run: 17–18 km (reached around week 9–11)
+- Taper: reduce volume by 50–60% in final week
+- Applies to: Beginner
+
+**Progression:**
+- Weeks 1–4: build endurance by increasing long run by 1–2 km/week
+- Weeks 5–8: introduce 1× tempo run (20–30 min) and short intervals (e.g. 400m reps)
+- Weeks 9–11: peak long run reaches 17–18 km
+- Week 12: taper week
+
+**Key sessions:** long slow run (Sunday), 2–3 easy/recovery runs, 1 optional strength session.
+
+### Intermediate (Goal: PB or Target Time)
+- Frequency: 4–5 days/week
+- Starting volume: 30–40 km/week
+- Peak volume: 50–70 km/week
+- Peak long run: 18–20+ km
+- Taper: 2 weeks to reduce fatigue
+- Applies to: Intermediate
+
+**Progression:**
+- Base phase (4–6 weeks): consistent running building to 40–50 km/week
+- Speed/strength phase: introduce intervals and tempo runs 2×/week
+- Peak phase: long runs reach 18–20+ km
+- Taper: 2-week reduction
+
+**Key sessions:** 1× speed interval session, 1× tempo/threshold run, 1× long run with race-pace segments, 1–2 recovery runs, 1–2 strength training sessions.
+
+### Key Principles (All Levels)
+- **80/20 rule:** ~80% easy conversational pace, ~20% high-intensity (intervals/tempo)
+- **Long run is the most important session:** builds from 60 min to nearly 2 hours (15–18 km beginner, 18–21 km intermediate)
+- **Deload/recovery weeks:** every 3–5 weeks, reduce volume by 20–30%
+- **Rest days:** at least 1, ideally 2, full rest or very light active recovery days per week
+- **10% rule:** maximum weekly volume increase of ~10%
+- Applies to: All
+
+---
+
+## Half Marathon 12-Week Training Block Structure
+
+### Phase 1: Base Building & Consistency (Weeks 1–4)
+- Focus: establish routine with easy-paced running, introduce light strength training
+- Workouts: mostly easy aerobic runs, short runs (3–5 km), long run building from 8–10 km
+- Goal: adapt body to regular training without overtraining
+- Applies to: All
+
+### Phase 2: Build & Peak Intensity (Weeks 5–9)
+- Focus: increase weekly volume, introduce speed work (intervals/tempo) to improve aerobic capacity
+- Workouts: 1–2 speed sessions/week (tempo runs or 400m intervals), long run growing to 15–18 km
+- Goal: build speed, endurance, and confidence at race pace
+- Applies to: All
+
+### Phase 3: Taper & Race Prep (Weeks 10–12)
+- Focus: reduce weekly volume to allow muscles to recover, ensure freshness for race day
+- Longest run (18–20 km) is often in week 10 or 11
+- Final week: very light, short easy efforts, 2–3 rest days before race
+- Goal: recover and sharpen for peak performance
+- Applies to: All
+
+> **Cross-reference:** See `periodisation.md` for how these phases map to the Friel model and how shorter plans compress phase durations.
+
+---
+
+## Half Marathon Lactate Threshold Speed Work
+
+Six specific threshold workout protocols. All follow the same principle: training at lactate threshold pace (comfortably hard, ~7–8 RPE) teaches the body to clear lactate more efficiently and sustain faster paces for longer.
+
+### 1. Five-Minute Interval Workout
+- 15–20 min warm-up at easy pace
+- 6 × 5 min at threshold pace, 60–90 sec recovery between reps
+- 15–20 min cooldown at easy pace
+- **Why:** breaks help runners new to threshold work reflect and adjust pace between reps; many beginners can't hold threshold for 20–30 min continuously
+- Applies to: Beginner / Intermediate
+
+### 2. Eight-Minute Interval Workout
+- 15–20 min warm-up at easy pace
+- 2–5 × 8 min at threshold pace, 60–90 sec recovery between reps
+- 15–20 min cooldown at easy pace
+- **Scaling:** 5K runners may only need 2 reps; marathon runners benefit from 4–5 reps
+- Applies to: Intermediate / Elite
+
+### 3. Steady-State Tempo Run
+- 15–20 min warm-up at easy pace
+- 20–30 min continuous at threshold pace
+- 15–20 min cooldown at easy pace
+- **Why:** eliminating breaks forces runners to battle through minor fatigue and maintain comfortably-hard pace — teaches the low-grade discomfort tolerance that distance running demands
+- Applies to: Intermediate / Elite
+
+### 4. Long Progression Run (Marathon-Focused)
+- 5–6.5 km at easy pace (3–4 RPE)
+- 5–6.5 km at marathon pace (4–5 RPE)
+- 20 min at lactate threshold pace (7–8 RPE)
+- 5–6.5 km at marathon pace (4–5 RPE)
+- 5–6.5 km at easy pace (3–4 RPE)
+- Total: ~24 km — build up to this over several weeks
+- **Why:** changing paces through a long run trains the body to maintain pace during the later stages of a race
+- Applies to: Elite
+
+### 5. Half Marathon Pace Progression (~14.5 km)
+- 1.6 km at easy pace (3–4 RPE)
+- 1.6 km at marathon pace (4–5 RPE)
+- 1.6 km at half marathon pace (5–6 RPE)
+- 4.8 km at lactate threshold pace (7–8 RPE)
+- 1.6 km at half marathon pace (5–6 RPE)
+- 1.6 km at marathon pace (4–5 RPE)
+- 1.6 km at easy pace (3–4 RPE)
+- **Why:** gradual pace increase and decrease simulates mid-race fatigue while sustaining threshold effort — builds confidence
+- Applies to: Intermediate / Elite
+
+### 6. Hill Threshold Workout
+- 15–20 min warm-up at easy pace
+- 10 × 2 min uphill running (7–8 RPE), light jog back down after each rep
+- 15–20 min cooldown at easy pace
+- **Why:** combines threshold endurance gains with hill-specific leg and core strength. Run at threshold effort (not pace) — you'll be slower uphill but giving the same physiological effort
+- Total uphill effort: ~20 min (matches the recommended threshold stimulus)
+- Good option for runners not yet confident enough for a full steady-state tempo
+- Applies to: Beginner / Intermediate
+
+---
+
+## Jack Daniels VDOT System
+
+VDOT is an adjusted VO2max value derived from a recent race performance. It serves two purposes: (1) predict equivalent race times across distances, and (2) set precise training paces. The full tables are saved as images in `public/images/vdot1a.jpg`, `vdot1b.jpg` (race equivalences) and `vdot2a.jpg`, `vdot2b.jpg` (training paces).
+
+### How It Works
+1. Run a timed race (any distance from 1500m to marathon)
+2. Look up your time in Table 1 → read across to find your VDOT number (30–85)
+3. Use that VDOT in Table 2 → read across to find training paces for each session type
+
+### Training Pace Categories (Table 2)
+
+| Code | Name | Purpose | Effort |
+|------|------|---------|--------|
+| E/L | Easy / Long | Aerobic base, recovery, long runs | Conversational, relaxed |
+| MP | Marathon Pace | Race-specific endurance for marathon | Steady, sustainable |
+| T | Threshold | Lactate threshold development | Comfortably hard, ~60-min race pace |
+| I | Interval | VO2max development | Hard, ~10–12-min race pace |
+| R | Repetition | Speed, economy, neuromuscular | Very hard, short bursts with full recovery |
+
+### Sample VDOT Reference Points
+
+| VDOT | 5K Time | 10K Time | Half Marathon | Easy Pace/km | Threshold/km | Interval/km |
+|------|---------|----------|---------------|-------------|--------------|-------------|
+| 30 | 30:40 | 63:46 | 2:21:04 | 7:37 | 6:24 | — |
+| 35 | 27:00 | 56:07 | 2:04:13 | 6:48 | 5:41 | — |
+| 40 | 24:08 | 50:03 | 1:50:59 | 6:07 | 5:06 | 4:42 |
+| 45 | 21:50 | 45:16 | 1:40:20 | 5:34 | 4:38 | 4:16 |
+| 50 | 19:57 | 41:21 | 1:31:35 | 5:07 | 4:15 | 3:55 |
+| 55 | 18:22 | 38:06 | 1:24:18 | 4:45 | 3:56 | 3:37 |
+| 60 | 17:03 | 35:22 | 1:18:09 | 4:25 | 3:40 | 3:23 |
+| 65 | 15:54 | 33:01 | 1:12:53 | 4:09 | 3:29 | 3:10 |
+| 70 | 14:55 | 31:00 | 1:08:21 | 3:54 | 3:14 | 2:59 |
+| 75 | 14:02 | 29:14 | 1:04:41 | 3:41 | 3:04 | 2:49 |
+| 80 | 13:17.8 | 27.41.2 | 1:00:15 | 3:30 | 2:54 | 2:41 |
+
+### Key Rules
+- **Don't train faster than your VDOT justifies** — to train at a higher intensity, first earn a higher VDOT by racing faster
+- Use performances from **similar conditions** (terrain, weather, altitude) when looking up VDOT
+- **Longer races** (15K–25K) are better predictors of marathon performance than 1500m or 5K
+- Re-assess VDOT after every significant race or every 6–8 weeks of training
+- Applies to: All
+
+---
+
+## 5K Training Plan — 8-Week VO2max Block
+
+An 8-week plan for intermediate runners with a base of 3–4 sessions/week. Follows a "general-to-specific" progression: higher-volume VO2max work early, transitioning to 5K-specific race pace efforts.
+
+### Phase Breakdown
+| Weeks | Focus | Interval Type |
+|-------|-------|---------------|
+| 1–2 | Foundation & pace adaptation | 400m–600m repeats |
+| 3–4 | Strength & speed endurance | 600m–800m repeats + tempo |
+| 5 | Peak VO2max intensity | 800m–1000m repeats |
+| 6 | 5K-specific training | 800m–1000m at goal pace |
+| 7 | Final peak & taper begins | Reduced volume |
+| 8 | Taper & race week | Short, sharp efforts only |
+
+### Weekly Structure
+| Day | Session |
+|-----|---------|
+| Monday | Rest or light cross-training |
+| Tuesday | VO2max interval session |
+| Wednesday | Rest or easy recovery run (5–6 km) |
+| Thursday | Tempo run (20 min at comfortably hard pace) |
+| Friday | Rest day |
+| Saturday | Easy run (5–8 km) or rest |
+| Sunday | Long run (9–13 km) at relaxed pace |
+
+### VO2max Interval Progression (Tuesday Sessions)
+10–15 min warm-up with light jogging and strides before every session.
+
+| Week | Session | Recovery |
+|------|---------|----------|
+| 1 | 8–10 × 400m at goal 5K pace | 90 sec–2 min jog |
+| 2 | 10–12 × 400m at goal 5K pace | 90 sec jog |
+| 3 | 6–8 × 600m at goal 5K pace | 2 min jog |
+| 4 | 4–5 × 800m slightly faster than 5K pace | 2–3 min jog |
+| 5 | 5–6 × 1000m at goal 5K pace | 2–3 min jog |
+| 6 | 4–5 × 1000m at goal 5K pace | 1:1 work-to-rest ratio |
+| 7 | 3–4 × 1000m at goal 5K pace (taper) | 2 min jog |
+| 8 | 4–5 × 400m at goal 5K pace (race week) | Full recovery |
+
+### Additional VO2max Session Options
+- **4 × 4 min:** 4 min hard (90–95% max HR), 3 min easy recovery. Repeat 4 times
+- **30/30s (Billat Method):** 30 sec hard (above 5K pace), 30 sec easy. 10–13 reps per set, 3 min rest, 2–3 sets
+- **Pyramid:** 400m–800m–1200m–800m–400m at 5K pace with equal distance recovery
+
+### Key Notes
+- VO2max intervals should feel "hard" — the pace you could sustain for a 10–12 min race, not an all-out sprint
+- For 800m–1000m repeats, recovery should allow HR to drop ~50 bpm before next rep
+- Taper: reduce volume (not intensity) in the final 7–10 days
+- Applies to: Intermediate / Elite
+
+---
+
+## 10K Training Plan — Weekly Structure
+
+A 10K plan typically spans 8–10 weeks with 3–5 sessions per week, building aerobic capacity and pace management through a mix of easy, tempo, and long runs.
+
+### Weekly Schedule (4-Day Structure)
+| Day | Session |
+|-----|---------|
+| Monday | Rest or very light cross-training (yoga, walk) |
+| Tuesday | Speed/interval session (e.g. 5–6 × 800m fast, or 20 min tempo) |
+| Wednesday | Rest or active recovery (cycling, swimming) |
+| Thursday | Easy run (~4–6 km at conversational pace) |
+| Friday | Rest |
+| Saturday/Sunday | Long run (gradually increasing to 8–12 km) |
+
+### Key Session Types
+- **Long runs:** done on weekends, comfortable pace, distance increasing weekly. Build endurance foundation
+- **Speed work (intervals):** short, fast reps (200m–800m) with jogging recovery. Improve running speed and VO2max
+- **Tempo runs:** 20–30 min at comfortably hard pace (~10K race pace). Boost lactate threshold and sustained endurance
+- **Cross-training:** low-impact options (cycling, swimming, elliptical) on off-days. Cardiovascular benefit without running impact
+- **Rest days:** at least 1–2 per week. Critical for injury prevention and muscle recovery
+
+### Progression Principles
+- Long run builds from ~6 km to 10–12 km over the training block
+- Speed work progresses from shorter reps (200m–400m) to longer reps (800m–1000m)
+- Tempo run duration increases from 15 min to 25–30 min
+- Recovery week every 3rd or 4th week (reduce volume by 20–30%)
+- Final 7–10 days: taper — reduce volume, maintain intensity
+- Applies to: Beginner / Intermediate
