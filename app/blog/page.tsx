@@ -1,9 +1,16 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { FadeIn, FadeInHero, HoverCard } from "@/components/FadeIn";
+import type { Metadata } from "next";
 
-/* ─── Palette ────────────────────────────────────────────────── */
+export const metadata: Metadata = {
+  title: "The Journal — Plan Metric",
+  description: "Evidence-based articles on endurance training, nutrition, and race preparation. Written by coaches, backed by science.",
+  openGraph: {
+    title: "The Journal — Plan Metric",
+    description: "Evidence-based articles on endurance training, nutrition, and race preparation.",
+  },
+};
+
 const BG = "#0F0F0F";
 const TEXT = "#F5F5F0";
 const DIM = "rgba(245,245,240,0.45)";
@@ -12,21 +19,6 @@ const CARD_BG = "rgba(245,245,240,0.03)";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
-/* ─── Animations ─────────────────────────────────────────────── */
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.15 },
-  transition: { duration: 0.5, ease: "easeOut" as const, delay },
-});
-
-const heroIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: "easeOut" as const, delay },
-});
-
-/* ─── Category colours (dark theme) ──────────────────────────── */
 const catColor: Record<string, { text: string; bg: string }> = {
   Training:    { text: ACCENT, bg: "rgba(184,92,44,0.10)" },
   Swim:        { text: "#0ea5e9", bg: "rgba(14,165,233,0.10)" },
@@ -38,7 +30,6 @@ const catColor: Record<string, { text: string; bg: string }> = {
   Racing:      { text: "#ef4444", bg: "rgba(239,68,68,0.10)" },
 };
 
-/* ─── Article data ───────────────────────────────────────────── */
 const ARTICLES = [
   { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones" },
   { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition" },
@@ -47,7 +38,6 @@ const ARTICLES = [
   { title: "How to taper before race day without losing fitness", category: "Racing", readTime: "5 min read", excerpt: "Reduce volume, maintain intensity, and arrive at the start line sharp. The science of the pre-race taper.", href: "/blog/how-to-taper" },
 ];
 
-/* ═══════════════════════════════════════════════════════════════ */
 export default function BlogPage() {
   return (
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
@@ -63,7 +53,7 @@ export default function BlogPage() {
         }}
       />
 
-      {/* ═══════════════ HERO ═══════════════════════════════ */}
+      {/* Hero */}
       <section className="min-h-[55vh] flex flex-col justify-end px-8 md:px-24 pt-40 pb-24 relative overflow-hidden">
         <div
           className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
@@ -78,92 +68,92 @@ export default function BlogPage() {
         </div>
 
         <div className="relative z-10 max-w-3xl">
-          <motion.span
-            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
-            style={{ color: ACCENT }}
-            {...heroIn(0.1)}
-          >
-            The Journal
-          </motion.span>
+          <FadeInHero delay={0.1}>
+            <span
+              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+              style={{ color: ACCENT }}
+            >
+              The Journal
+            </span>
+          </FadeInHero>
 
-          <motion.h1
-            className="font-headline text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.05] tracking-tight mb-6"
-            {...heroIn(0.2)}
-          >
-            Insights &amp;{" "}
-            <span style={{ color: ACCENT }}>methodology</span>.
-          </motion.h1>
+          <FadeInHero delay={0.2}>
+            <h1 className="font-headline text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.05] tracking-tight mb-6">
+              Insights &amp;{" "}
+              <span style={{ color: ACCENT }}>methodology</span>.
+            </h1>
+          </FadeInHero>
 
-          <motion.p
-            className="font-body text-lg md:text-xl leading-relaxed max-w-xl"
-            style={{ color: DIM }}
-            {...heroIn(0.35)}
-          >
-            Evidence-based articles on endurance training, nutrition, and
-            race preparation. Written by coaches, backed by science.
-          </motion.p>
+          <FadeInHero delay={0.35}>
+            <p
+              className="font-body text-lg md:text-xl leading-relaxed max-w-xl"
+              style={{ color: DIM }}
+            >
+              Evidence-based articles on endurance training, nutrition, and
+              race preparation. Written by coaches, backed by science.
+            </p>
+          </FadeInHero>
         </div>
       </section>
 
       {/* Divider */}
       <div className="px-8 md:px-24"><div className="max-w-6xl mx-auto" style={{ height: 1, background: RULE }} /></div>
 
-      {/* ═══════════════ ARTICLES ═══════════════════════════ */}
+      {/* Articles */}
       <section className="py-24 md:py-32 px-8 md:px-24">
         <div className="max-w-6xl mx-auto">
-          <motion.span
-            className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
-            style={{ color: DIM }}
-            {...fadeUp()}
-          >
-            Articles
-          </motion.span>
+          <FadeIn>
+            <span
+              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
+              style={{ color: DIM }}
+            >
+              Articles
+            </span>
+          </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {ARTICLES.map((article, i) => {
               const cat = catColor[article.category] || catColor.Training;
               return (
-                <motion.article
-                  key={article.title}
-                  className="rounded-sm overflow-hidden group cursor-pointer flex flex-col"
-                  style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
-                  {...fadeUp(i * 0.1)}
-                  whileHover={{ y: -6, boxShadow: "0 12px 40px rgba(0,0,0,0.4)", borderColor: ACCENT }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Link href={article.href} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
-                    <div className="flex items-center gap-3 mb-6">
+                <FadeIn key={article.title} delay={i * 0.1}>
+                  <HoverCard
+                    className="rounded-sm overflow-hidden group cursor-pointer flex flex-col h-full"
+                    style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
+                  >
+                    <Link href={article.href} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
+                      <div className="flex items-center gap-3 mb-6">
+                        <span
+                          className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
+                          style={{ color: cat.text, background: cat.bg }}
+                        >
+                          {article.category}
+                        </span>
+                        <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
+                          {article.readTime}
+                        </span>
+                      </div>
+                      <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
+                        {article.title}
+                      </h2>
+                      <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
+                        {article.excerpt}
+                      </p>
                       <span
-                        className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
-                        style={{ color: cat.text, background: cat.bg }}
+                        className="font-label text-xs tracking-wider mt-6 inline-block"
+                        style={{ color: ACCENT }}
                       >
-                        {article.category}
+                        Read article &rarr;
                       </span>
-                      <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
-                        {article.readTime}
-                      </span>
-                    </div>
-                    <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
-                      {article.title}
-                    </h2>
-                    <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
-                      {article.excerpt}
-                    </p>
-                    <span
-                      className="font-label text-xs tracking-wider mt-6 inline-block"
-                      style={{ color: ACCENT }}
-                    >
-                      Read article &rarr;
-                    </span>
-                  </Link>
-                </motion.article>
+                    </Link>
+                  </HoverCard>
+                </FadeIn>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════ FOOTER ═════════════════════════════ */}
+      {/* Footer */}
       <footer
         className="w-full py-10 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-6"
         style={{ background: BG, borderTop: `1px solid ${CARD_BORDER}` }}
