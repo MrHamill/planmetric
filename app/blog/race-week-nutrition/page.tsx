@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
+import { ArticleJsonLd } from "@/components/ArticleJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "What to Eat the Week Before a Triathlon — Plan Metric",
+  title: "What to Eat the Week Before a Triathlon",
   description: "Race week nutrition strategy for triathletes: carb loading protocol, race morning fuelling, on-course nutrition by distance, and hydration targets.",
   openGraph: {
     title: "What to Eat the Week Before a Triathlon",
     description: "Race week nutrition strategy for triathletes: carb loading, race morning fuelling, and on-course nutrition by distance.",
     type: "article",
   },
+  alternates: { canonical: "/blog/race-week-nutrition" },
 };
 
 const BG = "#0F0F0F";
@@ -21,6 +23,8 @@ const RULE = "rgba(245,245,240,0.15)";
 
 export default function RaceWeekNutritionArticle() {
   return (
+    <>
+    <ArticleJsonLd title="What to Eat the Week Before a Triathlon" description="Race week nutrition strategy for triathletes: carb loading, race morning fuelling, and on-course nutrition by distance." slug="race-week-nutrition" datePublished="2026-03-25" />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       <div className="pointer-events-none fixed inset-0 z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 
@@ -133,5 +137,6 @@ export default function RaceWeekNutritionArticle() {
         <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>&copy; 2026 Plan Metric. Precision Endurance.</span>
       </footer>
     </main>
+    </>
   );
 }

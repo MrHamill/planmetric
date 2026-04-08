@@ -3,12 +3,13 @@ import { FadeIn, FadeInHero, HoverCard } from "@/components/FadeIn";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "The Journal — Plan Metric",
+  title: "The Journal",
   description: "Evidence-based articles on endurance training, nutrition, and race preparation. Written by coaches, backed by science.",
   openGraph: {
     title: "The Journal — Plan Metric",
     description: "Evidence-based articles on endurance training, nutrition, and race preparation.",
   },
+  alternates: { canonical: "/blog" },
 };
 
 const BG = "#0F0F0F";

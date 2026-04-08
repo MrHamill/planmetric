@@ -14,9 +14,24 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Plan Metric | Precision Endurance",
+  title: {
+    default: "Plan Metric | Precision Endurance",
+    template: "%s | Plan Metric",
+  },
   description:
     "Personalised endurance training plans for triathletes, runners, and cyclists. Built on data. Reviewed by humans.",
+  metadataBase: new URL("https://planmetric.com.au"),
+  openGraph: {
+    type: "website",
+    locale: "en_AU",
+    siteName: "Plan Metric",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({

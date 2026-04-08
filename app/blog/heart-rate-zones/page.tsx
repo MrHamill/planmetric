@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
+import { ArticleJsonLd } from "@/components/ArticleJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Read Your Heart Rate Zones — Plan Metric",
+  title: "How to Read Your Heart Rate Zones",
   description: "Heart rate zones are one of the most powerful tools in endurance training. Learn the five-zone system, how to calibrate per discipline, and why the 80/20 rule matters.",
   openGraph: {
     title: "How to Read Your Heart Rate Zones",
     description: "Learn the five-zone system, how to calibrate per discipline, and why the 80/20 rule matters.",
     type: "article",
   },
+  alternates: { canonical: "/blog/heart-rate-zones" },
 };
 
 const BG = "#0F0F0F";
@@ -21,6 +23,8 @@ const RULE = "rgba(245,245,240,0.15)";
 
 export default function HeartRateZonesArticle() {
   return (
+    <>
+    <ArticleJsonLd title="How to Read Your Heart Rate Zones" description="Learn the five-zone system, how to calibrate per discipline, and why the 80/20 rule matters." slug="heart-rate-zones" datePublished="2026-03-25" />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       {/* Grain */}
       <div
@@ -156,5 +160,6 @@ export default function HeartRateZonesArticle() {
         <span className="font-label text-[10px] tracking-widest uppercase" style={{ color: DIM }}>&copy; 2026 Plan Metric. Precision Endurance.</span>
       </footer>
     </main>
+    </>
   );
 }
