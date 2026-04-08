@@ -3,15 +3,23 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
+import { buildSkeleton, parseAthleteInputs } from "@/lib/plan-skeleton";
+import type { PlanSkeleton, WeekSkeleton } from "@/lib/plan-skeleton";
+import { calculateZones } from "@/lib/plan-zones";
+import { buildPartialHtml } from "@/lib/plan-html";
+import type { WeekContent, SessionContent } from "@/lib/plan-html";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export const maxDuration = 300;
 
+const CHUNK_SIZE = 5;
+
 /* ─── POST /api/generate-plan ─────────────────────────────────────
    Body: { submission_id: string }
-   Pass 1 of 2: generates header + zones + first half of weeks.
-   Saves partial HTML to DB, then fires off /api/generate-plan/continue.
+   Pass 1: Calculate skeleton, generate static HTML + first chunk
+   of week sessions via AI (JSON), assemble HTML, save to DB,
+   trigger continue route.
    ────────────────────────────────────────────────────────────────── */
 export async function POST(req: NextRequest) {
   try {
@@ -41,82 +49,64 @@ export async function POST(req: NextRequest) {
     }
 
     const d = sub.data as Record<string, unknown>;
-    const athleteProfile = buildAthleteProfile(d, sub);
 
-    /* ── Calculate weeks and chunks ─────────────────────────── */
-    const today = new Date();
-    const raceDate = d.raceDate ? new Date(d.raceDate as string) : null;
-    const totalWeeks = raceDate
-      ? Math.ceil((raceDate.getTime() - today.getTime()) / (7 * 24 * 60 * 60 * 1000))
-      : (d.planWeeks ? parseInt(d.planWeeks as string) : 12);
+    /* ── Calculate deterministic skeleton ───────────────────── */
+    const inputs = parseAthleteInputs(d, sub);
+    const skeleton = buildSkeleton(inputs);
+    const zones = calculateZones(d);
 
-    const CHUNK_SIZE = 5;
+    const totalWeeks = skeleton.totalWeeks;
     const endWeek = Math.min(CHUNK_SIZE, totalWeeks);
 
     console.log(`Plan: ${totalWeeks} weeks, chunk 1: weeks 1-${endWeek}`);
 
-    /* ── Pass 1: header + zones + overview + weeks 1-${endWeek} ── */
+    /* ── Build athlete profile for AI prompt ────────────────── */
+    const athleteProfile = buildAthleteProfile(d, sub);
     const age = d.age ? parseInt(String(d.age), 10) : undefined;
-    const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
+    const research = loadResearchContent(
+      d.trainingFor as string,
+      isNaN(age as number) ? undefined : age,
+    );
 
-    const pass1Prompt = `Generate the FIRST PART of a personalised training plan for this athlete.
+    /* ── Call AI for session content (weeks 1-${endWeek}) ──── */
+    const weeksToGenerate = skeleton.weeks.filter(w => w.weekNumber <= endWeek);
+    const sessionPrompt = buildSessionPrompt(
+      weeksToGenerate, athleteProfile, research, skeleton, false,
+    );
 
-${athleteProfile}
-
-This plan has ${totalWeeks} total weeks. In this response, generate:
-1. The complete <!DOCTYPE html>, <head> with fonts (NO <style> block — CSS will be injected server-side), opening <body>
-2. Header (sticky, with Plan Metric logo and plan badge)
-3. Hero section (name, race, date, goal, stats)
-4. Training Zones section
-5. How To Use This Plan section
-6. Disclaimer (disclaimer class — use the exact disclaimer text from the system prompt, do not alter it)
-7. Phase banners and DETAILED week-by-week content for Weeks 1 through ${endWeek}
-
-Do NOT include the Training Phases Breakdown section yet — it will be generated later once all weeks are complete.
-
-Each week MUST have day-cards ONLY for the athlete's available days (see SCHEDULE section in profile). Do NOT generate day-cards for days the athlete is unavailable.
-CRITICAL: You MUST complete ALL available days of Week ${endWeek} before stopping. Do not cut off mid-week.
-Do NOT output any <style> block or CSS — only use the class names. CSS is injected server-side.
-Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
-Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
-End your output right after the last day-card of Week ${endWeek}.`;
-
-    let pass1Html: string;
+    let weekContents: WeekContent[];
     try {
-      const stream = anthropic.messages.stream({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 16000,
-        system: [
-          { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
-        ],
-        messages: [{ role: "user", content: pass1Prompt }],
-      });
-
-      const message = await stream.finalMessage();
-      const textBlock = message.content.find(b => b.type === "text");
-      if (!textBlock || textBlock.type !== "text") {
-        throw new Error("No text response from Claude");
-      }
-      pass1Html = extractHtml(textBlock.text);
+      weekContents = await callAiForSessions(sessionPrompt, research);
     } catch (e) {
       console.error("Claude API error (pass 1):", e);
       return NextResponse.json({ error: "Failed to generate plan (pass 1)" }, { status: 500 });
     }
 
-    /* ── Save pass 1 to DB ───────────────────────────────────── */
+    /* ── Assemble HTML ─────────────────────────────────────── */
+    const { html, lastPhase } = buildPartialHtml(
+      skeleton, zones, weekContents, d, sub.plan || "premium",
+      1, endWeek, true, null,
+    );
+
+    /* ── Save pass 1 to DB ─────────────────────────────────── */
     await supabase
       .from("intake_submissions")
-      .update({ generated_plan_part1: pass1Html })
+      .update({ generated_plan_part1: html })
       .eq("id", submission_id);
 
-    /* ── Trigger next chunk (runs after response is sent) ───── */
+    /* ── Trigger next chunk ────────────────────────────────── */
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     after(async () => {
       try {
         await fetch(`${siteUrl}/api/generate-plan/continue`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
+          body: JSON.stringify({
+            submission_id,
+            totalWeeks,
+            startWeek: endWeek + 1,
+            lastPhase,
+          }),
         });
       } catch (e) {
         console.error("Failed to trigger next chunk:", e);
@@ -131,7 +121,150 @@ End your output right after the last day-card of Week ${endWeek}.`;
   }
 }
 
-/* ─── Helpers ──────────────────────────────────────────────────── */
+/* ─── AI Session Generation ──────────────────────────────────── */
+
+function buildSessionPrompt(
+  weeks: WeekSkeleton[],
+  athleteProfile: string,
+  research: string,
+  skeleton: PlanSkeleton,
+  includeFinalSections: boolean,
+): string {
+  const weekDescriptions = weeks.map(w => {
+    const dayLines = w.sessions.map(s =>
+      `  ${s.day} | ${s.sessionType} | ${s.discipline} | ${s.durationMinutes} min | ${s.zone}`
+    ).join("\n");
+    return `Week ${w.weekNumber} — ${w.phase}${w.isRecovery ? " (Recovery)" : ""}
+Volume: ${w.totalMinutes} min (${w.volumePercent}% of peak)
+Date range: ${w.dateRange}
+Sessions:
+${dayLines}`;
+  }).join("\n\n");
+
+  let prompt = `You are an elite endurance coach writing detailed session content for a personalised training plan.
+
+ATHLETE PROFILE:
+${athleteProfile}
+
+${research ? `COACHING RESEARCH — use these insights to inform session design and coaching notes:\n${research}\n` : ""}
+
+TASK: Write session details for the weeks listed below. The structure (days, session types, durations, zones) is already decided. You write the creative coaching content.
+
+FOR EACH SESSION, PROVIDE:
+- sessionName: A descriptive name (e.g., "Easy Recovery Run", "Threshold Swim Set", "Long Endurance Ride")
+- warmUp: Specific warm-up protocol (minimum 10-15 min for run/bike, 200-400m for swim, 5-10 min for strength)
+- mainSet: Detailed main set with specific distances, paces, intervals, rest periods. Reference the athlete's zones.
+- coolDown: Specific cool-down protocol (minimum 5-10 min for run/bike, 100-200m for swim)
+- total: Total distance or time summary (e.g., "8-9km" or "45 min total")
+- coachingNote: 3+ sentences of personalised coaching. Include hydration reminders for sessions over 60 min. Include fuelling guidance for sessions over 90 min.
+
+RULES:
+- All swim distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). NEVER use 75m, 125m, etc.
+- Freestyle (front crawl) only for swimming — no backstroke, breaststroke, or butterfly
+- Reference the athlete's specific pace/HR/power zones where relevant
+- Progress difficulty within each phase (earlier weeks slightly easier than later weeks)
+- Recovery weeks should have reduced intensity, not just reduced volume
+- Coaching notes should be encouraging, specific, and actionable
+
+${weekDescriptions}`;
+
+  if (includeFinalSections) {
+    prompt += `
+
+ALSO generate these one-time sections in your JSON response:
+
+"raceDayProtocol": {
+  "preRaceTimeline": "HTML content with <div class='timeline'> containing <div class='time-block'><strong>Time</strong><p>Details</p></div> elements for race morning",
+  "raceStrategy": "HTML content with race pacing strategy, split targets, nutrition plan",
+  "mentalStrategy": "HTML content with mental cues, mantras, course segment strategies"
+},
+"glossary": [{"term": "RPE", "definition": "Rate of Perceived Exertion..."}, ...] (10-15 terms),
+"tips": [{"icon": "material_symbol_name", "title": "Tip Title", "description": "Tip details..."}, ...] (6-8 tips, icons from: track_changes, local_cafe, directions_run, psychology, bolt, celebration, health_and_safety, trending_up, pool, directions_bike, nutrition, bedtime, self_improvement),
+"phaseDescriptions": {
+  "BASE": "2-3 sentence coaching explanation of this phase...",
+  "BUILD": "...",
+  "PEAK": "...",
+  "TAPER": "..."
+}`;
+  }
+
+  prompt += `
+
+Respond with ONLY valid JSON. No markdown, no explanation, no code fences. The JSON schema:
+{
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "weeklySummary": "2-3 sentence overview of this week's focus and goals",
+      "sessions": [
+        {
+          "sessionName": "...",
+          "warmUp": "...",
+          "mainSet": "...",
+          "coolDown": "...",
+          "total": "...",
+          "coachingNote": "..."
+        }
+      ]
+    }
+  ]${includeFinalSections ? `,
+  "raceDayProtocol": { "preRaceTimeline": "...", "raceStrategy": "...", "mentalStrategy": "..." },
+  "glossary": [...],
+  "tips": [...],
+  "phaseDescriptions": { "BASE": "...", "BUILD": "...", "PEAK": "...", "TAPER": "..." }` : ""}
+}`;
+
+  return prompt;
+}
+
+async function callAiForSessions(prompt: string, research: string): Promise<WeekContent[]> {
+  const systemPrompt = `You are an elite endurance coach at Plan Metric. Return ONLY valid JSON — no markdown, no code fences, no explanation.${research ? `\n\nCOACHING RESEARCH:\n${research}` : ""}`;
+
+  const stream = anthropic.messages.stream({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 16000,
+    system: [
+      { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
+    ],
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const message = await stream.finalMessage();
+  const textBlock = message.content.find(b => b.type === "text");
+  if (!textBlock || textBlock.type !== "text") {
+    throw new Error("No text response from Claude");
+  }
+
+  return parseAiResponse(textBlock.text).weeks;
+}
+
+interface AiResponse {
+  weeks: WeekContent[];
+  raceDayProtocol?: { preRaceTimeline: string; raceStrategy: string; mentalStrategy: string };
+  glossary?: { term: string; definition: string }[];
+  tips?: { icon: string; title: string; description: string }[];
+  phaseDescriptions?: Record<string, string>;
+}
+
+function parseAiResponse(text: string): AiResponse {
+  // Strip markdown code fences if present
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "");
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // Try to extract the outermost JSON object
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      return JSON.parse(cleaned.slice(start, end + 1));
+    }
+    throw new Error("Failed to parse AI response as JSON");
+  }
+}
+
+/* ─── Helpers (kept from original for AI prompt building) ─────── */
 
 function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unknown>): string {
   const lines: string[] = [];
@@ -153,9 +286,8 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Location", d.location);
 
   lines.push("\n=== RACE & GOAL ===");
-  add("Training For Race", d.hasRace); add("Training For", d.trainingFor);
+  add("Training For", d.trainingFor);
   add("Race Name", d.raceName); add("Race Date", d.raceDate);
-  add("Plan Duration", d.planWeeks ? `${d.planWeeks} weeks` : "");
   add("Main Goal", d.mainGoal); add("Target Time", d.targetTime);
   add("Completed Before", d.completedRaceBefore);
   add("Previous Finish Time", d.previousFinishTime);
@@ -163,12 +295,6 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   lines.push("\n=== CURRENT FITNESS ===");
   add("Training Consistency", d.trainingConsistency);
   add("Recent Race Result", d.recentRaceResult);
-  if (d.splitSwim || d.splitT1 || d.splitBike || d.splitT2 || d.splitRun) {
-    const splits = [d.splitSwim && `Swim ${d.splitSwim}`, d.splitT1 && `T1 ${d.splitT1}`, d.splitBike && `Bike ${d.splitBike}`, d.splitT2 && `T2 ${d.splitT2}`, d.splitRun && `Run ${d.splitRun}`].filter(Boolean).join(" / ");
-    add("Split Times", splits);
-  } else {
-    add("Split Times", d.splitTimes);
-  }
   add("Max HR", d.maxHRUnknown ? "Unknown" : d.maxHR ? `${d.maxHR} BPM` : "");
   add("Resting HR", d.restingHRUnknown ? "Unknown" : d.restingHR ? `${d.restingHR} BPM` : "");
 
@@ -177,76 +303,18 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Threshold Pace", d.swimPaceHard ? `${d.swimPaceHard}/100m` : "");
   add("Weekly Volume", d.weeklySwimVolume);
   add("Longest Swim", d.longestSwim ? `${d.longestSwim}m` : "");
-  add("Bilateral Breathing", d.bilateralBreathing);
-  add("Pool Access", d.poolAccess);
-  add("Open Water", d.openWaterAccess);
-  add("Wetsuit", d.wetsuit);
 
   lines.push("\n=== BIKE ===");
   add("Avg Speed", d.avgBikeSpeed ? `${d.avgBikeSpeed} km/h` : "");
+  add("FTP", d.ftpUnknown ? "Unknown" : d.ftp ? `${d.ftp}W` : "");
   add("Weekly Volume", d.weeklyBikeVolume);
   add("Longest Ride", d.longestRide);
-  add("FTP", d.ftpUnknown ? "Unknown / no power meter" : d.ftp ? `${d.ftp}W` : "");
-  add("Bike Type", d.bikeType); add("Power Meter", d.powerMeter);
-  add("Indoor Trainer", d.indoorTrainer);
 
   lines.push("\n=== RUN ===");
   add("Weekly Distance", d.weeklyRunDistance ? `${d.weeklyRunDistance} km` : "");
   add("Longest Run", d.longestRun ? `${d.longestRun} km` : "");
   add("Easy Pace", d.easyRunPace ? `${d.easyRunPace}/km` : "");
   add("Recent Race", d.recentRunRace);
-  add("Treadmill", d.treadmillAccess);
-
-  lines.push("\n=== DISCIPLINE RANKING ===");
-  add("Weakest", d.weakestDiscipline);
-  add("Strongest", d.strongestDiscipline);
-
-  lines.push("\n=== SCHEDULE — READ CAREFULLY ===");
-  const availDays = Array.isArray(d.availableDays) ? d.availableDays as string[] : [];
-  const allDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const unavailDays = allDays.filter(day => !availDays.includes(day));
-  add("Training Days/Week", d.trainingDaysPerWeek);
-  add("Rest Days/Week", d.restDaysPerWeek);
-  add("Preferred Times", d.preferredTimes);
-  if (availDays.length > 0) {
-    lines.push(`AVAILABLE DAYS: ${availDays.join(", ")} ONLY`);
-    if (unavailDays.length > 0) {
-      lines.push(`⚠️ DO NOT SCHEDULE ANY SESSIONS ON: ${unavailDays.join(", ")} — these days must NOT appear in the plan at all`);
-    }
-    lines.push(`TRAINING SESSIONS PER WEEK: ${d.trainingDaysPerWeek} (pick ${d.trainingDaysPerWeek} of the ${availDays.length} available days for training, remaining = rest)`);
-  } else {
-    add("Available Days", d.availableDays);
-  }
-  add("Max Weekday Session", d.maxWeekdaySession);
-  add("Max Weekend Session", d.maxWeekendSession);
-  add("Double Days OK", d.doubleDays);
-  add("Double Day Combos", d.doubleDayCombos);
-  add("Long Session Day", d.preferredLongDay);
-  add("Rest Day", d.preferredRestDay);
-  add("Work Schedule", d.workShifts);
-  add("Unavailable Weeks", d.unavailableWeeks);
-
-  lines.push("\n=== OTHER SPORTS & COMMITMENTS ===");
-  add("Other Sports", d.otherSports);
-  if (d.otherSport1Name) {
-    add("Activity 1", d.otherSport1Name);
-    add("  Days", Array.isArray(d.otherSport1Days) ? (d.otherSport1Days as string[]).join(", ") : d.otherSport1Days);
-    add("  Time", d.otherSport1Time);
-    add("  Duration", d.otherSport1Duration);
-    add("  Intensity", d.otherSport1Intensity);
-  }
-  if (d.otherSport2Name) {
-    add("Activity 2", d.otherSport2Name);
-    add("  Days", Array.isArray(d.otherSport2Days) ? (d.otherSport2Days as string[]).join(", ") : d.otherSport2Days);
-    add("  Time", d.otherSport2Time);
-    add("  Duration", d.otherSport2Duration);
-    add("  Intensity", d.otherSport2Intensity);
-  }
-
-  lines.push("\n=== EQUIPMENT ===");
-  add("GPS/HRM Watch", d.gpsWatch);
-  add("Gym Access", d.gymAccess);
-  add("Equipment Budget", d.equipmentBudget);
 
   lines.push("\n=== HEALTH & RECOVERY ===");
   add("Current Injuries", d.currentInjuries);
@@ -254,18 +322,10 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Injury History", d.injuryHistory);
   add("Avg Sleep", d.avgSleep);
   add("Stress Level", d.stressLevel);
-  add("Race Nutrition Experience", d.raceNutrition);
-  add("Strength Training", d.strengthTraining);
-  add("Dietary Restrictions", d.dietaryRestrictions);
 
   lines.push("\n=== MOTIVATION ===");
   add("Training Preference", d.trainingPreference);
-  add("Intensity Feeling", d.intensityFeeling);
-  add("Training Blockers", d.trainingBlockers);
   add("Motivation", d.motivation);
-  add("Success Definition", d.successDefinition);
-
-  lines.push("\n=== ADDITIONAL NOTES ===");
   add("Athlete Notes", d.anythingElse);
 
   return lines.join("\n");
@@ -276,23 +336,19 @@ function loadResearchContent(trainingFor: string, athleteAge?: number): string {
   const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
   const CYCLING = ["Cycling Event"];
 
-  // Always include these
   const files = [
     "nutrition.md", "recovery.md", "general-triathlon.md",
     "periodisation.md", "strength-conditioning.md", "training-load.md", "race-psychology.md",
   ];
 
-  // Add sport-specific files
   if (TRIATHLON.includes(trainingFor)) {
     files.push("swim.md", "bike.md", "run.md");
   } else if (CYCLING.includes(trainingFor)) {
     files.push("bike.md");
   } else {
-    // Running events (marathon, 5K, 10K, half marathon, ultra, etc.)
     files.push("run.md");
   }
 
-  // Masters athlete research for 40+
   if (athleteAge && athleteAge >= 40) {
     files.push("masters-athletes.md");
   }
@@ -303,257 +359,17 @@ function loadResearchContent(trainingFor: string, athleteAge?: number): string {
     try {
       let content = fs.readFileSync(path.join(researchDir, file), "utf-8");
       if (content.length > MAX_CHARS_PER_FILE) {
-        content = content.slice(0, MAX_CHARS_PER_FILE) + "\n[…truncated]";
+        content = content.slice(0, MAX_CHARS_PER_FILE) + "\n[...truncated]";
       }
       const label = file.replace(".md", "").replace(/-/g, " ").toUpperCase();
       sections.push(`--- ${label} ---\n${content}`);
     } catch {
-      // File doesn't exist yet — skip silently
+      // File doesn't exist — skip
     }
   }
 
   return sections.join("\n\n");
 }
 
-function buildSystemPrompt(trainingFor?: string, athleteAge?: number): string {
-  const research = trainingFor ? loadResearchContent(trainingFor, athleteAge) : "";
-
-  return `You are an elite endurance coach at Plan Metric creating a personalised HTML training plan for a paying customer.
-
-HARD CONSTRAINTS — VIOLATION OF ANY MAKES THE PLAN INVALID:
-1. AVAILABLE DAYS ONLY: Generate day-cards ONLY for the athlete's specified available days. If they are available Mon-Fri, there must be ZERO Saturday or Sunday day-cards. Omit unavailable days entirely — no rest cards, no day-cards, nothing.
-2. TRAINING DAY COUNT IS ABSOLUTE: If the athlete says 4 days/week, exactly 4 of their available days get training sessions. The remaining available day(s) are rest. Never exceed this number.
-3. ONE BANNER PER PHASE: Exactly ONE phase banner per phase. Four phases only: BASE, BUILD, PEAK, TAPER. No sub-phases like "Build 1"/"Build 2" or "BUILD PHASE — Weeks X-Y" variants.
-4. TAPER VOLUME MUST DROP: Each taper week must have 30-50% less volume than peak week. Volume should decrease progressively through the taper.
-5. CONSISTENT WEEKLY STRUCTURE: Same days train, same days rest, every week. The long run day stays the same throughout the plan.
-6. NO PHASE OVERLAP: Each week belongs to exactly one phase. Week ranges in phase cards and banners must not overlap.
-
-OUTPUT: Return ONLY valid HTML. No markdown, no explanation, no \`\`\`html wrapper. Do NOT output any <style> block or CSS — the CSS will be injected server-side. Just use the correct class names.
-
-REQUIRED HTML CLASSES AND STRUCTURE:
-
-HEADER: <header class="header"><div class="header-content"><div class="logo">Plan Metric</div><div class="premium-badge">[tier]</div></div></header>
-
-HERO: <section class="hero"><div class="hero-content"><h1 class="athlete-name">, <div class="race-info">, <div class="goal-badge">, <div class="stats-row"> with <div class="stat-card">
-
-ZONES: <section class="section"> with <div class="zones-grid"> → <div class="zone-discipline"> → <div class="zone-item"><span class="zone-name"> + <div class="zone-values">
-
-HOW TO USE: <section class="section"> with <ul class="instructions-list"> → <li> with <span class="material-symbols-outlined"> icon
-
-DISCLAIMER: <div class="disclaimer"><span class="material-symbols-outlined">info</span><p>[exact text]</p></div>
-— Always use this exact text: "This training plan is provided as a general guide only and does not constitute medical advice, professional coaching, or a substitute for consultation with qualified healthcare or fitness professionals. Plan Metric and its creators are not qualified coaches, medical practitioners, or dietitians. You should consult your doctor before starting any new exercise program. By using this plan, you acknowledge that you do so entirely at your own risk. Plan Metric accepts no liability for injury, illness, or loss arising from the use of this plan."
-
-PHASE BREAKDOWN: <section class="section"> with <h2>Your Training Phases</h2> → <div class="phase-breakdown"> → <div class="phase-card"> with <div class="phase-card-header">(<span class="material-symbols-outlined">[icon_name]</span> + <h3>[Phase Name] <span class="phase-weeks">Weeks X-Y</span></h3>) + <p>2-3 sentence coaching explanation of what the phase does, why it matters, and what the athlete will gain</p>
-— Cover every phase in the plan. Do NOT generate a week-by-week overview grid.
-— Phase week ranges MUST match the actual weeks you generate. Do NOT assign weeks to a phase that don't exist in the plan.
-— Icon names MUST always be inside <span class="material-symbols-outlined">icon_name</span>. Never output the icon name as plain text.
-
-PHASE BANNER: <div class="phase-banner"><h2 class="phase-title"> + <p class="phase-subtitle">
-— Generate exactly ONE phase banner per phase. NEVER duplicate banners for the same phase.
-— Phase title format: "Phase N: [NAME]" where NAME is exactly one of: Foundation Build, Aerobic Development, Strength Endurance, Marathon Specific, Taper and Race Preparation. Do NOT append week ranges to the banner title.
-— NEVER create two banners with the same phase name or similar names like "BUILD" and "BUILD — Weeks X-Y".
-
-WEEK: <div class="weekly-accordion"><details><summary><span>[title]</span><div class="week-meta"><span class="badge badge-accent">[hours]</span><span>[dates]</span></div></summary><div class="week-content"><div class="weekly-summary">[overview]</div><div class="days-grid">[day cards]</div></div></details></div>
-
-DAY CARD:
-<div class="day-card">
-  <div class="day-header">
-    <h4 class="day-title">[Day] - [Session Name]</h4>
-    <div class="day-badges">
-      <span class="badge badge-swim">SWIM</span>
-      <span class="badge">Z1-Z2</span>
-      <span class="badge">60min</span>
-    </div>
-  </div>
-  <div class="session-structure">
-    <div class="structure-item"><span class="structure-label">Warm-up:</span> [detail]</div>
-    <div class="structure-item"><span class="structure-label">Main Set:</span> [detail]</div>
-    <div class="structure-item"><span class="structure-label">Cool-down:</span> [detail]</div>
-    <div class="structure-item"><span class="structure-label">Total:</span> [detail]</div>
-  </div>
-  <div class="coaching-note">
-    <div class="note-title">Coach's Note:</div>
-    [3+ sentences]
-  </div>
-</div>
-
-BADGES: badge-swim, badge-bike, badge-run, badge-brick, badge-accent, badge-red, badge-rest
-
-RACE DAY: <section class="race-protocol"> with <details class="protocol-section"><summary>[heading]</summary>[content]</details>
-— Three collapsible sub-sections:
-  1. <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default) — use .timeline and .time-block inside
-  2. <details class="protocol-section"><summary>Your Race Strategy</summary>
-  3. <details class="protocol-section"><summary>Mental Strategy</summary>
-— If the athlete has a target finish time, all split estimates MUST add up to LESS than that target. Double-check the arithmetic. If you cannot confidently calculate accurate splits, describe the STRATEGY without specific time predictions.
-
-GLOSSARY: <section class="glossary"> with .glossary-grid → .term
-
-COACH TIPS: <section class="coach-tips"> with .tips-grid → .tip (.tip-icon + .tip-content)
-— .tip-icon MUST contain <span class="material-symbols-outlined">[icon_name]</span> — NEVER use emojis
-— Use relevant icons: track_changes, local_cafe, directions_run, psychology, bolt, celebration, health_and_safety, trending_up, pool, directions_bike, etc.
-
-FOOTER: <footer class="plan-footer"> with .footer-content (.footer-brand + .footer-contact) + .footer-bottom
-
-HEAD TEMPLATE (use this exact <head>, no <style>):
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[Athlete Name] - [Race Name] Training Plan | Plan Metric</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-</head>
-
-ZONES:
-- HR zones: Karvonen formula. Cycling HR 5-10 BPM lower than running. Swimming HR 10-15 BPM lower than running.
-- CSS zones: Recovery CSS+15s, Aerobic CSS+8-14s, Threshold CSS±3s, VO2max CSS-5-10s, Anaerobic CSS-15+s
-- FTP zones: Z1<55%, Z2 56-75%, Z3 76-90%, Z4 91-105%, Z5 106-120%, Z6>121%
-- All units: KM, min/km, BPM, Celsius
-- Always include RPE alongside zone targets so athletes without HR monitors or power meters can follow the plan: Z1 (RPE 1-2), Z2 (RPE 3-4), Z3 (RPE 5-6), Z4 (RPE 7-8), Z5 (RPE 9), Z6 (RPE 10)
-
-SESSION FREQUENCY — MANDATORY MINIMUMS:
-- 70.3/Ironman triathlon: minimum 3 swim, 3 bike, 3 run per week
-- Olympic triathlon: 2-3 per discipline + strength + 1 rest day
-- Swim frequency: 1x/week = no improvement, 2x = maintenance only, 3x = improvement, 4x = significant improvement
-- Weakest discipline gets +1 session above minimum (e.g., weak swimmer gets 4 swims/week)
-- Max 2-3 quality (hard) sessions per week; all remaining sessions must be low-intensity (Z1-Z2)
-- Strength: 2x/week in Base, 1-2x in Build, 1x in Peak, 0 in race week
-
-SWIMMING RULES:
-- Every swim needs drills. Every session needs specific numbers. No vague sessions.
-- ALL distances MUST be multiples of 50m (50, 100, 150, 200, 400, etc). Never use 75m, 125m, or other non-50m distances. Plans must work in both 25m and 50m pools.
-- Freestyle (front crawl) only unless the athlete specifically requests other strokes. Do NOT include backstroke, breaststroke, or butterfly.
-- Session duration: 45-60 min for most triathletes; 20-30 min for beginners
-
-WARM-UP & COOL-DOWN — MANDATORY:
-- Every session MUST include a proper warm-up and cool-down — never skip them
-- Run/bike warm-up: minimum 10-15 min progressive easy effort before any intensity work
-- Run/bike cool-down: minimum 5-10 min easy effort + stretching notes
-- Swim warm-up: minimum 200-400m mixed drill/easy freestyle
-- Swim cool-down: minimum 100-200m easy choice
-- Strength warm-up: 5-10 min dynamic mobility + activation exercises
-
-NUTRITION & HYDRATION CUES:
-- Sessions over 60 min: include a hydration reminder in the coaching note (e.g. "Aim for 500-750ml/hr")
-- Sessions over 90 min: include fuelling guidance in the coaching note (e.g. "Take a gel or 30-60g carbs per hour — practise your race nutrition")
-- Long rides 3+ hours: specify a fuelling strategy (when to eat, what to carry)
-- Race week coaching notes: include pre-race nutrition guidance (carb loading, breakfast timing)
-- Brick sessions: note practising T2 nutrition (taking fuel on the bike before the run)
-
-LONG RUN CAPS BY DISTANCE:
-- Marathon: peak long run 30-35km (or cap at 3-3.5 hours). Longest run 3-4 weeks before race, NOT in race week.
-- Half Marathon: peak long run 16-19km (or cap at 2-2.5 hours). Beginners cap at 2 hours.
-- Long run should NOT exceed 25-35% of total weekly volume.
-- Long run intensity: easy to steady pace, 30-60 sec/km slower than goal race pace.
-- Weekly volume targets: Marathon 40-80 km/week, Half Marathon 30-40 km/week. Scale to athlete level.
-
-RUNNING RULES:
-- Conservative build. Long run = 25-35% of weekly run volume, no more.
-- Easy run pace: 60-75 sec/km slower than goal race pace
-- Max 2 quality run sessions/week (tempo/intervals). 3 only for advanced runners.
-
-CYCLING RULES:
-- Optimal cadence: 85-100 RPM for triathletes (preserves run legs)
-- 60-min indoor trainer session ≈ 90-min outdoor ride for adaptation
-
-BRICK SESSIONS:
-- Minimum 2-4 brick sessions in final 6 weeks before race
-- Protocol: 60-90 min bike at race power → immediate 15-30 min run at race pace
-- Weekly brick during Build and Peak for 70.3/Ironman
-- Vary brick run speeds: rotate easy pace, strides, race-pace runs
-
-VOLUME PROGRESSION — HARD LIMITS:
-- Max 10% weekly volume increase
-- Swim/run: max +5 min/week increase
-- Bike: max +10 min/week increase
-- 10% rule for long rides: don't increase long ride distance by more than 10%/week
-- Never back-to-back hard sessions (hard = high intensity OR high duration)
-
-PHASES — EXACTLY four phases, no sub-phases:
-- BASE: Aerobic endurance at low intensity, technique focus, volume building. Intensity: ~80% Z1-Z2, ~20% above.
-- BUILD: Introduce higher intensity (tempo, intervals, threshold). Volume stabilises. Intensity: ~65% Z1-Z2, ~35% above.
-- PEAK: Race-specific sessions, brick workouts, race simulations. Highest intensity.
-- TAPER: Reduce volume 30-50% from peak week. Each successive taper week should be lower than the previous. Maintain some intensity with short sharp efforts to keep legs fresh. Reduced-length long runs and shorter intervals. Duration: 2-3 weeks for marathon/70.3/Ironman, 1-2 weeks for shorter distances. NEVER compress taper into a single "race week." Example: if peak is 70km, taper week 1 ≈ 45km, taper week 2 ≈ 30km.
-- Recovery weeks every 3rd or 4th week at 50-60% volume (within any phase).
-- Do NOT create sub-phases like "Build 1" and "Build 2" or "Pre-Base". Only the four above.
-
-PHASE PROPORTIONS BY DISTANCE:
-- Marathon (16-20 week): Base ~4-6wks, Build ~5-7wks, Peak ~3-4wks, Taper ~2-3wks
-- Half Marathon (10-12 week): Base ~3-4wks, Build ~3-4wks, Peak ~2-3wks, Taper ~1-2wks
-- 70.3 (20-week): Base ~8wks, Build ~6wks, Peak ~4wks, Taper ~2wks
-- Ironman (24-week): Base ~8wks, Build ~8wks, Peak ~6wks, Taper ~2wks
-- Olympic (12-week): Base ~4wks, Build ~4wks, Peak ~3wks, Taper ~1wk
-- Scale proportionally for other plan lengths
-- TAPER IS MANDATORY: minimum 2 weeks for marathon/70.3/Ironman, minimum 1 week for shorter. NEVER skip or compress taper into race week.
-
-SESSION DISTRIBUTION:
-- 80/20 rule: ~80% low intensity (Z1-Z2), ~20% high intensity across each week
-- Do NOT schedule same discipline at high intensity on consecutive days
-- T4/T5 sessions require 48-72 hrs recovery before next quality session
-- Brick sessions (bike→run) and AM/PM doubles of different disciplines on same day are fine
-- Alternate hard and easy days
-
-WEEKLY CONSISTENCY — CRITICAL:
-- Assign each training day a consistent role across the entire plan (e.g., Monday = easy run + swim, Tuesday = morning bike, etc.)
-- Keep the same day-to-session mapping throughout all phases. Do NOT shuffle session types between days week to week unless athlete has shift work.
-- If shift work: adjust session placement but maintain same SESSION TYPES each week (e.g., always 1 threshold run, 1 long bike, 2 technique swims — even if days shift).
-- Progress via VOLUME first (Base), then INTENSITY (Build/Peak), NOT by changing which days do what.
-
-WEEK TITLES:
-- Format: "Week [N] — [PHASE]" (e.g., "Week 9 — BUILD", "Week 22 — TAPER")
-- Do NOT add creative subtitles. Keep them short and scannable.
-- Only add extra context for recovery weeks: "Week 4 — BASE (Recovery)"
-
-MASTERS ATHLETES (40+) — apply when athlete age >= 40:
-- Scale total weekly hours down 10-15% vs younger equivalent
-- 2 rest days/week minimum (vs 1 for younger)
-- Strength training 2-3x/week non-negotiable (sarcopenia prevention)
-- At least 1 VO2max interval session/week to defend aerobic capacity
-- 40-49: max 2-3 high-intensity sessions/week
-- 50-59: max 2-3, hard ceiling, separate hard days by 48+ hrs
-- 60+: 1-2 high-intensity sessions/week
-- Age 45+: use 2-on/1-off recovery cycle instead of 3-on/1-off
-- Female 45+: further reduce intensity ceiling, increase recovery, prioritise bone-loading strength
-
-TRAINING DAYS — HARD LIMIT:
-- The athlete specifies exactly how many days/week they train. This number is ABSOLUTE.
-- Schedule EXACTLY that many training sessions per week. Remaining days MUST be rest or active recovery ONLY.
-- NEVER add extra training days beyond what the athlete selected, even if you think they could handle more.
-- Example: if athlete says 4 days/week and is available Mon-Fri, pick 4 of those 5 days for training. The 5th weekday + any other days = rest/recovery.
-- Other sports (gym, yoga, etc.) listed by the athlete do NOT count toward this limit — they are separate commitments.
-
-PERSONALISATION:
-- Sessions ONLY on athlete's available days
-- Long session on preferred long day, rest on preferred rest day
-- Double sessions only if explicitly allowed
-- Work around injuries with safe alternatives
-- Account for other sports as training load
-
-SESSION TIMING — MANDATORY:
-- Every session MUST include a specific start and end time (e.g. "6:00 – 6:45am")
-- Calculate times from the athlete's preferred training windows and the session duration
-- If multiple preferred windows are given, distribute sessions sensibly (e.g. early morning for swims, evening for runs) based on typical facility access and the athlete's schedule
-- Weekday sessions must fit within the athlete's max weekday session duration; weekend sessions within the max weekend duration
-- For shift workers (rotating/night/FIFO), stagger times realistically — not every session at 5am
-- Display the time directly after the session title in each day cell, e.g. "Easy Run (6:00 – 6:45am)" or "Pool Swim (5:30 – 6:15am)"
-
-PLAN DURATION — CRITICAL:
-Calculate exact weeks from TODAY's date to race date. Today's date is in the athlete profile.
-- Taper always 2-3 weeks before race
-- Recovery weeks every 3-4 weeks
-- Distribute Base/Build/Peak proportionally using the phase proportions above${research ? `
-
-COACHING RESEARCH LIBRARY — use the following curated research to inform your coaching decisions, session design, and coaching notes. Apply insights where relevant to the athlete's sport, level, and goals:
-
-${research}` : ""}`;
-}
-
-function extractHtml(text: string): string {
-  const match = text.match(/```html\s*([\s\S]*?)```/);
-  if (match) return match[1].trim();
-  if (text.trim().startsWith("<!") || text.trim().startsWith("<html")) return text.trim();
-  return text.trim();
-}
-
-export { buildAthleteProfile, buildSystemPrompt, extractHtml };
+export { buildAthleteProfile, loadResearchContent, buildSessionPrompt, callAiForSessions, parseAiResponse };
+export type { AiResponse };

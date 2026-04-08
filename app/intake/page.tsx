@@ -660,7 +660,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <F label="Max session — weekdays *" error={mt("maxWeekdaySession")}>
                 <SelectInput value={form.maxWeekdaySession} onChange={v => upd("maxWeekdaySession", v)}
-                  options={["30 min", "45 min", "60 min", "75 min", "90 min", "2 hours"]} error={mt("maxWeekdaySession")} />
+                  options={["30 min", "45 min", "60 min", "75 min", "90 min", "2 hours", "No limit"]} error={mt("maxWeekdaySession")} />
               </F>
               <F label="Max session — weekends *" error={mt("maxWeekendSession")}>
                 <SelectInput value={form.maxWeekendSession} onChange={v => upd("maxWeekendSession", v)}

@@ -1,0 +1,838 @@
+/* ─── Deterministic Plan Skeleton Calculator ─────────────────────
+   Calculates the complete structural skeleton of a training plan:
+   phases, weeks, training days, session types, volume targets.
+   The AI never touches any of this — it only fills in session content.
+   ────────────────────────────────────────────────────────────────── */
+
+/* ─── Types ──────────────────────────────────────────────────── */
+
+export type EventType =
+  | "Marathon" | "Half Marathon" | "10K" | "5K"
+  | "Olympic Triathlon" | "70.3 Ironman" | "Full Ironman"
+  | "Sprint Triathlon" | "Cycling Event";
+
+export type Phase = "BASE" | "BUILD" | "PEAK" | "TAPER";
+
+export type SessionType =
+  | "easy-run" | "long-run" | "tempo-run" | "interval-run" | "recovery-run"
+  | "swim-technique" | "swim-endurance" | "swim-threshold"
+  | "bike-endurance" | "bike-quality" | "long-ride"
+  | "brick"
+  | "strength"
+  | "rest";
+
+export type Discipline = "swim" | "bike" | "run" | "brick" | "strength" | "rest";
+
+export interface SessionSlot {
+  day: string;                // "Mon" | "Tue" | ... | "Sun"
+  sessionType: SessionType;
+  discipline: Discipline;
+  durationMinutes: number;
+  zone: string;               // "Z1-Z2", "Z3-Z4", etc.
+  isKeySession: boolean;      // long run, quality, brick
+  timeSlot?: string;          // "6:00–6:45am"
+}
+
+export interface WeekSkeleton {
+  weekNumber: number;
+  phase: Phase;
+  isRecovery: boolean;
+  volumePercent: number;      // percent of peak volume (0-100)
+  totalMinutes: number;       // target total training minutes
+  dateRange: string;          // "7–13 Apr 2026"
+  sessions: SessionSlot[];
+}
+
+export interface PhaseRange {
+  phase: Phase;
+  startWeek: number;
+  endWeek: number;
+}
+
+export interface PlanSkeleton {
+  totalWeeks: number;
+  eventType: EventType;
+  weeks: WeekSkeleton[];
+  phases: PhaseRange[];
+  peakVolumeMinutes: number;
+  trainingDays: string[];     // which days of week are training days
+  restDays: string[];         // which days are rest
+  longDay: string;            // day assigned for long sessions
+}
+
+export interface AthleteInputs {
+  trainingFor: EventType;
+  availableDays: string[];
+  trainingDaysPerWeek: number;
+  preferredLongDay: string;
+  preferredRestDay: string;
+  maxWeekdayMinutes: number;
+  maxWeekendMinutes: number;
+  raceDate: Date | null;
+  planWeeks: number | null;
+  age: number | null;
+  weakestDiscipline?: string;
+  preferredTimes: string[];
+  doubleDays?: string;         // "Yes" | "No" | "Sometimes"
+  // Current volume for scaling
+  weeklyRunDistance?: number;
+  easyRunPace?: string;        // "X:XX" min/km
+}
+
+/* ─── Constants ──────────────────────────────────────────────── */
+
+const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+
+const FULL_TO_SHORT: Record<string, string> = {
+  Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu",
+  Friday: "Fri", Saturday: "Sat", Sunday: "Sun",
+};
+
+const WEEKEND = new Set(["Sat", "Sun"]);
+
+/** Phase proportions by event type [BASE, BUILD, PEAK, TAPER] */
+const PHASE_PROPORTIONS: Record<string, [number, number, number, number]> = {
+  "Marathon":           [0.30, 0.35, 0.20, 0.15],
+  "Half Marathon":      [0.30, 0.30, 0.25, 0.15],
+  "10K":                [0.30, 0.35, 0.25, 0.10],
+  "5K":                 [0.30, 0.35, 0.25, 0.10],
+  "Olympic Triathlon":  [0.33, 0.33, 0.25, 0.09],
+  "70.3 Ironman":       [0.40, 0.30, 0.20, 0.10],
+  "Full Ironman":       [0.33, 0.33, 0.25, 0.09],
+  "Sprint Triathlon":   [0.30, 0.35, 0.25, 0.10],
+  "Cycling Event":      [0.30, 0.35, 0.20, 0.15],
+};
+
+/** Minimum taper weeks by event type */
+const MIN_TAPER: Record<string, number> = {
+  "Marathon": 2, "Half Marathon": 1, "10K": 1, "5K": 1,
+  "Olympic Triathlon": 1, "70.3 Ironman": 2, "Full Ironman": 2,
+  "Sprint Triathlon": 1, "Cycling Event": 1,
+};
+
+/* ─── Main entry point ───────────────────────────────────────── */
+
+export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
+  const totalWeeks = calculateTotalWeeks(inputs.raceDate, inputs.planWeeks);
+  const phases = calculatePhaseRanges(totalWeeks, inputs.trainingFor);
+  const { trainingDays, restDays, longDay } = assignTrainingDays(inputs);
+  const recoveryWeeks = assignRecoveryWeeks(totalWeeks, phases, inputs.age);
+  const peakVolumeMinutes = estimatePeakVolume(inputs);
+
+  const weeks: WeekSkeleton[] = [];
+
+  for (let w = 1; w <= totalWeeks; w++) {
+    const phase = getPhaseForWeek(w, phases);
+    const isRecovery = recoveryWeeks.has(w);
+    const volumePercent = calculateWeekVolume(w, totalWeeks, phase, isRecovery, phases);
+    const totalMinutes = Math.round(peakVolumeMinutes * volumePercent / 100);
+    const dateRange = calculateDateRange(w, inputs.raceDate, totalWeeks);
+
+    const sessions = assignSessionsForWeek({
+      weekNumber: w,
+      phase,
+      isRecovery,
+      totalMinutes,
+      trainingDays,
+      longDay,
+      eventType: inputs.trainingFor,
+      maxWeekdayMinutes: inputs.maxWeekdayMinutes,
+      maxWeekendMinutes: inputs.maxWeekendMinutes,
+      weakestDiscipline: inputs.weakestDiscipline,
+      isLastWeek: w === totalWeeks,
+      preferredTimes: inputs.preferredTimes,
+    });
+
+    weeks.push({
+      weekNumber: w,
+      phase,
+      isRecovery,
+      volumePercent: Math.round(volumePercent),
+      totalMinutes,
+      dateRange,
+      sessions,
+    });
+  }
+
+  return {
+    totalWeeks,
+    eventType: inputs.trainingFor,
+    weeks,
+    phases,
+    peakVolumeMinutes,
+    trainingDays,
+    restDays,
+    longDay,
+  };
+}
+
+/* ─── Parse athlete inputs from form data ────────────────────── */
+
+export function parseAthleteInputs(d: Record<string, unknown>, sub: Record<string, unknown>): AthleteInputs {
+  const availableDays = Array.isArray(d.availableDays)
+    ? (d.availableDays as string[])
+    : ALL_DAYS.slice();
+
+  return {
+    trainingFor: (d.trainingFor || sub.training_for || "Marathon") as EventType,
+    availableDays,
+    trainingDaysPerWeek: parseInt(String(d.trainingDaysPerWeek || "4"), 10),
+    preferredLongDay: String(d.preferredLongDay || "Flexible"),
+    preferredRestDay: String(d.preferredRestDay || "Flexible"),
+    maxWeekdayMinutes: parseSessionDuration(String(d.maxWeekdaySession || "60 min")),
+    maxWeekendMinutes: parseSessionDuration(String(d.maxWeekendSession || "2 hours")),
+    raceDate: d.raceDate ? new Date(d.raceDate as string) : null,
+    planWeeks: d.planWeeks ? parseInt(String(d.planWeeks), 10) : null,
+    age: d.age ? parseInt(String(d.age), 10) : null,
+    weakestDiscipline: d.weakestDiscipline ? String(d.weakestDiscipline) : undefined,
+    preferredTimes: Array.isArray(d.preferredTimes) ? (d.preferredTimes as string[]) : [],
+    doubleDays: d.doubleDays ? String(d.doubleDays) : undefined,
+    weeklyRunDistance: d.weeklyRunDistance ? parseFloat(String(d.weeklyRunDistance)) : undefined,
+    easyRunPace: d.easyRunPace ? String(d.easyRunPace) : undefined,
+  };
+}
+
+function parseSessionDuration(str: string): number {
+  if (str === "No limit") return 240;
+  const hourMatch = str.match(/^(\d+)\s*hours?$/i);
+  if (hourMatch) return parseInt(hourMatch[1], 10) * 60;
+  const minMatch = str.match(/^(\d+)\s*min$/i);
+  if (minMatch) return parseInt(minMatch[1], 10);
+  return 60; // default
+}
+
+/* ─── Total Weeks ────────────────────────────────────────────── */
+
+function calculateTotalWeeks(raceDate: Date | null, planWeeks: number | null): number {
+  if (raceDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weeks = Math.ceil((raceDate.getTime() - today.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    return Math.max(4, Math.min(weeks, 52)); // clamp 4-52
+  }
+  return planWeeks ? Math.max(4, Math.min(planWeeks, 52)) : 12;
+}
+
+/* ─── Phase Ranges ───────────────────────────────────────────── */
+
+function calculatePhaseRanges(totalWeeks: number, eventType: EventType): PhaseRange[] {
+  const props = PHASE_PROPORTIONS[eventType] || PHASE_PROPORTIONS["Marathon"];
+  const minTaper = MIN_TAPER[eventType] || 2;
+
+  // Calculate raw week counts
+  let taperWeeks = Math.max(minTaper, Math.round(totalWeeks * props[3]));
+  let peakWeeks = Math.max(1, Math.round(totalWeeks * props[2]));
+  let buildWeeks = Math.max(1, Math.round(totalWeeks * props[1]));
+  let baseWeeks = totalWeeks - taperWeeks - peakWeeks - buildWeeks;
+
+  // Ensure base has at least 1 week
+  if (baseWeeks < 1) {
+    baseWeeks = 1;
+    // Steal from build if needed
+    const excess = (baseWeeks + buildWeeks + peakWeeks + taperWeeks) - totalWeeks;
+    if (excess > 0) buildWeeks = Math.max(1, buildWeeks - excess);
+  }
+
+  // Final adjustment to exactly match totalWeeks
+  const sum = baseWeeks + buildWeeks + peakWeeks + taperWeeks;
+  if (sum < totalWeeks) buildWeeks += totalWeeks - sum;
+  if (sum > totalWeeks) buildWeeks = Math.max(1, buildWeeks - (sum - totalWeeks));
+
+  const phases: PhaseRange[] = [
+    { phase: "BASE", startWeek: 1, endWeek: baseWeeks },
+    { phase: "BUILD", startWeek: baseWeeks + 1, endWeek: baseWeeks + buildWeeks },
+    { phase: "PEAK", startWeek: baseWeeks + buildWeeks + 1, endWeek: baseWeeks + buildWeeks + peakWeeks },
+    { phase: "TAPER", startWeek: totalWeeks - taperWeeks + 1, endWeek: totalWeeks },
+  ];
+
+  return phases;
+}
+
+function getPhaseForWeek(week: number, phases: PhaseRange[]): Phase {
+  for (const p of phases) {
+    if (week >= p.startWeek && week <= p.endWeek) return p.phase;
+  }
+  return "BUILD"; // fallback
+}
+
+/* ─── Recovery Weeks ─────────────────────────────────────────── */
+
+function assignRecoveryWeeks(totalWeeks: number, phases: PhaseRange[], age: number | null): Set<number> {
+  const recovery = new Set<number>();
+  const interval = age && age >= 45 ? 3 : 4; // 2-on/1-off for 45+, 3-on/1-off otherwise
+  const taperStart = phases.find(p => p.phase === "TAPER")!.startWeek;
+
+  let count = 0;
+  for (let w = 1; w < taperStart; w++) {
+    count++;
+    if (count >= interval) {
+      recovery.add(w);
+      count = 0;
+    }
+  }
+
+  return recovery;
+}
+
+/* ─── Volume Progression ─────────────────────────────────────── */
+
+function calculateWeekVolume(
+  week: number, totalWeeks: number, phase: Phase,
+  isRecovery: boolean, phases: PhaseRange[],
+): number {
+  if (isRecovery) return 55; // 50-60% of peak
+
+  const taperPhase = phases.find(p => p.phase === "TAPER")!;
+
+  if (phase === "TAPER") {
+    const taperWeek = week - taperPhase.startWeek + 1;
+    const taperTotal = taperPhase.endWeek - taperPhase.startWeek + 1;
+    // Progressive decrease: 65% → 45% → 30%
+    if (taperTotal === 1) return 45;
+    if (taperTotal === 2) return taperWeek === 1 ? 60 : 35;
+    // 3+ weeks
+    const step = (65 - 30) / (taperTotal - 1);
+    return Math.round(65 - step * (taperWeek - 1));
+  }
+
+  if (phase === "BASE") {
+    const basePhase = phases.find(p => p.phase === "BASE")!;
+    const baseWeek = week - basePhase.startWeek;
+    const baseTotal = basePhase.endWeek - basePhase.startWeek;
+    // Ramp from 55% to 80%
+    return baseTotal === 0 ? 70 : Math.round(55 + (80 - 55) * (baseWeek / baseTotal));
+  }
+
+  if (phase === "BUILD") {
+    const buildPhase = phases.find(p => p.phase === "BUILD")!;
+    const buildWeek = week - buildPhase.startWeek;
+    const buildTotal = buildPhase.endWeek - buildPhase.startWeek;
+    // Ramp from 80% to 95%
+    return buildTotal === 0 ? 88 : Math.round(80 + (95 - 80) * (buildWeek / buildTotal));
+  }
+
+  // PEAK: 95-100%
+  const peakPhase = phases.find(p => p.phase === "PEAK")!;
+  const peakWeek = week - peakPhase.startWeek;
+  const peakTotal = peakPhase.endWeek - peakPhase.startWeek;
+  return peakTotal === 0 ? 100 : Math.round(95 + 5 * (peakWeek / peakTotal));
+}
+
+/* ─── Peak Volume Estimation ─────────────────────────────────── */
+
+function estimatePeakVolume(inputs: AthleteInputs): number {
+  const { trainingDaysPerWeek, maxWeekdayMinutes, maxWeekendMinutes, trainingFor } = inputs;
+
+  // Estimate based on event type base hours + available time
+  const eventMinutes: Record<string, number> = {
+    "5K": 240, "10K": 300, "Half Marathon": 360, "Marathon": 420,
+    "Sprint Triathlon": 360, "Olympic Triathlon": 480,
+    "70.3 Ironman": 600, "Full Ironman": 720,
+    "Cycling Event": 360,
+  };
+
+  const baseTarget = eventMinutes[trainingFor] || 360;
+
+  // Cap by available time: weekday sessions × count + weekend session
+  const weekdayCount = Math.max(0, trainingDaysPerWeek - 1);
+  const weekendCount = trainingDaysPerWeek - weekdayCount;
+
+  const maxAvailable = (weekdayCount * maxWeekdayMinutes) + (weekendCount * maxWeekendMinutes);
+
+  return Math.min(baseTarget, maxAvailable);
+}
+
+/* ─── Training Day Assignment ────────────────────────────────── */
+
+function assignTrainingDays(inputs: AthleteInputs): {
+  trainingDays: string[];
+  restDays: string[];
+  longDay: string;
+} {
+  const available = inputs.availableDays.length > 0
+    ? inputs.availableDays
+    : ALL_DAYS.slice();
+  const targetCount = Math.min(inputs.trainingDaysPerWeek, available.length);
+
+  // Determine long day
+  let longDay = available.includes("Sat") ? "Sat" : available[available.length - 1];
+  if (inputs.preferredLongDay && inputs.preferredLongDay !== "Flexible") {
+    const short = FULL_TO_SHORT[inputs.preferredLongDay] || inputs.preferredLongDay;
+    if (available.includes(short)) longDay = short;
+  }
+
+  // Determine preferred rest day
+  let preferredRest: string | null = null;
+  if (inputs.preferredRestDay && inputs.preferredRestDay !== "Flexible") {
+    const short = FULL_TO_SHORT[inputs.preferredRestDay] || inputs.preferredRestDay;
+    if (available.includes(short)) preferredRest = short;
+  }
+
+  // Select training days: start with long day, then spread evenly
+  const training = new Set<string>();
+  training.add(longDay);
+
+  // Add remaining days, avoiding preferred rest day, spreading evenly
+  const candidates = available.filter(d => d !== longDay && d !== preferredRest);
+  // Prioritize by spacing: spread training days across the week
+  const dayIndex = (d: string) => ALL_DAYS.indexOf(d as typeof ALL_DAYS[number]);
+  candidates.sort((a, b) => dayIndex(a) - dayIndex(b));
+
+  // Greedy: pick days that maximize spacing
+  while (training.size < targetCount && candidates.length > 0) {
+    let bestDay = candidates[0];
+    let bestScore = -1;
+
+    for (const c of candidates) {
+      if (training.has(c)) continue;
+      // Score = minimum distance to any existing training day
+      const ci = dayIndex(c);
+      let minDist = 7;
+      for (const t of training) {
+        const ti = dayIndex(t);
+        const dist = Math.min(Math.abs(ci - ti), 7 - Math.abs(ci - ti));
+        minDist = Math.min(minDist, dist);
+      }
+      if (minDist > bestScore) {
+        bestScore = minDist;
+        bestDay = c;
+      }
+    }
+
+    training.add(bestDay);
+    candidates.splice(candidates.indexOf(bestDay), 1);
+  }
+
+  // If still need more, add preferred rest day
+  if (training.size < targetCount && preferredRest && !training.has(preferredRest)) {
+    training.add(preferredRest);
+  }
+
+  const trainingDays = available.filter(d => training.has(d)); // maintain day order
+  const restDays = available.filter(d => !training.has(d));
+
+  return { trainingDays, restDays, longDay };
+}
+
+/* ─── Session Assignment ─────────────────────────────────────── */
+
+interface SessionAssignmentContext {
+  weekNumber: number;
+  phase: Phase;
+  isRecovery: boolean;
+  totalMinutes: number;
+  trainingDays: string[];
+  longDay: string;
+  eventType: EventType;
+  maxWeekdayMinutes: number;
+  maxWeekendMinutes: number;
+  weakestDiscipline?: string;
+  isLastWeek: boolean;
+  preferredTimes: string[];
+}
+
+const TRIATHLON_EVENTS = new Set([
+  "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Sprint Triathlon",
+]);
+
+const LONG_COURSE = new Set(["70.3 Ironman", "Full Ironman"]);
+
+function assignSessionsForWeek(ctx: SessionAssignmentContext): SessionSlot[] {
+  const isTri = TRIATHLON_EVENTS.has(ctx.eventType);
+  const isCycling = ctx.eventType === "Cycling Event";
+
+  if (isTri) return assignTriathlonSessions(ctx);
+  if (isCycling) return assignCyclingSessions(ctx);
+  return assignRunningSessions(ctx);
+}
+
+/* ─── Running Session Templates ──────────────────────────────── */
+
+function assignRunningSessions(ctx: SessionAssignmentContext): SessionSlot[] {
+  const { trainingDays, longDay, phase, isRecovery, totalMinutes } = ctx;
+  const n = trainingDays.length;
+  const sessions: SessionSlot[] = [];
+
+  // Define session roles based on training day count
+  // Roles: L=long, Q1=quality1, Q2=quality2, E=easy, S=strength
+  type Role = "L" | "Q1" | "Q2" | "E" | "S";
+  let roles: Role[];
+
+  if (n <= 3) {
+    roles = ["E", "Q1", "L"];
+  } else if (n === 4) {
+    roles = ["E", "Q1", "S", "L"];
+  } else if (n === 5) {
+    roles = ["E", "Q1", "E", "Q2", "L"];
+  } else {
+    // 6-7 days
+    roles = ["E", "Q1", "E", "Q2", "S", "L"];
+    while (roles.length < n) roles.splice(roles.length - 1, 0, "E");
+  }
+
+  // In BASE phase, quality sessions become easy (except one tempo)
+  if (phase === "BASE" || isRecovery) {
+    roles = roles.map(r => {
+      if (r === "Q2") return "E";
+      if (r === "Q1" && !isRecovery) return "Q1"; // keep one quality
+      if (r === "Q1" && isRecovery) return "E";
+      return r;
+    });
+  }
+
+  // Last week (race week): everything easy + short
+  if (ctx.isLastWeek) {
+    roles = roles.map(r => (r === "L" ? "E" : r === "Q1" || r === "Q2" ? "E" : r));
+  }
+
+  // Assign roles to specific days — long day gets "L" role
+  const longIdx = trainingDays.indexOf(longDay);
+  if (longIdx >= 0 && roles.includes("L")) {
+    // Move L role to longDay position
+    const lIdx = roles.indexOf("L");
+    [roles[lIdx], roles[longIdx]] = [roles[longIdx], roles[lIdx]];
+  }
+
+  // Allocate time budgets
+  const timeBudgets = allocateTime(roles.map(r => roleWeight(r)), totalMinutes, ctx);
+
+  for (let i = 0; i < n; i++) {
+    const day = trainingDays[i];
+    const role = roles[i];
+    const dur = timeBudgets[i];
+    const isWeekend = WEEKEND.has(day);
+    const maxDur = isWeekend ? ctx.maxWeekendMinutes : ctx.maxWeekdayMinutes;
+    const clampedDur = Math.min(dur, maxDur);
+
+    const slot = roleToRunSession(role, phase, clampedDur, day, ctx.preferredTimes);
+    sessions.push(slot);
+  }
+
+  return sessions;
+}
+
+function roleToRunSession(role: string, phase: Phase, dur: number, day: string, preferredTimes: string[]): SessionSlot {
+  const time = estimateTimeSlot(day, dur, preferredTimes);
+  switch (role) {
+    case "L":
+      return { day, sessionType: "long-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: true, timeSlot: time };
+    case "Q1":
+      return {
+        day, discipline: "run", durationMinutes: dur, isKeySession: true, timeSlot: time,
+        sessionType: phase === "BASE" ? "tempo-run" : phase === "BUILD" ? "tempo-run" : "interval-run",
+        zone: phase === "BASE" ? "Z3" : phase === "BUILD" ? "Z3-Z4" : "Z4-Z5",
+      };
+    case "Q2":
+      return {
+        day, discipline: "run", durationMinutes: dur, isKeySession: true, timeSlot: time,
+        sessionType: "interval-run", zone: "Z4-Z5",
+      };
+    case "S":
+      return { day, sessionType: "strength", discipline: "strength", durationMinutes: Math.min(dur, 45), zone: "N/A", isKeySession: false, timeSlot: time };
+    default: // "E"
+      return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
+  }
+}
+
+/* ─── Triathlon Session Templates ────────────────────────────── */
+
+function assignTriathlonSessions(ctx: SessionAssignmentContext): SessionSlot[] {
+  const { trainingDays, longDay, phase, isRecovery, totalMinutes } = ctx;
+  const n = trainingDays.length;
+  const isLong = LONG_COURSE.has(ctx.eventType);
+  const sessions: SessionSlot[] = [];
+
+  // Define multi-sport roles
+  // S=swim, B=bike, R=run, LR=long run, LB=long ride, BK=brick, ST=strength
+  type TriRole = "S" | "SQ" | "B" | "BQ" | "R" | "RQ" | "LR" | "LB" | "BK" | "ST";
+  let roles: TriRole[];
+
+  // Minimum: 2-3 swim, 2-3 bike, 2-3 run for Olympic; 3/3/3 for long course
+  if (n <= 5) {
+    if (isLong) {
+      // 5 days, long course: swim, bike, run+swim(double?), long ride, long run
+      // Can't hit 3/3/3=9 in 5 single sessions — use combo sessions
+      roles = ["S", "B", "R", "LB", "LR"];
+    } else {
+      roles = ["S", "B", "R", "BQ", "LR"];
+    }
+    while (roles.length < n) roles.splice(2, 0, "S");
+  } else if (n === 6) {
+    if (isLong) {
+      roles = ["S", "B", "R", "SQ", "LB", "LR"];
+    } else {
+      roles = ["S", "B", "R", "SQ", "BQ", "LR"];
+    }
+  } else {
+    // 7 days
+    roles = ["S", "B", "R", "SQ", "BQ", "LB", "LR"];
+  }
+
+  // Add brick in BUILD/PEAK (replace a BQ or B with BK)
+  if ((phase === "BUILD" || phase === "PEAK") && !isRecovery) {
+    const bqIdx = roles.indexOf("BQ");
+    const bIdx = bqIdx >= 0 ? bqIdx : roles.indexOf("B");
+    if (bIdx >= 0) roles[bIdx] = "BK";
+  }
+
+  // Add strength in BASE/BUILD (replace last easy session)
+  if ((phase === "BASE" || phase === "BUILD") && !isRecovery && n >= 6) {
+    // Find a non-key session to swap
+    const swapIdx = roles.lastIndexOf("R");
+    if (swapIdx >= 0 && roles.filter(r => r === "R" || r === "RQ" || r === "LR").length > 2) {
+      roles[swapIdx] = "ST";
+    }
+  }
+
+  // Recovery weeks: all quality → easy
+  if (isRecovery) {
+    roles = roles.map(r => {
+      if (r === "SQ") return "S";
+      if (r === "BQ") return "B";
+      if (r === "RQ") return "R";
+      if (r === "BK") return "B";
+      return r;
+    }) as TriRole[];
+  }
+
+  // Race week: shorten everything
+  if (ctx.isLastWeek) {
+    roles = roles.map(r => {
+      if (r === "LR") return "R";
+      if (r === "LB") return "B";
+      if (r === "BK") return "R";
+      return r;
+    }) as TriRole[];
+  }
+
+  // Assign long sessions to longDay
+  const longIdx = trainingDays.indexOf(longDay);
+  if (longIdx >= 0) {
+    const lrIdx = roles.indexOf("LR");
+    const lbIdx = roles.indexOf("LB");
+    // Prefer long run on longDay
+    if (lrIdx >= 0) {
+      [roles[lrIdx], roles[longIdx]] = [roles[longIdx], roles[lrIdx]];
+    } else if (lbIdx >= 0) {
+      [roles[lbIdx], roles[longIdx]] = [roles[longIdx], roles[lbIdx]];
+    }
+  }
+
+  const timeBudgets = allocateTime(roles.map(r => triRoleWeight(r)), totalMinutes, ctx);
+
+  for (let i = 0; i < n; i++) {
+    const day = trainingDays[i];
+    const role = roles[i];
+    const dur = timeBudgets[i];
+    const isWeekend = WEEKEND.has(day);
+    const maxDur = isWeekend ? ctx.maxWeekendMinutes : ctx.maxWeekdayMinutes;
+    const clampedDur = Math.min(dur, maxDur);
+
+    sessions.push(triRoleToSession(role, phase, clampedDur, day, ctx.preferredTimes));
+  }
+
+  return sessions;
+}
+
+function triRoleToSession(role: string, phase: Phase, dur: number, day: string, preferredTimes: string[]): SessionSlot {
+  const time = estimateTimeSlot(day, dur, preferredTimes);
+  switch (role) {
+    case "S":
+      return { day, sessionType: "swim-technique", discipline: "swim", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
+    case "SQ":
+      return { day, sessionType: "swim-threshold", discipline: "swim", durationMinutes: dur, zone: "Z3-Z4", isKeySession: true, timeSlot: time };
+    case "B":
+      return { day, sessionType: "bike-endurance", discipline: "bike", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
+    case "BQ":
+      return { day, sessionType: "bike-quality", discipline: "bike", durationMinutes: dur, zone: "Z3-Z4", isKeySession: true, timeSlot: time };
+    case "LB":
+      return { day, sessionType: "long-ride", discipline: "bike", durationMinutes: dur, zone: "Z1-Z2", isKeySession: true, timeSlot: time };
+    case "R":
+      return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
+    case "RQ":
+      return {
+        day, discipline: "run", durationMinutes: dur, isKeySession: true, timeSlot: time,
+        sessionType: phase === "PEAK" ? "interval-run" : "tempo-run",
+        zone: phase === "PEAK" ? "Z4-Z5" : "Z3-Z4",
+      };
+    case "LR":
+      return { day, sessionType: "long-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: true, timeSlot: time };
+    case "BK":
+      return { day, sessionType: "brick", discipline: "brick", durationMinutes: dur, zone: "Z2-Z3", isKeySession: true, timeSlot: time };
+    case "ST":
+      return { day, sessionType: "strength", discipline: "strength", durationMinutes: Math.min(dur, 45), zone: "N/A", isKeySession: false, timeSlot: time };
+    default:
+      return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
+  }
+}
+
+/* ─── Cycling Session Templates ──────────────────────────────── */
+
+function assignCyclingSessions(ctx: SessionAssignmentContext): SessionSlot[] {
+  const { trainingDays, longDay, phase, isRecovery, totalMinutes } = ctx;
+  const n = trainingDays.length;
+
+  type CycleRole = "E" | "Q1" | "Q2" | "L" | "S";
+  let roles: CycleRole[];
+
+  if (n <= 3) {
+    roles = ["E", "Q1", "L"];
+  } else if (n === 4) {
+    roles = ["E", "Q1", "S", "L"];
+  } else {
+    roles = ["E", "Q1", "E", "Q2", "L"];
+    while (roles.length < n) roles.splice(roles.length - 1, 0, "E");
+  }
+
+  if (phase === "BASE" || isRecovery) {
+    roles = roles.map(r => (r === "Q2" ? "E" : r === "Q1" && isRecovery ? "E" : r));
+  }
+
+  if (ctx.isLastWeek) {
+    roles = roles.map(r => (r === "L" || r === "Q1" || r === "Q2" ? "E" : r));
+  }
+
+  const longIdx = trainingDays.indexOf(longDay);
+  if (longIdx >= 0 && roles.includes("L")) {
+    const lIdx = roles.indexOf("L");
+    [roles[lIdx], roles[longIdx]] = [roles[longIdx], roles[lIdx]];
+  }
+
+  const timeBudgets = allocateTime(roles.map(r => roleWeight(r)), totalMinutes, ctx);
+  const sessions: SessionSlot[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const day = trainingDays[i];
+    const role = roles[i];
+    const dur = timeBudgets[i];
+    const isWeekend = WEEKEND.has(day);
+    const maxDur = isWeekend ? ctx.maxWeekendMinutes : ctx.maxWeekdayMinutes;
+    const clampedDur = Math.min(dur, maxDur);
+    const time = estimateTimeSlot(day, clampedDur, ctx.preferredTimes);
+
+    switch (role) {
+      case "L":
+        sessions.push({ day, sessionType: "long-ride", discipline: "bike", durationMinutes: clampedDur, zone: "Z1-Z2", isKeySession: true, timeSlot: time });
+        break;
+      case "Q1":
+        sessions.push({ day, sessionType: "bike-quality", discipline: "bike", durationMinutes: clampedDur, zone: phase === "BASE" ? "Z3" : "Z3-Z4", isKeySession: true, timeSlot: time });
+        break;
+      case "Q2":
+        sessions.push({ day, sessionType: "bike-quality", discipline: "bike", durationMinutes: clampedDur, zone: "Z4-Z5", isKeySession: true, timeSlot: time });
+        break;
+      case "S":
+        sessions.push({ day, sessionType: "strength", discipline: "strength", durationMinutes: Math.min(clampedDur, 45), zone: "N/A", isKeySession: false, timeSlot: time });
+        break;
+      default:
+        sessions.push({ day, sessionType: "bike-endurance", discipline: "bike", durationMinutes: clampedDur, zone: "Z1-Z2", isKeySession: false, timeSlot: time });
+    }
+  }
+
+  return sessions;
+}
+
+/* ─── Time Allocation ────────────────────────────────────────── */
+
+function roleWeight(role: string): number {
+  switch (role) {
+    case "L": return 2.5;
+    case "Q1": case "Q2": return 1.2;
+    case "S": return 0.7;
+    default: return 1.0; // easy
+  }
+}
+
+function triRoleWeight(role: string): number {
+  switch (role) {
+    case "LR": case "LB": return 2.5;
+    case "BK": return 2.0;
+    case "SQ": case "BQ": case "RQ": return 1.2;
+    case "ST": return 0.7;
+    default: return 1.0;
+  }
+}
+
+function allocateTime(weights: number[], totalMinutes: number, ctx: SessionAssignmentContext): number[] {
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  // Round to nearest 5 minutes
+  return weights.map(w => Math.round((w / totalWeight) * totalMinutes / 5) * 5);
+}
+
+/* ─── Date Range Calculation ─────────────────────────────────── */
+
+function calculateDateRange(weekNumber: number, raceDate: Date | null, totalWeeks: number): string {
+  const baseDate = raceDate ? new Date(raceDate) : new Date();
+  if (!raceDate) {
+    // If no race date, start from next Monday
+    const dayOfWeek = baseDate.getDay();
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
+    baseDate.setDate(baseDate.getDate() + daysUntilMonday);
+  }
+
+  // Calculate week 1 start (Monday)
+  let week1Start: Date;
+  if (raceDate) {
+    // Count backwards: race is in the last week
+    week1Start = new Date(raceDate);
+    week1Start.setDate(week1Start.getDate() - (totalWeeks * 7) + 1);
+    // Adjust to Monday
+    const dow = week1Start.getDay();
+    if (dow !== 1) {
+      week1Start.setDate(week1Start.getDate() - ((dow + 6) % 7));
+    }
+  } else {
+    week1Start = new Date(baseDate);
+  }
+
+  const weekStart = new Date(week1Start);
+  weekStart.setDate(weekStart.getDate() + (weekNumber - 1) * 7);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const startStr = `${weekStart.getDate()} ${months[weekStart.getMonth()]}`;
+  const endStr = weekStart.getMonth() === weekEnd.getMonth()
+    ? `${weekEnd.getDate()}`
+    : `${weekEnd.getDate()} ${months[weekEnd.getMonth()]}`;
+
+  return `${startStr}–${endStr} ${weekEnd.getFullYear()}`;
+}
+
+/* ─── Time Slot Estimation ───────────────────────────────────── */
+
+function estimateTimeSlot(day: string, durationMinutes: number, preferredTimes: string[]): string {
+  const isWeekend = WEEKEND.has(day);
+
+  // Default start times based on preferences
+  let startHour = 6; // default: 6am
+  let startMin = 0;
+
+  if (preferredTimes.length > 0) {
+    const pref = preferredTimes[0].toLowerCase();
+    if (pref.includes("early morning") || pref.includes("before work")) {
+      startHour = 5; startMin = 30;
+    } else if (pref.includes("morning")) {
+      startHour = isWeekend ? 7 : 6;
+    } else if (pref.includes("lunch")) {
+      startHour = 12;
+    } else if (pref.includes("afternoon")) {
+      startHour = 15;
+    } else if (pref.includes("evening") || pref.includes("after work")) {
+      startHour = 17; startMin = 30;
+    }
+  } else {
+    startHour = isWeekend ? 7 : 6;
+  }
+
+  const endTotalMin = startHour * 60 + startMin + durationMinutes;
+  const endHour = Math.floor(endTotalMin / 60);
+  const endMin = endTotalMin % 60;
+
+  const fmt = (h: number, m: number) => {
+    const period = h >= 12 ? "pm" : "am";
+    const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return m === 0 ? `${h12}:00${period}` : `${h12}:${m.toString().padStart(2, "0")}${period}`;
+  };
+
+  return `${fmt(startHour, startMin)}–${fmt(endHour, endMin)}`;
+}

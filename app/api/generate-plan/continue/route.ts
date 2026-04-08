@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse, after } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
-import { buildAthleteProfile, buildSystemPrompt, extractHtml } from "../route";
-import { validatePlan, ValidationResult } from "@/lib/validate-plan";
+import {
+  buildAthleteProfile, loadResearchContent,
+  buildSessionPrompt, parseAiResponse,
+} from "../route";
+import type { AiResponse } from "../route";
+import Anthropic from "@anthropic-ai/sdk";
+import { buildSkeleton, parseAthleteInputs } from "@/lib/plan-skeleton";
+import type { Phase } from "@/lib/plan-skeleton";
+import { calculateZones } from "@/lib/plan-zones";
+import { buildPartialHtml, buildClosingSections, injectCss } from "@/lib/plan-html";
+import type { WeekContent, FinalSections } from "@/lib/plan-html";
+import { validatePlan } from "@/lib/validate-plan";
+import type { ValidationResult } from "@/lib/validate-plan";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -12,14 +22,14 @@ export const maxDuration = 300;
 const CHUNK_SIZE = 5;
 
 /* ─── POST /api/generate-plan/continue ────────────────────────────
-   Body: { submission_id, totalWeeks, startWeek }
-   Generates one chunk of weeks (up to CHUNK_SIZE). If more weeks
+   Body: { submission_id, totalWeeks, startWeek, lastPhase }
+   Generates one chunk of week sessions via AI (JSON). If more weeks
    remain, calls itself recursively. On the final chunk, also
-   generates race day + footer, stitches everything, and finalizes.
+   generates race day + glossary + tips, assembles everything.
    ────────────────────────────────────────────────────────────────── */
 export async function POST(req: NextRequest) {
   try {
-    const { submission_id, totalWeeks, startWeek } = await req.json();
+    const { submission_id, totalWeeks, startWeek, lastPhase } = await req.json();
 
     if (!submission_id || !totalWeeks || !startWeek) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -50,76 +60,39 @@ export async function POST(req: NextRequest) {
     }
 
     const d = sub.data as Record<string, unknown>;
+
+    /* ── Recalculate skeleton (deterministic) ──────────────── */
+    const inputs = parseAthleteInputs(d, sub);
+    const skeleton = buildSkeleton(inputs);
+    const zones = calculateZones(d);
+
+    /* ── Build AI prompt for this chunk ────────────────────── */
     const athleteProfile = buildAthleteProfile(d, sub);
     const age = d.age ? parseInt(String(d.age), 10) : undefined;
-    const systemPrompt = buildSystemPrompt(d.trainingFor as string, isNaN(age as number) ? undefined : age);
+    const research = loadResearchContent(
+      d.trainingFor as string,
+      isNaN(age as number) ? undefined : age,
+    );
 
-    /* ── Build prompt for this chunk ─────────────────────────── */
-    let chunkPrompt: string;
+    const weeksToGenerate = skeleton.weeks.filter(
+      w => w.weekNumber >= startWeek && w.weekNumber <= endWeek,
+    );
+    const sessionPrompt = buildSessionPrompt(
+      weeksToGenerate, athleteProfile, research, skeleton, isFinal,
+    );
 
-    if (isFinal) {
-      chunkPrompt = `Generate the FINAL PART of a personalised training plan for this athlete. Weeks 1-${startWeek - 1} were already generated — you are continuing from where that left off.
-
-${athleteProfile}
-
-This plan has ${totalWeeks} total weeks. Generate ONLY:
-1. Phase banners and DETAILED week-by-week content for Weeks ${startWeek} through ${totalWeeks} (the final week is race week)
-2. Training Phases Breakdown section (phase-breakdown class — coach-style explanation of each phase). The week ranges in each phase card MUST exactly match the actual weeks in the plan. Use only four phases: BASE, BUILD, PEAK, TAPER.
-3. Race Day Protocol section (race-protocol class) with THREE collapsible <details class="protocol-section"> sub-sections: <details class="protocol-section" open><summary>Pre-Race Timeline</summary> (open by default), <details class="protocol-section"><summary>Your Race Strategy</summary>, <details class="protocol-section"><summary>Mental Strategy</summary>
-4. Glossary section (glossary class)
-5. Coach Tips section (coach-tips class, 6-8 tips — use <span class="material-symbols-outlined"> icons in .tip-icon, NEVER emojis)
-6. Footer (plan-footer class)
-7. Close all remaining tags: </div></body></html>
-
-MANDATORY CHECKLIST — every single week MUST have:
-- Day-cards ONLY for the athlete's available days (see SCHEDULE in profile). Do NOT generate day-cards for unavailable days.
-- Exactly the number of training sessions specified by the athlete. Remaining available days = rest.
-- 1 long run (title must include "Long") — for multi-sport plans also 1 long ride
-- For 70.3/Ironman: minimum 3 swim, 3 bike, 3 run sessions
-- All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
-- Freestyle only — no backstroke, breaststroke, or butterfly
-- No same-discipline high intensity on consecutive days
-- Coaching notes must be 3+ sentences per day
-
-CRITICAL: You MUST complete ALL available days of every week before moving to the next. Do not cut off mid-week.
-Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks 1-${startWeek - 1}. Start directly from the phase banner for Week ${startWeek}.
-Do NOT output \`\`\`html wrappers.`;
-    } else {
-      chunkPrompt = `Generate the NEXT PART of a personalised training plan for this athlete. Weeks 1-${startWeek - 1} were already generated — you are continuing from where that left off.
-
-${athleteProfile}
-
-This plan has ${totalWeeks} total weeks. Generate ONLY:
-1. Phase banners (if a new phase starts in this range) and DETAILED week-by-week content for Weeks ${startWeek} through ${endWeek}
-
-MANDATORY CHECKLIST — every single week MUST have:
-- Day-cards ONLY for the athlete's available days (see SCHEDULE in profile). Do NOT generate day-cards for unavailable days.
-- Exactly the number of training sessions specified by the athlete. Remaining available days = rest.
-- 1 long run (title must include "Long") — for multi-sport plans also 1 long ride
-- For 70.3/Ironman: minimum 3 swim, 3 bike, 3 run sessions
-- All swim distances must be multiples of 50m — NEVER use 75m, 125m, etc.
-- Freestyle only — no backstroke, breaststroke, or butterfly
-- No same-discipline high intensity on consecutive days
-- Coaching notes must be 3+ sentences per day
-
-CRITICAL: You MUST complete ALL available days of Week ${endWeek} before stopping. Do not cut off mid-week.
-Do NOT output any CSS, <style>, <head>, <header>, hero, zones, overview, or weeks before ${startWeek}. Start directly from Week ${startWeek}.
-Do NOT close the </div>, </body> or </html> tags — the plan continues in a follow-up.
-Do NOT include Race Day Protocol, Glossary, Coach Tips, or Footer yet.
-Do NOT output \`\`\`html wrappers.
-End your output right after the last day-card of Week ${endWeek}.`;
-    }
-
-    /* ── Call Claude API ─────────────────────────────────────── */
-    let chunkHtml: string;
+    /* ── Call AI ───────────────────────────────────────────── */
+    let aiResponse: AiResponse;
     try {
+      const systemPrompt = `You are an elite endurance coach at Plan Metric. Return ONLY valid JSON — no markdown, no code fences, no explanation.${research ? `\n\nCOACHING RESEARCH:\n${research}` : ""}`;
+
       const stream = anthropic.messages.stream({
         model: "claude-sonnet-4-20250514",
         max_tokens: 16000,
         system: [
           { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
         ],
-        messages: [{ role: "user", content: chunkPrompt }],
+        messages: [{ role: "user", content: sessionPrompt }],
       });
 
       const message = await stream.finalMessage();
@@ -127,24 +100,48 @@ End your output right after the last day-card of Week ${endWeek}.`;
       if (!textBlock || textBlock.type !== "text") {
         throw new Error("No text response from Claude");
       }
-      chunkHtml = extractHtml(textBlock.text);
+      aiResponse = parseAiResponse(textBlock.text);
     } catch (e) {
       console.error(`Claude API error (weeks ${startWeek}-${endWeek}):`, e);
       return NextResponse.json({ error: `Failed to generate weeks ${startWeek}-${endWeek}` }, { status: 500 });
     }
 
-    if (isFinal) {
-      /* ── Stitch all parts + finalize ──────────────────────── */
-      const repairedPart1 = repairTrailingHtml(sub.generated_plan_part1);
-      let stitched = stitchParts(repairedPart1, chunkHtml);
-      stitched = await injectCss(stitched);
+    const weekContents: WeekContent[] = aiResponse.weeks;
 
-      /* ── Validate final plan ────────────────────────────────── */
-      const age = d.age ? parseInt(String(d.age), 10) : undefined;
-      const validationResults = validatePlan(stitched, {
+    /* ── Assemble HTML for this chunk ──────────────────────── */
+    const { html: chunkHtml, lastPhase: newLastPhase } = buildPartialHtml(
+      skeleton, zones, weekContents, d, sub.plan || "premium",
+      startWeek, endWeek, false, (lastPhase as Phase) || null,
+    );
+
+    if (isFinal) {
+      /* ── Build closing sections ──────────────────────────── */
+      const finalSections: FinalSections = {
+        raceDayProtocol: aiResponse.raceDayProtocol || {
+          preRaceTimeline: "", raceStrategy: "", mentalStrategy: "",
+        },
+        glossary: aiResponse.glossary || [],
+        tips: aiResponse.tips || [],
+        phaseDescriptions: aiResponse.phaseDescriptions || {
+          BASE: "Building your aerobic foundation with easy, consistent training.",
+          BUILD: "Introducing higher intensity work to build race-specific fitness.",
+          PEAK: "Sharpening with race-pace sessions and maximum training load.",
+          TAPER: "Reducing volume while maintaining intensity for fresh race-day legs.",
+        },
+      };
+
+      const closingHtml = buildClosingSections(skeleton, finalSections);
+
+      /* ── Stitch everything together ──────────────────────── */
+      let fullPlan = sub.generated_plan_part1 + "\n\n" + chunkHtml + "\n\n" + closingHtml;
+      fullPlan = await injectCss(fullPlan);
+
+      /* ── Validate final plan ─────────────────────────────── */
+      const validationResults = validatePlan(fullPlan, {
         totalWeeks,
         eventType: d.trainingFor as string || sub.training_for || "",
         athleteAge: isNaN(age as number) ? undefined : age,
+        trainingDaysPerWeek: inputs.trainingDaysPerWeek,
       });
 
       const criticals = validationResults.filter(r => r.severity === "critical");
@@ -160,16 +157,17 @@ End your output right after the last day-card of Week ${endWeek}.`;
         console.log(`Plan QA for ${sub.full_name}: ALL PASSED`);
       }
 
+      /* ── Save to DB ──────────────────────────────────────── */
       await supabase
         .from("intake_submissions")
         .update({
           status: "plan_generated",
-          generated_plan: stitched,
+          generated_plan: fullPlan,
           generated_plan_part1: null,
         })
         .eq("id", submission_id);
 
-      /* ── Email admin with review link ─────────────────────── */
+      /* ── Email admin ─────────────────────────────────────── */
       try {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
         const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
@@ -191,7 +189,7 @@ End your output right after the last day-card of Week ${endWeek}.`;
       return NextResponse.json({
         ok: true,
         status: "complete",
-        planLength: stitched.length,
+        planLength: fullPlan.length,
         validation: {
           passed: validationResults.length === 0,
           criticals: criticals.length,
@@ -200,9 +198,8 @@ End your output right after the last day-card of Week ${endWeek}.`;
         },
       });
     } else {
-      /* ── Append chunk to part1 and trigger next chunk ─────── */
-      const repairedPart1 = repairTrailingHtml(sub.generated_plan_part1);
-      const updatedPart1 = repairedPart1 + "\n\n" + chunkHtml;
+      /* ── Append chunk and trigger next ───────────────────── */
+      const updatedPart1 = sub.generated_plan_part1 + "\n\n" + chunkHtml;
 
       await supabase
         .from("intake_submissions")
@@ -215,7 +212,12 @@ End your output right after the last day-card of Week ${endWeek}.`;
           await fetch(`${siteUrl}/api/generate-plan/continue`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ submission_id, totalWeeks, startWeek: endWeek + 1 }),
+            body: JSON.stringify({
+              submission_id,
+              totalWeeks,
+              startWeek: endWeek + 1,
+              lastPhase: newLastPhase,
+            }),
           });
         } catch (e) {
           console.error("Failed to trigger next chunk:", e);
@@ -231,74 +233,7 @@ End your output right after the last day-card of Week ${endWeek}.`;
   }
 }
 
-/* ─── Helpers ──────────────────────────────────────────────────── */
-
-/** Close any orphaned HTML tags left when Claude gets cut off mid-week */
-function repairTrailingHtml(html: string): string {
-  // Track open tags (simplified — only cares about div, details, summary, section, span)
-  const openTags: string[] = [];
-  const tagRegex = /<\/?(\w+)[^>]*>/g;
-  const selfClosing = new Set(["br", "hr", "img", "input", "meta", "link"]);
-  let match;
-
-  while ((match = tagRegex.exec(html)) !== null) {
-    const [full, tag] = match;
-    const tagLower = tag.toLowerCase();
-    if (selfClosing.has(tagLower)) continue;
-    if (full.startsWith("</")) {
-      // Closing tag — pop matching open tag
-      const idx = openTags.lastIndexOf(tagLower);
-      if (idx !== -1) openTags.splice(idx, 1);
-    } else if (!full.endsWith("/>")) {
-      openTags.push(tagLower);
-    }
-  }
-
-  // Close orphaned tags in reverse order (skip html, body, head — those are structural)
-  const structural = new Set(["html", "body", "head"]);
-  const toClose = openTags.filter(t => !structural.has(t)).reverse();
-  return html + toClose.map(t => `</${t}>`).join("\n");
-}
-
-function stitchParts(pass1: string, pass2: string): string {
-  let p1 = pass1.replace(/<\/body>\s*<\/html>\s*$/i, "");
-  let p2 = pass2
-    .replace(/^<!DOCTYPE[^>]*>/i, "")
-    .replace(/<html[^>]*>/i, "")
-    .replace(/<head>[\s\S]*?<\/head>/i, "")
-    .replace(/<body[^>]*>/i, "");
-
-  return p1 + "\n\n" + p2;
-}
-
-async function injectCss(html: string): Promise<string> {
-  let css = "";
-
-  // Try filesystem first (works locally), then fetch from public URL (works on Vercel)
-  try {
-    const fs = require("fs");
-    const path = require("path");
-    const cssPath = path.resolve(process.cwd(), "public/assets/plan-styles.css");
-    css = fs.readFileSync(cssPath, "utf-8");
-  } catch {
-    try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      const res = await fetch(`${siteUrl}/assets/plan-styles.css`);
-      if (res.ok) css = await res.text();
-    } catch {
-      console.error("Could not load plan-styles.css from filesystem or URL");
-    }
-  }
-
-  if (css && html.includes("</head>")) {
-    return html.replace("</head>", `<style>${css}</style>\n</head>`);
-  }
-  if (css) {
-    return html.replace(/<html[^>]*>/i, (match) => `${match}\n<head><style>${css}</style></head>`);
-  }
-  return html;
-}
-
+/* ─── Admin Email ────────────────────────────────────────────── */
 
 function buildAdminReviewEmail(name: string, event: string, plan: string, reviewUrl: string, results?: ValidationResult[]): string {
   const criticals = results?.filter(r => r.severity === "critical") || [];

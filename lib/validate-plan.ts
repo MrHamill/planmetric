@@ -1,6 +1,11 @@
 /* ─── Post-generation plan validation ─────────────────────────────
    Parses the stitched HTML plan and validates against training rules.
    Returns an array of violations with severity levels.
+
+   Updated for code-driven skeleton architecture:
+   - Structural rules (phases, day count, week titles) are now
+     guaranteed by code, so they're downgraded to sanity checks.
+   - AI content rules (swim distances, coaching notes) remain critical.
    ────────────────────────────────────────────────────────────────── */
 
 export type Severity = "critical" | "warning";
@@ -16,6 +21,7 @@ export interface PlanMetadata {
   totalWeeks: number;
   eventType: string;
   athleteAge?: number;
+  trainingDaysPerWeek?: number;
 }
 
 /* ─── Data structures ─────────────────────────────────────────── */
@@ -43,24 +49,20 @@ function stripTags(html: string): string {
 function extractWeeks(html: string): WeekData[] {
   const weeks: WeekData[] = [];
 
-  // Split on weekly-accordion boundaries
   const weekBlocks = html.split(/(?=class="weekly-accordion")/);
 
   for (const block of weekBlocks) {
     if (!block.includes('class="weekly-accordion"')) continue;
 
-    // Extract week title from summary
     const summaryMatch = block.match(/<summary[\s\S]*?<\/summary>/i);
     const titleText = summaryMatch ? stripTags(summaryMatch[0]) : "";
 
     const weekNumMatch = titleText.match(/Week\s+(\d+)/i);
     const weekNumber = weekNumMatch ? parseInt(weekNumMatch[1], 10) : 0;
 
-    // Detect phase from title (e.g. "Week 9 — BUILD")
     const phaseMatch = titleText.match(/(?:—|–|-)\s*(BASE|BUILD|PEAK|TAPER)/i);
     const phase = phaseMatch ? phaseMatch[1].toUpperCase() : "";
 
-    // Extract day cards
     const dayCards = extractDayCards(block);
 
     weeks.push({ weekNumber, title: titleText, phase, dayCards });
@@ -76,20 +78,16 @@ function extractDayCards(weekHtml: string): DayCard[] {
   for (const block of cardBlocks) {
     if (!block.includes('class="day-card"')) continue;
 
-    // Title
     const titleMatch = block.match(/class="day-title"[^>]*>([\s\S]*?)<\/h4>/i);
     const title = titleMatch ? stripTags(titleMatch[1]) : "";
 
-    // Badges
     const badges: string[] = [];
-    const badgeMatches = block.matchAll(/badge-(swim|bike|run|brick|rest|strength)/gi);
+    const badgeMatches = block.matchAll(/badge-(swim|bike|run|brick|rest|strength|accent)/gi);
     for (const m of badgeMatches) badges.push(m[1].toLowerCase());
 
-    // Structure text
     const structMatch = block.match(/class="session-structure"[\s\S]*?(?=class="coaching-note"|class="day-card"|$)/i);
     const structureText = structMatch ? stripTags(structMatch[0]) : "";
 
-    // Coaching note text
     const noteMatch = block.match(/class="coaching-note"[\s\S]*?(?=class="day-card"|class="weekly-accordion"|<\/div>\s*<\/div>\s*<\/details>|$)/i);
     const coachingNoteText = noteMatch ? stripTags(noteMatch[0]) : "";
 
@@ -107,180 +105,37 @@ export function validatePlan(html: string, meta: PlanMetadata): ValidationResult
   const isLongCourse = /70\.3|ironman|half iron|full iron/i.test(meta.eventType);
   const isTriathlon = isLongCourse || /triathlon|olympic tri|sprint tri/i.test(meta.eventType);
 
-  // Critical
-  results.push(...validateAllWeeksPresent(html, meta.totalWeeks));
-  results.push(...validateDayCardsPerWeek(weeks));
-  results.push(...validateExactlyFourPhases(html));
-  results.push(...validateNoSubPhases(html));
-  if (isLongCourse) {
-    results.push(...validateSessionFrequency(weeks));
-  }
-  results.push(...validateLongRideEveryWeek(weeks));
-  results.push(...validateLongRunEveryWeek(weeks));
+  // Critical — AI content checks (still needed)
   results.push(...validateSwimDistances(weeks));
   results.push(...validateNoNonFreestyle(weeks));
 
-  // Warning
+  // Sanity checks — code guarantees these, but verify (downgraded to warning)
+  results.push(...validateAllWeeksPresent(html, meta.totalWeeks));
+  results.push(...validateDayCardsPerWeek(weeks, meta.trainingDaysPerWeek));
+  results.push(...validatePhaseBannerCount(html));
+
+  // Warning — AI content quality
+  results.push(...validateCoachingNotes(weeks));
+  results.push(...validateLongRunEveryWeek(weeks));
   if (isTriathlon) {
+    results.push(...validateLongRideEveryWeek(weeks));
     results.push(...validateBrickSessions(weeks));
   }
-  results.push(...validateNoConsecutiveHardSameDiscipline(weeks));
+  if (isLongCourse) {
+    results.push(...validateSessionFrequency(weeks));
+  }
   results.push(...validateRecoveryWeeks(weeks));
-  results.push(...validateCoachingNotes(weeks));
-  results.push(...validateQualityRunSessions(weeks));
-  results.push(...validateWeekTitles(html, meta.totalWeeks));
   results.push(...validateDisclaimer(html));
 
   // Masters
   if (meta.athleteAge && meta.athleteAge >= 40) {
-    results.push(...validateMastersRestDays(weeks));
-    results.push(...validateMastersStrength(weeks));
-    results.push(...validateMastersVO2max(weeks));
+    results.push(...validateMastersRestDays(weeks, meta.trainingDaysPerWeek));
   }
 
   return results;
 }
 
-/* ─── CRITICAL rules ──────────────────────────────────────────── */
-
-function validateAllWeeksPresent(html: string, totalWeeks: number): ValidationResult[] {
-  const missing: number[] = [];
-  for (let i = 1; i <= totalWeeks; i++) {
-    if (!new RegExp(`Week\\s+${i}\\b`).test(html)) missing.push(i);
-  }
-  if (missing.length === 0) return [];
-  return [{
-    rule: "all-weeks-present",
-    severity: "critical",
-    message: `Missing weeks: ${missing.join(", ")}`,
-    details: missing.map(w => `Week ${w} not found`),
-  }];
-}
-
-function validateDayCardsPerWeek(weeks: WeekData[]): ValidationResult[] {
-  const failing = weeks.filter(w => w.dayCards.length !== 7);
-  if (failing.length === 0) return [];
-  return [{
-    rule: "7-days-per-week",
-    severity: "critical",
-    message: `${failing.length} week(s) don't have 7 days`,
-    details: failing.map(w => `Week ${w.weekNumber}: ${w.dayCards.length} days`),
-  }];
-}
-
-function validateExactlyFourPhases(html: string): ValidationResult[] {
-  const count = (html.match(/class="phase-banner"/g) || []).length;
-  if (count === 4) return [];
-  return [{
-    rule: "exactly-4-phases",
-    severity: "critical",
-    message: `Found ${count} phases instead of 4 (BASE, BUILD, PEAK, TAPER)`,
-  }];
-}
-
-function validateNoSubPhases(html: string): ValidationResult[] {
-  const titles: string[] = [];
-  const bannerMatches = html.matchAll(/class="phase-title"[^>]*>([\s\S]*?)<\/h2>/gi);
-  for (const m of bannerMatches) titles.push(stripTags(m[1]));
-
-  // Also check h2 inside phase-banner if phase-title class isn't used
-  if (titles.length === 0) {
-    const h2Matches = html.matchAll(/class="phase-banner"[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/gi);
-    for (const m of h2Matches) titles.push(stripTags(m[1]));
-  }
-
-  const validPhases = /^(BASE|BUILD|PEAK|TAPER)$/i;
-  const invalid = titles.filter(t => !validPhases.test(t.trim()));
-  if (invalid.length === 0) return [];
-  return [{
-    rule: "no-sub-phases",
-    severity: "critical",
-    message: `Invalid phase names found: ${invalid.join(", ")}`,
-    details: invalid.map(t => `"${t}" should be BASE, BUILD, PEAK, or TAPER only`),
-  }];
-}
-
-function validateSessionFrequency(weeks: WeekData[]): ValidationResult[] {
-  const failing: string[] = [];
-
-  for (const week of weeks) {
-    // Skip race week (last week) and recovery weeks
-    if (/taper/i.test(week.phase) && week.weekNumber === weeks[weeks.length - 1]?.weekNumber) continue;
-
-    let swim = 0, bike = 0, run = 0;
-    for (const day of week.dayCards) {
-      if (day.badges.includes("swim")) swim++;
-      if (day.badges.includes("bike")) bike++;
-      if (day.badges.includes("brick")) { bike++; run++; }
-      if (day.badges.includes("run")) run++;
-    }
-
-    const issues: string[] = [];
-    if (swim < 3) issues.push(`swim:${swim}`);
-    if (bike < 3) issues.push(`bike:${bike}`);
-    if (run < 3) issues.push(`run:${run}`);
-
-    if (issues.length > 0) {
-      failing.push(`Week ${week.weekNumber} — ${issues.join(", ")}`);
-    }
-  }
-
-  if (failing.length === 0) return [];
-  return [{
-    rule: "session-frequency",
-    severity: "critical",
-    message: `${failing.length} week(s) below minimum 3/3/3 (swim/bike/run)`,
-    details: failing,
-  }];
-}
-
-function validateLongRideEveryWeek(weeks: WeekData[]): ValidationResult[] {
-  const failing: number[] = [];
-
-  for (const week of weeks) {
-    // Skip race week
-    if (week.weekNumber === weeks[weeks.length - 1]?.weekNumber && /taper/i.test(week.phase)) continue;
-
-    const hasLongRide = week.dayCards.some(d =>
-      (d.badges.includes("bike") || d.badges.includes("brick")) &&
-      /long/i.test(d.title)
-    );
-
-    if (!hasLongRide) failing.push(week.weekNumber);
-  }
-
-  if (failing.length === 0) return [];
-  return [{
-    rule: "long-ride-every-week",
-    severity: "critical",
-    message: `${failing.length} week(s) missing a long ride`,
-    details: failing.map(w => `Week ${w}`),
-  }];
-}
-
-function validateLongRunEveryWeek(weeks: WeekData[]): ValidationResult[] {
-  const failing: number[] = [];
-
-  for (const week of weeks) {
-    // Skip race week
-    if (week.weekNumber === weeks[weeks.length - 1]?.weekNumber && /taper/i.test(week.phase)) continue;
-
-    const hasLongRun = week.dayCards.some(d =>
-      (d.badges.includes("run") || d.badges.includes("brick")) &&
-      /long/i.test(d.title)
-    );
-
-    if (!hasLongRun) failing.push(week.weekNumber);
-  }
-
-  if (failing.length === 0) return [];
-  return [{
-    rule: "long-run-every-week",
-    severity: "critical",
-    message: `${failing.length} week(s) missing a long run`,
-    details: failing.map(w => `Week ${w}`),
-  }];
-}
+/* ─── CRITICAL rules (AI content) ────────────────────────────── */
 
 function validateSwimDistances(weeks: WeekData[]): ValidationResult[] {
   const badDistances: string[] = [];
@@ -289,7 +144,6 @@ function validateSwimDistances(weeks: WeekData[]): ValidationResult[] {
     for (const day of week.dayCards) {
       if (!day.badges.includes("swim")) continue;
 
-      // Find all distances in metres — exclude pace references like /100m
       const distanceMatches = day.structureText.matchAll(/(?<![:/\d])(\d{2,4})\s*m\b/gi);
       for (const m of distanceMatches) {
         const dist = parseInt(m[1], 10);
@@ -334,7 +188,149 @@ function validateNoNonFreestyle(weeks: WeekData[]): ValidationResult[] {
   }];
 }
 
-/* ─── WARNING rules ───────────────────────────────────────────── */
+/* ─── SANITY CHECKS (code-guaranteed, but verify) ────────────── */
+
+function validateAllWeeksPresent(html: string, totalWeeks: number): ValidationResult[] {
+  const missing: number[] = [];
+  for (let i = 1; i <= totalWeeks; i++) {
+    if (!new RegExp(`Week\\s+${i}\\b`).test(html)) missing.push(i);
+  }
+  if (missing.length === 0) return [];
+  return [{
+    rule: "all-weeks-present",
+    severity: "warning",
+    message: `Missing weeks: ${missing.join(", ")}`,
+    details: missing.map(w => `Week ${w} not found`),
+  }];
+}
+
+function validateDayCardsPerWeek(weeks: WeekData[], trainingDaysPerWeek?: number): ValidationResult[] {
+  const expected = trainingDaysPerWeek || 4;
+  const failing = weeks.filter(w => w.dayCards.length !== expected);
+  if (failing.length === 0) return [];
+  return [{
+    rule: "day-cards-per-week",
+    severity: "warning",
+    message: `${failing.length} week(s) don't have ${expected} day cards`,
+    details: failing.map(w => `Week ${w.weekNumber}: ${w.dayCards.length} days (expected ${expected})`),
+  }];
+}
+
+function validatePhaseBannerCount(html: string): ValidationResult[] {
+  const count = (html.match(/class="phase-banner"/g) || []).length;
+  if (count === 4) return [];
+  return [{
+    rule: "phase-banner-count",
+    severity: "warning",
+    message: `Found ${count} phase banners instead of 4`,
+  }];
+}
+
+/* ─── WARNING rules (AI content quality) ─────────────────────── */
+
+function validateCoachingNotes(weeks: WeekData[]): ValidationResult[] {
+  const short: string[] = [];
+
+  for (const week of weeks) {
+    for (const day of week.dayCards) {
+      if (!day.coachingNoteText || day.badges.includes("rest")) continue;
+
+      const text = day.coachingNoteText.replace(/Coach'?s?\s*Note:?\s*/i, "");
+      const sentences = text.split(/[.!?]+\s/).filter(s => s.trim().length > 10);
+
+      if (sentences.length < 3) {
+        short.push(`Week ${week.weekNumber}, "${day.title}": ${sentences.length} sentence(s)`);
+      }
+    }
+  }
+
+  if (short.length === 0) return [];
+  return [{
+    rule: "coaching-notes-length",
+    severity: "warning",
+    message: `${short.length} day(s) have coaching notes shorter than 3 sentences`,
+    details: short.slice(0, 10),
+  }];
+}
+
+function validateLongRunEveryWeek(weeks: WeekData[]): ValidationResult[] {
+  const failing: number[] = [];
+
+  for (const week of weeks) {
+    if (week.weekNumber === weeks[weeks.length - 1]?.weekNumber && /taper/i.test(week.phase)) continue;
+
+    const hasLongRun = week.dayCards.some(d =>
+      (d.badges.includes("run") || d.badges.includes("brick")) &&
+      /long/i.test(d.title)
+    );
+
+    if (!hasLongRun) failing.push(week.weekNumber);
+  }
+
+  if (failing.length === 0) return [];
+  return [{
+    rule: "long-run-every-week",
+    severity: "warning",
+    message: `${failing.length} week(s) missing a long run`,
+    details: failing.map(w => `Week ${w}`),
+  }];
+}
+
+function validateLongRideEveryWeek(weeks: WeekData[]): ValidationResult[] {
+  const failing: number[] = [];
+
+  for (const week of weeks) {
+    if (week.weekNumber === weeks[weeks.length - 1]?.weekNumber && /taper/i.test(week.phase)) continue;
+
+    const hasLongRide = week.dayCards.some(d =>
+      (d.badges.includes("bike") || d.badges.includes("brick")) &&
+      /long/i.test(d.title)
+    );
+
+    if (!hasLongRide) failing.push(week.weekNumber);
+  }
+
+  if (failing.length === 0) return [];
+  return [{
+    rule: "long-ride-every-week",
+    severity: "warning",
+    message: `${failing.length} week(s) missing a long ride`,
+    details: failing.map(w => `Week ${w}`),
+  }];
+}
+
+function validateSessionFrequency(weeks: WeekData[]): ValidationResult[] {
+  const failing: string[] = [];
+
+  for (const week of weeks) {
+    if (/taper/i.test(week.phase) && week.weekNumber === weeks[weeks.length - 1]?.weekNumber) continue;
+
+    let swim = 0, bike = 0, run = 0;
+    for (const day of week.dayCards) {
+      if (day.badges.includes("swim")) swim++;
+      if (day.badges.includes("bike")) bike++;
+      if (day.badges.includes("brick")) { bike++; run++; }
+      if (day.badges.includes("run")) run++;
+    }
+
+    const issues: string[] = [];
+    if (swim < 3) issues.push(`swim:${swim}`);
+    if (bike < 3) issues.push(`bike:${bike}`);
+    if (run < 3) issues.push(`run:${run}`);
+
+    if (issues.length > 0) {
+      failing.push(`Week ${week.weekNumber} — ${issues.join(", ")}`);
+    }
+  }
+
+  if (failing.length === 0) return [];
+  return [{
+    rule: "session-frequency",
+    severity: "warning",
+    message: `${failing.length} week(s) below minimum 3/3/3 (swim/bike/run)`,
+    details: failing,
+  }];
+}
 
 function validateBrickSessions(weeks: WeekData[]): ValidationResult[] {
   const last6 = weeks.slice(-6);
@@ -356,39 +352,6 @@ function validateBrickSessions(weeks: WeekData[]): ValidationResult[] {
   }];
 }
 
-const QUALITY_KEYWORDS = /tempo|interval|threshold|vo2max|vo2|fartlek|race.?pace|time.?trial|speed/i;
-
-function validateNoConsecutiveHardSameDiscipline(weeks: WeekData[]): ValidationResult[] {
-  const violations: string[] = [];
-
-  for (const week of weeks) {
-    for (let i = 1; i < week.dayCards.length; i++) {
-      const prev = week.dayCards[i - 1];
-      const curr = week.dayCards[i];
-
-      const prevText = prev.title + " " + prev.structureText;
-      const currText = curr.title + " " + curr.structureText;
-
-      if (!QUALITY_KEYWORDS.test(prevText) || !QUALITY_KEYWORDS.test(currText)) continue;
-
-      // Check if same discipline
-      for (const discipline of ["swim", "bike", "run"]) {
-        if (prev.badges.includes(discipline) && curr.badges.includes(discipline)) {
-          violations.push(`Week ${week.weekNumber}: consecutive hard ${discipline} (${prev.title} → ${curr.title})`);
-        }
-      }
-    }
-  }
-
-  if (violations.length === 0) return [];
-  return [{
-    rule: "no-consecutive-hard-same-discipline",
-    severity: "warning",
-    message: `${violations.length} case(s) of consecutive hard sessions in same discipline`,
-    details: violations,
-  }];
-}
-
 function validateRecoveryWeeks(weeks: WeekData[]): ValidationResult[] {
   let lastRecovery = 0;
   const gaps: string[] = [];
@@ -402,17 +365,6 @@ function validateRecoveryWeeks(weeks: WeekData[]): ValidationResult[] {
     }
   }
 
-  // Check tail
-  if (lastRecovery > 0 && weeks.length > 0) {
-    const lastWeek = weeks[weeks.length - 1].weekNumber;
-    // Don't flag if remaining weeks are taper
-    const remainingNonTaper = weeks.filter(w => w.weekNumber > lastRecovery && !/taper/i.test(w.phase));
-    if (remainingNonTaper.length > 4) {
-      gaps.push(`Weeks ${lastRecovery + 1}-${lastWeek} (${lastWeek - lastRecovery} weeks without recovery)`);
-    }
-  }
-
-  // If no recovery weeks found at all in a plan > 8 weeks
   if (lastRecovery === 0 && weeks.length > 8) {
     return [{
       rule: "recovery-week-frequency",
@@ -430,80 +382,6 @@ function validateRecoveryWeeks(weeks: WeekData[]): ValidationResult[] {
   }];
 }
 
-function validateCoachingNotes(weeks: WeekData[]): ValidationResult[] {
-  const short: string[] = [];
-
-  for (const week of weeks) {
-    for (const day of week.dayCards) {
-      if (!day.coachingNoteText || day.badges.includes("rest")) continue;
-
-      // Count sentences (period followed by space/end, or exclamation/question mark)
-      const text = day.coachingNoteText.replace(/Coach'?s?\s*Note:?\s*/i, "");
-      const sentences = text.split(/[.!?]+\s/).filter(s => s.trim().length > 10);
-
-      if (sentences.length < 3) {
-        short.push(`Week ${week.weekNumber}, "${day.title}": ${sentences.length} sentence(s)`);
-      }
-    }
-  }
-
-  if (short.length === 0) return [];
-  return [{
-    rule: "coaching-notes-length",
-    severity: "warning",
-    message: `${short.length} day(s) have coaching notes shorter than 3 sentences`,
-    details: short.slice(0, 10), // Cap at 10 to avoid huge emails
-  }];
-}
-
-function validateQualityRunSessions(weeks: WeekData[]): ValidationResult[] {
-  const violations: string[] = [];
-
-  for (const week of weeks) {
-    let qualityRuns = 0;
-    for (const day of week.dayCards) {
-      if (!day.badges.includes("run")) continue;
-      const text = day.title + " " + day.structureText;
-      if (QUALITY_KEYWORDS.test(text)) qualityRuns++;
-    }
-
-    if (qualityRuns > 2) {
-      violations.push(`Week ${week.weekNumber}: ${qualityRuns} quality run sessions`);
-    }
-  }
-
-  if (violations.length === 0) return [];
-  return [{
-    rule: "max-quality-runs",
-    severity: "warning",
-    message: `${violations.length} week(s) have more than 2 quality run sessions`,
-    details: violations,
-  }];
-}
-
-function validateWeekTitles(html: string, totalWeeks: number): ValidationResult[] {
-  const bad: string[] = [];
-  const summaryMatches = html.matchAll(/<summary[\s\S]*?<\/summary>/gi);
-
-  for (const m of summaryMatches) {
-    const text = stripTags(m[0]);
-    if (!text.match(/Week\s+\d+/i)) continue; // Not a week summary
-
-    const valid = /Week\s+\d+\s+[—–-]\s*(BASE|BUILD|PEAK|TAPER)(\s*\(Recovery\))?/i;
-    if (!valid.test(text)) {
-      bad.push(text.substring(0, 60));
-    }
-  }
-
-  if (bad.length === 0) return [];
-  return [{
-    rule: "week-title-format",
-    severity: "warning",
-    message: `${bad.length} week title(s) don't match "Week N — PHASE" format`,
-    details: bad,
-  }];
-}
-
 function validateDisclaimer(html: string): ValidationResult[] {
   if (/class="disclaimer"/i.test(html)) return [];
   return [{
@@ -515,72 +393,16 @@ function validateDisclaimer(html: string): ValidationResult[] {
 
 /* ─── MASTERS rules (age >= 40) ───────────────────────────────── */
 
-function validateMastersRestDays(weeks: WeekData[]): ValidationResult[] {
-  const failing: string[] = [];
+function validateMastersRestDays(weeks: WeekData[], trainingDaysPerWeek?: number): ValidationResult[] {
+  // With the new system, rest days = 7 - trainingDaysPerWeek
+  // For masters, we need at least 2 rest days (i.e., max 5 training days)
+  const daysPerWeek = trainingDaysPerWeek || 4;
+  const restDays = 7 - daysPerWeek;
 
-  for (const week of weeks) {
-    const restDays = week.dayCards.filter(d =>
-      d.badges.includes("rest") || /rest\s*day|complete\s*rest|off/i.test(d.title)
-    ).length;
-
-    if (restDays < 2) {
-      failing.push(`Week ${week.weekNumber}: ${restDays} rest day(s)`);
-    }
-  }
-
-  if (failing.length === 0) return [];
+  if (restDays >= 2) return [];
   return [{
     rule: "masters-rest-days",
     severity: "warning",
-    message: `${failing.length} week(s) have fewer than 2 rest days (masters 40+ requirement)`,
-    details: failing,
-  }];
-}
-
-function validateMastersStrength(weeks: WeekData[]): ValidationResult[] {
-  const failing: string[] = [];
-
-  for (const week of weeks) {
-    const strengthCount = week.dayCards.filter(d =>
-      /strength/i.test(d.title) || d.badges.includes("strength")
-    ).length;
-
-    const minRequired = /base/i.test(week.phase) ? 2 : 1;
-
-    if (strengthCount < minRequired) {
-      failing.push(`Week ${week.weekNumber} (${week.phase}): ${strengthCount} strength session(s), need ${minRequired}+`);
-    }
-  }
-
-  if (failing.length === 0) return [];
-  return [{
-    rule: "masters-strength",
-    severity: "warning",
-    message: `${failing.length} week(s) below masters strength minimum`,
-    details: failing,
-  }];
-}
-
-function validateMastersVO2max(weeks: WeekData[]): ValidationResult[] {
-  const failing: number[] = [];
-
-  for (const week of weeks) {
-    // Skip taper weeks
-    if (/taper/i.test(week.phase)) continue;
-
-    const hasVO2 = week.dayCards.some(d => {
-      const text = d.title + " " + d.structureText + " " + d.coachingNoteText;
-      return /vo2\s*max|vo2/i.test(text);
-    });
-
-    if (!hasVO2) failing.push(week.weekNumber);
-  }
-
-  if (failing.length === 0) return [];
-  return [{
-    rule: "masters-vo2max",
-    severity: "warning",
-    message: `${failing.length} week(s) missing VO2max session (masters 40+ requirement)`,
-    details: failing.map(w => `Week ${w}`),
+    message: `Masters athlete has only ${restDays} rest day(s)/week (minimum 2 recommended for 40+)`,
   }];
 }
