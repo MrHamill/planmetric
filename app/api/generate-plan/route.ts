@@ -167,6 +167,7 @@ RULES:
 - Recovery weeks should have reduced intensity, not just reduced volume
 - Sessions marked "+ strength supplement": in the coaching note, recommend 1-2 strength sessions per week to complement their running. Advise on timing (after easy runs or on separate days, never before quality sessions), focus areas (hip stability, glute activation, calf/ankle resilience, core — whatever reduces their injury risk), and intensity (moderate load, not to failure — it should support running, not create fatigue). Do NOT prescribe specific exercises or a strength workout — just coach them on how to approach it.
 - Coaching notes should be encouraging, specific, and actionable
+- LONG RUN DISTANCES: Calculate the "total" distance from the session duration and the athlete's easy pace. Marathon peak long runs should reach 30-35km (cap at 3-3.5 hours). Half marathon peak long runs: 18-21km. The distance in the "total" field must be realistic for the given duration and pace — do not underestimate.
 
 ${weekDescriptions}`;
 
