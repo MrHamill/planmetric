@@ -31,6 +31,7 @@ export interface SessionSlot {
   zone: string;               // "Z1-Z2", "Z3-Z4", etc.
   isKeySession: boolean;      // long run, quality, brick
   timeSlot?: string;          // "6:00–6:45am"
+  includeStrength?: boolean;  // add 15-20 min strength supplement after the run
 }
 
 export interface WeekSkeleton {
@@ -454,19 +455,22 @@ function assignRunningSessions(ctx: SessionAssignmentContext): SessionSlot[] {
   const sessions: SessionSlot[] = [];
 
   // Define session roles based on training day count
-  // Roles: L=long, Q1=quality1, Q2=quality2, E=easy, S=strength
-  type Role = "L" | "Q1" | "Q2" | "E" | "S";
+  // Roles: L=long, Q1=quality1, Q2=quality2, E=easy, ES=easy+strength supplement
+  // For running events, every training day is a run — strength is a 15-20 min
+  // supplement after an easy run, never a standalone day that steals a run slot.
+  type Role = "L" | "Q1" | "Q2" | "E" | "ES";
   let roles: Role[];
 
   if (n <= 3) {
     roles = ["E", "Q1", "L"];
   } else if (n === 4) {
-    roles = ["E", "Q1", "S", "L"];
+    roles = ["E", "Q1", "ES", "L"];
   } else if (n === 5) {
-    roles = ["E", "Q1", "E", "Q2", "L"];
+    roles = ["E", "Q1", "ES", "Q2", "L"];
   } else {
     // 6-7 days
-    roles = ["E", "Q1", "E", "Q2", "S", "L"];
+    roles = ["E", "Q1", "ES", "Q2", "E", "ES", "L"];
+    while (roles.length > n) roles.splice(roles.indexOf("ES"), 1) || roles.pop();
     while (roles.length < n) roles.splice(roles.length - 1, 0, "E");
   }
 
@@ -527,8 +531,9 @@ function roleToRunSession(role: string, phase: Phase, dur: number, day: string, 
         day, discipline: "run", durationMinutes: dur, isKeySession: true, timeSlot: time,
         sessionType: "interval-run", zone: "Z4-Z5",
       };
-    case "S":
-      return { day, sessionType: "strength", discipline: "strength", durationMinutes: Math.min(dur, 45), zone: "N/A", isKeySession: false, timeSlot: time };
+    case "ES":
+      // Easy run + strength supplement (AI writes both in one session card)
+      return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time, includeStrength: true };
     default: // "E"
       return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
   }
@@ -737,7 +742,7 @@ function roleWeight(role: string): number {
   switch (role) {
     case "L": return 2.5;
     case "Q1": case "Q2": return 1.2;
-    case "S": return 0.7;
+    case "ES": return 1.1; // easy run + strength supplement (slightly longer)
     default: return 1.0; // easy
   }
 }

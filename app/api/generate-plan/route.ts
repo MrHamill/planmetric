@@ -132,7 +132,7 @@ function buildSessionPrompt(
 ): string {
   const weekDescriptions = weeks.map(w => {
     const dayLines = w.sessions.map(s =>
-      `  ${s.day} | ${s.sessionType} | ${s.discipline} | ${s.durationMinutes} min | ${s.zone}`
+      `  ${s.day} | ${s.sessionType} | ${s.discipline} | ${s.durationMinutes} min | ${s.zone}${s.includeStrength ? " | + 15-20 min strength supplement after run" : ""}`
     ).join("\n");
     return `Week ${w.weekNumber} — ${w.phase}${w.isRecovery ? " (Recovery)" : ""}
 Volume: ${w.totalMinutes} min (${w.volumePercent}% of peak)
@@ -164,6 +164,7 @@ RULES:
 - Reference the athlete's specific pace/HR/power zones where relevant
 - Progress difficulty within each phase (earlier weeks slightly easier than later weeks)
 - Recovery weeks should have reduced intensity, not just reduced volume
+- Sessions marked "+ strength supplement": in the coaching note, recommend 1-2 strength sessions per week to complement their running. Advise on timing (after easy runs or on separate days, never before quality sessions), focus areas (hip stability, glute activation, calf/ankle resilience, core — whatever reduces their injury risk), and intensity (moderate load, not to failure — it should support running, not create fatigue). Do NOT prescribe specific exercises or a strength workout — just coach them on how to approach it.
 - Coaching notes should be encouraging, specific, and actionable
 
 ${weekDescriptions}`;
