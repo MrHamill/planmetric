@@ -76,7 +76,8 @@ export async function POST(req: NextRequest) {
 
     let weekContents: WeekContent[];
     try {
-      weekContents = await callAiForSessions(sessionPrompt, research);
+      const result = await callAiForSessions(sessionPrompt, research);
+      weekContents = result.response.weeks;
     } catch (e) {
       console.error("Claude API error (pass 1):", e);
       return NextResponse.json({ error: "Failed to generate plan (pass 1)" }, { status: 500 });
@@ -218,7 +219,12 @@ Respond with ONLY valid JSON. No markdown, no explanation, no code fences. The J
   return prompt;
 }
 
-async function callAiForSessions(prompt: string, research: string): Promise<WeekContent[]> {
+interface AiCallResult {
+  response: AiResponse;
+  usage: { input: number; output: number; cacheRead: number; cacheCreate: number };
+}
+
+async function callAiForSessions(prompt: string, research: string): Promise<AiCallResult> {
   const systemPrompt = `You are an elite endurance coach at Plan Metric. Return ONLY valid JSON — no markdown, no code fences, no explanation.${research ? `\n\nCOACHING RESEARCH:\n${research}` : ""}`;
 
   const stream = anthropic.messages.stream({
@@ -236,7 +242,16 @@ async function callAiForSessions(prompt: string, research: string): Promise<Week
     throw new Error("No text response from Claude");
   }
 
-  return parseAiResponse(textBlock.text).weeks;
+  const usage = {
+    input: message.usage?.input_tokens || 0,
+    output: message.usage?.output_tokens || 0,
+    cacheRead: (message.usage as unknown as Record<string, number>)?.cache_read_input_tokens || 0,
+    cacheCreate: (message.usage as unknown as Record<string, number>)?.cache_creation_input_tokens || 0,
+  };
+
+  console.log(`AI tokens — input: ${usage.input} (cache read: ${usage.cacheRead}, cache create: ${usage.cacheCreate}), output: ${usage.output}`);
+
+  return { response: parseAiResponse(textBlock.text), usage };
 }
 
 interface AiResponse {

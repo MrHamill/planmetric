@@ -3,10 +3,9 @@ import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import {
   buildAthleteProfile, loadResearchContent,
-  buildSessionPrompt, parseAiResponse,
+  buildSessionPrompt, callAiForSessions,
 } from "../route";
 import type { AiResponse } from "../route";
-import Anthropic from "@anthropic-ai/sdk";
 import { buildSkeleton, parseAthleteInputs } from "@/lib/plan-skeleton";
 import type { Phase } from "@/lib/plan-skeleton";
 import { calculateZones } from "@/lib/plan-zones";
@@ -14,8 +13,6 @@ import { buildPartialHtml, buildClosingSections, injectCss } from "@/lib/plan-ht
 import type { WeekContent, FinalSections } from "@/lib/plan-html";
 import { validatePlan } from "@/lib/validate-plan";
 import type { ValidationResult } from "@/lib/validate-plan";
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export const maxDuration = 300;
 
@@ -84,23 +81,8 @@ export async function POST(req: NextRequest) {
     /* ── Call AI ───────────────────────────────────────────── */
     let aiResponse: AiResponse;
     try {
-      const systemPrompt = `You are an elite endurance coach at Plan Metric. Return ONLY valid JSON — no markdown, no code fences, no explanation.${research ? `\n\nCOACHING RESEARCH:\n${research}` : ""}`;
-
-      const stream = anthropic.messages.stream({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 16000,
-        system: [
-          { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
-        ],
-        messages: [{ role: "user", content: sessionPrompt }],
-      });
-
-      const message = await stream.finalMessage();
-      const textBlock = message.content.find(b => b.type === "text");
-      if (!textBlock || textBlock.type !== "text") {
-        throw new Error("No text response from Claude");
-      }
-      aiResponse = parseAiResponse(textBlock.text);
+      const result = await callAiForSessions(sessionPrompt, research);
+      aiResponse = result.response;
     } catch (e) {
       console.error(`Claude API error (weeks ${startWeek}-${endWeek}):`, e);
       return NextResponse.json({ error: `Failed to generate weeks ${startWeek}-${endWeek}` }, { status: 500 });
