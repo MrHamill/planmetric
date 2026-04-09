@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import {
@@ -17,12 +17,14 @@ import type { ValidationResult } from "@/lib/validate-plan";
 export const maxDuration = 300;
 
 const CHUNK_SIZE = 5;
+const MAX_RETRIES = 2;
 
 /* ─── POST /api/generate-plan/continue ────────────────────────────
    Body: { submission_id, totalWeeks, startWeek, lastPhase }
-   Generates one chunk of week sessions via AI (JSON). If more weeks
-   remain, calls itself recursively. On the final chunk, also
-   generates race day + glossary + tips, assembles everything.
+   Loops through ALL remaining chunks in a single invocation.
+   Saves progress after each chunk so work is never lost.
+   On the final chunk, generates closing sections, stitches,
+   validates, and emails admin.
    ────────────────────────────────────────────────────────────────── */
 export async function POST(req: NextRequest) {
   try {
@@ -31,11 +33,6 @@ export async function POST(req: NextRequest) {
     if (!submission_id || !totalWeeks || !startWeek) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-
-    const endWeek = Math.min(startWeek + CHUNK_SIZE - 1, totalWeeks);
-    const isFinal = endWeek >= totalWeeks;
-
-    console.log(`Continue: weeks ${startWeek}-${endWeek} of ${totalWeeks}${isFinal ? " (FINAL)" : ""}`);
 
     const supabase = createClient(
       process.env.SUPABASE_URL!,
@@ -63,7 +60,7 @@ export async function POST(req: NextRequest) {
     const skeleton = buildSkeleton(inputs);
     const zones = calculateZones(d);
 
-    /* ── Build AI prompt for this chunk ────────────────────── */
+    /* ── Build athlete profile + research (once) ──────────── */
     const athleteProfile = buildAthleteProfile(d, sub);
     const age = d.age ? parseInt(String(d.age), 10) : undefined;
     const research = loadResearchContent(
@@ -71,143 +68,155 @@ export async function POST(req: NextRequest) {
       isNaN(age as number) ? undefined : age,
     );
 
-    const weeksToGenerate = skeleton.weeks.filter(
-      w => w.weekNumber >= startWeek && w.weekNumber <= endWeek,
-    );
-    const sessionPrompt = buildSessionPrompt(
-      weeksToGenerate, athleteProfile, research, skeleton, isFinal,
-    );
+    /* ── Loop through all remaining chunks ────────────────── */
+    let currentStart = startWeek;
+    let currentPhase: Phase | null = (lastPhase as Phase) || null;
+    let accumulatedHtml = sub.generated_plan_part1 as string;
 
-    /* ── Call AI ───────────────────────────────────────────── */
-    let aiResponse: AiResponse;
-    try {
-      const result = await callAiForSessions(sessionPrompt, research);
-      aiResponse = result.response;
-    } catch (e) {
-      console.error(`Claude API error (weeks ${startWeek}-${endWeek}):`, e);
-      return NextResponse.json({ error: `Failed to generate weeks ${startWeek}-${endWeek}` }, { status: 500 });
-    }
+    while (currentStart <= totalWeeks) {
+      const currentEnd = Math.min(currentStart + CHUNK_SIZE - 1, totalWeeks);
+      const isFinal = currentEnd >= totalWeeks;
 
-    const weekContents: WeekContent[] = aiResponse.weeks;
+      console.log(`Continue: weeks ${currentStart}-${currentEnd} of ${totalWeeks}${isFinal ? " (FINAL)" : ""}`);
 
-    /* ── Assemble HTML for this chunk ──────────────────────── */
-    const { html: chunkHtml, lastPhase: newLastPhase } = buildPartialHtml(
-      skeleton, zones, weekContents, d, sub.plan || "premium",
-      startWeek, endWeek, false, (lastPhase as Phase) || null,
-    );
+      const weeksToGenerate = skeleton.weeks.filter(
+        w => w.weekNumber >= currentStart && w.weekNumber <= currentEnd,
+      );
+      const sessionPrompt = buildSessionPrompt(
+        weeksToGenerate, athleteProfile, research, skeleton, isFinal,
+      );
 
-    if (isFinal) {
-      /* ── Build closing sections ──────────────────────────── */
-      const finalSections: FinalSections = {
-        raceDayProtocol: aiResponse.raceDayProtocol || {
-          preRaceTimeline: "", raceStrategy: "", mentalStrategy: "",
-        },
-        glossary: aiResponse.glossary || [],
-        tips: aiResponse.tips || [],
-        phaseDescriptions: aiResponse.phaseDescriptions || {
-          BASE: "Building your aerobic foundation with easy, consistent training.",
-          BUILD: "Introducing higher intensity work to build race-specific fitness.",
-          PEAK: "Sharpening with race-pace sessions and maximum training load.",
-          TAPER: "Reducing volume while maintaining intensity for fresh race-day legs.",
-        },
-      };
-
-      const closingHtml = buildClosingSections(skeleton, finalSections);
-
-      /* ── Stitch everything together ──────────────────────── */
-      let fullPlan = sub.generated_plan_part1 + "\n\n" + chunkHtml + "\n\n" + closingHtml;
-      fullPlan = await injectCss(fullPlan);
-
-      /* ── Validate final plan ─────────────────────────────── */
-      const validationResults = validatePlan(fullPlan, {
-        totalWeeks,
-        eventType: d.trainingFor as string || sub.training_for || "",
-        athleteAge: isNaN(age as number) ? undefined : age,
-        trainingDaysPerWeek: inputs.trainingDaysPerWeek,
-      });
-
-      const criticals = validationResults.filter(r => r.severity === "critical");
-      const warnings = validationResults.filter(r => r.severity === "warning");
-
-      if (criticals.length > 0) {
-        console.warn(`Plan QA CRITICAL for ${sub.full_name}:`, criticals.map(r => r.message));
-      }
-      if (warnings.length > 0) {
-        console.warn(`Plan QA warnings for ${sub.full_name}:`, warnings.map(r => r.message));
-      }
-      if (validationResults.length === 0) {
-        console.log(`Plan QA for ${sub.full_name}: ALL PASSED`);
-      }
-
-      /* ── Save to DB ──────────────────────────────────────── */
-      await supabase
-        .from("intake_submissions")
-        .update({
-          status: "plan_generated",
-          generated_plan: fullPlan,
-          generated_plan_part1: null,
-        })
-        .eq("id", submission_id);
-
-      /* ── Email admin ─────────────────────────────────────── */
-      try {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-        const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
-        const qaStatus = criticals.length > 0
-          ? ` !! ${criticals.length} CRITICAL`
-          : warnings.length > 0
-          ? ` ⚠ ${warnings.length} warnings`
-          : " ✓ QA passed";
-
-        await sendEmail({
-          to: "pete@planmetric.com.au",
-          subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${qaStatus}`,
-          html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl, validationResults),
-        });
-      } catch (e) {
-        console.error("Email error:", e);
-      }
-
-      return NextResponse.json({
-        ok: true,
-        status: "complete",
-        planLength: fullPlan.length,
-        validation: {
-          passed: validationResults.length === 0,
-          criticals: criticals.length,
-          warnings: warnings.length,
-          results: validationResults,
-        },
-      });
-    } else {
-      /* ── Append chunk and trigger next ───────────────────── */
-      const updatedPart1 = sub.generated_plan_part1 + "\n\n" + chunkHtml;
-
-      await supabase
-        .from("intake_submissions")
-        .update({ generated_plan_part1: updatedPart1 })
-        .eq("id", submission_id);
-
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      after(async () => {
+      /* ── Call AI with retry ─────────────────────────────── */
+      let aiResponse: AiResponse;
+      let succeeded = false;
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
-          await fetch(`${siteUrl}/api/generate-plan/continue`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              submission_id,
-              totalWeeks,
-              startWeek: endWeek + 1,
-              lastPhase: newLastPhase,
-            }),
+          const result = await callAiForSessions(sessionPrompt, research);
+          aiResponse = result.response;
+          succeeded = true;
+          break;
+        } catch (e) {
+          console.error(`Claude API error (weeks ${currentStart}-${currentEnd}, attempt ${attempt}/${MAX_RETRIES}):`, e);
+          if (attempt === MAX_RETRIES) {
+            return NextResponse.json({
+              error: `Failed to generate weeks ${currentStart}-${currentEnd} after ${MAX_RETRIES} attempts`,
+              weeksCompleted: currentStart - 1,
+            }, { status: 500 });
+          }
+        }
+      }
+
+      if (!succeeded) break;
+
+      const weekContents: WeekContent[] = aiResponse!.weeks;
+
+      /* ── Assemble HTML for this chunk ────────────────────── */
+      const { html: chunkHtml, lastPhase: newLastPhase } = buildPartialHtml(
+        skeleton, zones, weekContents, d, sub.plan || "premium",
+        currentStart, currentEnd, false, currentPhase,
+      );
+
+      currentPhase = newLastPhase;
+
+      if (isFinal) {
+        /* ── Build closing sections ────────────────────────── */
+        const finalSections: FinalSections = {
+          raceDayProtocol: aiResponse!.raceDayProtocol || {
+            preRaceTimeline: "", raceStrategy: "", mentalStrategy: "",
+          },
+          glossary: aiResponse!.glossary || [],
+          tips: aiResponse!.tips || [],
+          phaseDescriptions: aiResponse!.phaseDescriptions || {
+            BASE: "Building your aerobic foundation with easy, consistent training.",
+            BUILD: "Introducing higher intensity work to build race-specific fitness.",
+            PEAK: "Sharpening with race-pace sessions and maximum training load.",
+            TAPER: "Reducing volume while maintaining intensity for fresh race-day legs.",
+          },
+        };
+
+        const closingHtml = buildClosingSections(skeleton, finalSections);
+
+        /* ── Stitch everything together ────────────────────── */
+        let fullPlan = accumulatedHtml + "\n\n" + chunkHtml + "\n\n" + closingHtml;
+        fullPlan = await injectCss(fullPlan);
+
+        /* ── Validate final plan ───────────────────────────── */
+        const validationResults = validatePlan(fullPlan, {
+          totalWeeks,
+          eventType: d.trainingFor as string || sub.training_for || "",
+          athleteAge: isNaN(age as number) ? undefined : age,
+          trainingDaysPerWeek: inputs.trainingDaysPerWeek,
+        });
+
+        const criticals = validationResults.filter(r => r.severity === "critical");
+        const warnings = validationResults.filter(r => r.severity === "warning");
+
+        if (criticals.length > 0) {
+          console.warn(`Plan QA CRITICAL for ${sub.full_name}:`, criticals.map(r => r.message));
+        }
+        if (warnings.length > 0) {
+          console.warn(`Plan QA warnings for ${sub.full_name}:`, warnings.map(r => r.message));
+        }
+        if (validationResults.length === 0) {
+          console.log(`Plan QA for ${sub.full_name}: ALL PASSED`);
+        }
+
+        /* ── Save to DB ────────────────────────────────────── */
+        await supabase
+          .from("intake_submissions")
+          .update({
+            status: "plan_generated",
+            generated_plan: fullPlan,
+            generated_plan_part1: null,
+          })
+          .eq("id", submission_id);
+
+        /* ── Email admin ───────────────────────────────────── */
+        try {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+          const reviewUrl = `${siteUrl}/admin/review/${submission_id}`;
+          const qaStatus = criticals.length > 0
+            ? ` !! ${criticals.length} CRITICAL`
+            : warnings.length > 0
+            ? ` ⚠ ${warnings.length} warnings`
+            : " ✓ QA passed";
+
+          await sendEmail({
+            to: "pete@planmetric.com.au",
+            subject: `Review Plan: ${sub.full_name} — ${sub.plan?.toUpperCase()} — ${sub.training_for}${qaStatus}`,
+            html: buildAdminReviewEmail(sub.full_name, sub.training_for, sub.plan, reviewUrl, validationResults),
           });
         } catch (e) {
-          console.error("Failed to trigger next chunk:", e);
+          console.error("Email error:", e);
         }
-      });
 
-      return NextResponse.json({ ok: true, status: "generating", weeksGenerated: endWeek });
+        return NextResponse.json({
+          ok: true,
+          status: "complete",
+          planLength: fullPlan.length,
+          validation: {
+            passed: validationResults.length === 0,
+            criticals: criticals.length,
+            warnings: warnings.length,
+            results: validationResults,
+          },
+        });
+      } else {
+        /* ── Save progress after each chunk ────────────────── */
+        accumulatedHtml = accumulatedHtml + "\n\n" + chunkHtml;
+
+        await supabase
+          .from("intake_submissions")
+          .update({ generated_plan_part1: accumulatedHtml })
+          .eq("id", submission_id);
+
+        console.log(`Saved progress: weeks 1-${currentEnd} of ${totalWeeks}`);
+      }
+
+      currentStart = currentEnd + 1;
     }
+
+    return NextResponse.json({ error: "Unexpected loop exit" }, { status: 500 });
   } catch (e: unknown) {
     console.error("Unhandled error in generate-plan/continue:", e);
     const message = e instanceof Error ? e.message : String(e);
