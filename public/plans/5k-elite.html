@@ -1,579 +1,2019 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5K Elite — Metric Athlete | Plan Metric</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#F0E6D4;--bg-card:#E4DAC8;--bg-hover:#DBD0BC;
-  --text:#1C1614;--text-sec:#3A2E28;--text-ter:#6B5E54;
-  --accent:#A0522D;--accent-dim:rgba(160,82,45,0.12);
-  --border:rgba(28,22,20,0.08);
-  --green:#2E7D32;--orange:#E65100;--red:#C62828;
-  --radius:10px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starter Athlete - 5K Training Plan | Plan Metric</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased}
-.container{max-width:820px;margin:0 auto;padding:0 20px}
-h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;font-weight:700;line-height:1.2}
-.section-label{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.section-label::before{content:'\25C6';font-size:8px;color:var(--accent)}
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
-.badge{display:inline-flex;align-items:center;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;padding:4px 10px;border-radius:20px;text-transform:uppercase}
-.badge-accent{background:var(--accent-dim);color:var(--accent)}
-.badge-green{background:rgba(46,125,50,0.1);color:var(--green)}
-.badge-orange{background:rgba(230,81,0,0.1);color:var(--orange)}
-.badge-red{background:rgba(198,40,40,0.1);color:var(--red)}
-.badge-rest{background:rgba(107,94,84,0.1);color:var(--text-ter)}
-.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;font-size:20px}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F0E6D4;
+    color: #1C1614;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+}
 
 /* Header */
-.sticky-header{position:sticky;top:0;z-index:100;background:rgba(228,218,200,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
-.sticky-header .logo{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text)}
-.sticky-header .plan-badge{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;background:var(--accent-dim);color:var(--accent)}
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #E4DAC8;
+    border-bottom: 1px solid rgba(28,22,20,0.08);
+    padding: 1rem 2rem;
+}
 
-/* Hero */
-.hero{padding:80px 0 48px;text-align:center}
-.hero h1{font-size:clamp(28px,5vw,42px);margin-bottom:12px;letter-spacing:-0.02em}
-.hero h1 span{color:var(--accent)}
-.hero .subtitle{color:var(--text-sec);font-size:16px;font-weight:300;max-width:520px;margin:0 auto 32px}
-.stats-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
-.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 20px;text-align:center;min-width:120px}
-.stat .num{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--accent);display:block}
-.stat .label{font-size:11px;color:var(--text-ter);text-transform:uppercase;letter-spacing:0.08em}
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-/* How To Use */
-.how-to-list{list-style:none;padding:0;margin:0;counter-reset:howto}
-.how-to-list li{counter-increment:howto;display:flex;gap:14px;margin-bottom:16px;font-size:14px;color:var(--text-sec);font-weight:300;line-height:1.7}
-.how-to-list li:last-child{margin-bottom:0}
-.how-to-list li::before{content:counter(howto);font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--accent);min-width:24px;line-height:1.5;flex-shrink:0}
+.logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #A0522D;
+}
 
-/* Overview Grid */
-.overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:48px}
-@media(max-width:600px){.overview-grid{grid-template-columns:repeat(2,1fr)}}
-.overview-cell{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s}
-.overview-cell:hover{background:var(--bg-hover);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(160,82,45,0.15)}
-.overview-cell .week-num{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
-.overview-cell .week-focus{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:6px}
-.overview-cell .week-km{font-size:12px;color:var(--text-ter)}
+.premium-badge {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
 
-/* Zones */
-.zones-table{width:100%;border-collapse:collapse;font-size:13px}
-.zones-table th{font-family:'Space Grotesk',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-ter);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
-.zones-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-sec)}
-.zones-table td:first-child{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--accent)}
+/* Hero Section */
+.hero {
+    background: #E4DAC8;
+    padding: 3rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(28,22,20,0.08);
+}
 
-/* Week Accordion */
-.week-accordion{margin-bottom:12px}
-.week-accordion summary{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;list-style:none;transition:all 0.2s;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
-.week-accordion summary::-webkit-details-marker{display:none}
-.week-accordion summary:hover{background:var(--bg-hover);border-color:var(--accent)}
-.week-accordion summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.week-accordion summary .chevron{transition:transform 0.3s;font-size:20px;color:var(--text-ter)}
-.week-accordion[open] summary{border-color:var(--accent);border-radius:var(--radius) var(--radius) 0 0}
-.week-accordion[open] summary .chevron{transform:rotate(180deg);color:var(--accent)}
-.week-content{background:var(--bg-card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:24px}
-.week-overview{color:var(--text-sec);font-size:14px;font-weight:300;margin-bottom:24px;line-height:1.7}
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-/* Progress Dots */
-.progress-dots{display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.progress-dots .dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all 0.2s;flex-shrink:0}
-.progress-dots .dot.filled{background:var(--accent)}
-.progress-dots .dot.current{background:transparent;border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
-.progress-dots .week-indicator{font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-ter);margin-left:8px}
+.athlete-name {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1C1614;
+}
 
-/* Day Card */
-.day-card{background:#EDE3D0;border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px}
-.day-card.rest{opacity:0.6}
-.day-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
-.day-label{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);min-width:90px}
-.day-session{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text)}
-.day-badges{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
-.day-structure{font-size:13px;color:var(--text-sec);font-weight:300;margin-bottom:8px;line-height:1.6}
-.coach-note{background:rgba(160,82,45,0.06);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-top:10px}
-.coach-note strong{color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;display:block;margin-bottom:4px}
+.race-info {
+    font-size: 1.25rem;
+    color: #3A2E28;
+    margin-bottom: 2rem;
+}
 
-/* Key Workout Callout */
-.key-callout{background:rgba(198,40,40,0.05);border:1px solid rgba(198,40,40,0.15);border-left:3px solid var(--red);border-radius:var(--radius);padding:20px;margin:20px 0}
-.key-callout h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
-.key-callout p{font-size:13px;color:var(--text);font-weight:300;line-height:1.7}
+.race-date {
+    color: #A0522D;
+    font-weight: 600;
+}
 
-/* Recovery & Check-in */
-.recovery-box{background:rgba(46,125,50,0.05);border:1px solid rgba(46,125,50,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
-.recovery-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px}
-.recovery-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7}
-.checkin-box{background:rgba(230,81,0,0.05);border:1px solid rgba(230,81,0,0.15);border-radius:var(--radius);padding:20px;margin:16px 0}
-.checkin-box h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
-.checkin-box p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.7;font-style:italic}
+.goal-badge {
+    display: inline-block;
+    background: #A0522D;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
 
-/* Upgrade Prompt */
-.upgrade-prompt{position:relative;background:var(--bg-card);border:1px solid var(--border);border-left:3px solid transparent;border-image:linear-gradient(to bottom,var(--accent),transparent) 1;border-image-slice:1;border-radius:var(--radius);padding:24px 24px 24px 40px;margin:24px 0}
-.upgrade-prompt::before{content:'\25C6';position:absolute;top:16px;left:14px;font-size:10px;color:var(--accent);opacity:0.6}
-.upgrade-prompt .prompt-brand{font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-ter);margin-bottom:8px;opacity:0.7}
-.upgrade-prompt p{font-size:13px;color:var(--text-ter);font-weight:300;line-height:1.7;margin-bottom:12px}
-.upgrade-prompt .prompt-link{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;transition:opacity 0.2s}
-.upgrade-prompt .prompt-link:hover{opacity:0.7}
-.upgrade-prompt .prompt-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
 
-/* What's Next */
-.whats-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
-@media(max-width:600px){.whats-next-grid{grid-template-columns:1fr}}
-.next-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column}
-.next-card h4{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
-.next-card p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6;margin-bottom:16px;flex:1}
-.next-card a{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;transition:opacity 0.2s}
-.next-card a:hover{opacity:0.7}
-.next-card a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stat-card {
+    background: #F0E6D4;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(28,22,20,0.08);
+}
 
-/* Tips Grid */
-.tips-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(max-width:600px){.tips-grid{grid-template-columns:1fr}}
-.tip-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.tip-card h4{font-size:13px;color:var(--accent);margin-bottom:6px}
-.tip-card p{font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6}
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #A0522D;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6B5E54;
+    margin-top: 0.25rem;
+}
+
+/* Main Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.section {
+    background: #E4DAC8;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title .material-symbols-outlined {
+    color: #A0522D;
+}
+
+/* Training Zones */
+.zones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.zone-discipline {
+    background: #F0E6D4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.discipline-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zone-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(28,22,20,0.05);
+}
+
+.zone-item:last-child {
+    border-bottom: none;
+}
+
+.zone-name {
+    font-weight: 500;
+    color: #1C1614;
+}
+
+.zone-values {
+    font-size: 0.875rem;
+    color: #6B5E54;
+    text-align: right;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-swim { background: #0ea5e9; color: white; }
+.badge-bike { background: #22c55e; color: white; }
+.badge-run { background: #f97316; color: white; }
+.badge-brick { background: #a855f7; color: white; }
+.badge-accent { background: #A0522D; color: white; }
+.badge-red { background: #C62828; color: white; }
+.badge-rest { background: #6B5E54; color: white; }
+
+/* Instructions List */
+.instructions-list {
+    list-style: none;
+}
+
+.instructions-list li {
+    background: #F0E6D4;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(28,22,20,0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.instructions-list .material-symbols-outlined {
+    color: #A0522D;
+    margin-top: 0.125rem;
+}
+
+/* Disclaimer */
+.disclaimer {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 1.25rem 1.5rem;
+    background: rgba(160, 82, 45, 0.08);
+    border: 1px solid rgba(160, 82, 45, 0.2);
+    border-radius: 10px;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    font-size: 0.8rem;
+    color: #6B5E54;
+    line-height: 1.6;
+}
+
+.disclaimer .material-symbols-outlined {
+    color: #A0522D;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.disclaimer p {
+    margin: 0;
+}
+
+/* Phase Breakdown */
+.phase-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.phase-card {
+    background: #F0E6D4;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.phase-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.phase-card-header .material-symbols-outlined {
+    color: #A0522D;
+    font-size: 24px;
+}
+
+.phase-card-header h3 {
+    font-size: 1.1rem;
+    color: #1C1614;
+    margin: 0;
+}
+
+.phase-weeks {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: #A0522D;
+    margin-left: 0.5rem;
+}
+
+.phase-card p {
+    font-size: 0.9rem;
+    color: #3A2E28;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Phase Banner */
+.phase-banner {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.phase-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.phase-subtitle {
+    font-size: 1.125rem;
+    opacity: 0.9;
+}
+
+.phase-banner h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.phase-banner p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+}
+
+/* Phase banner variants */
+.phase-banner.build-2,
+.phase-banner.build-3 {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+/* Weekly Accordions */
+.weekly-accordion {
+    margin-bottom: 1.5rem;
+}
+
+.weekly-accordion details {
+    background: #E4DAC8;
+    border-radius: 12px;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.weekly-accordion summary {
+    padding: 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.125rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.weekly-accordion summary:hover {
+    background: #DBD0BC;
+}
+
+.week-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: #6B5E54;
+}
+
+.week-content {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.weekly-summary {
+    background: rgba(160,82,45,0.12);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    color: #3A2E28;
+}
+
+/* Daily Cards */
+.days-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.day-card {
+    background: #F0E6D4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.day-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #1C1614;
+}
+
+.day-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.session-structure {
+    margin-bottom: 1rem;
+}
+
+.structure-item {
+    margin-bottom: 0.5rem;
+    color: #3A2E28;
+}
+
+.structure-label {
+    font-weight: 500;
+    color: #A0522D;
+}
+
+.coaching-note {
+    background: rgba(160,82,45,0.08);
+    border-left: 3px solid #A0522D;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+}
+
+.note-title {
+    font-weight: 600;
+    color: #A0522D;
+    margin-bottom: 0.5rem;
+    font-style: normal;
+}
+
+/* Week Accordion (weeks 9+) — mirrors .weekly-accordion styling */
+.week-accordion {
+    background: #E4DAC8;
+    border-radius: 12px;
+    border: 1px solid rgba(28,22,20,0.08);
+    margin-bottom: 1.5rem;
+}
+
+.week-accordion > .week-header {
+    padding: 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.125rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+    list-style: none;
+}
+
+.week-accordion > .week-header::-webkit-details-marker {
+    display: none;
+}
+
+.week-accordion > .week-header:hover {
+    background: #DBD0BC;
+}
+
+.week-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: #1C1614;
+}
+
+.week-volume {
+    font-size: 0.875rem;
+    color: #6B5E54;
+}
+
+.week-accordion > .week-content {
+    padding: 0 1.5rem 1.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+/* Day cards inside week-accordion */
+.week-accordion .day-card {
+    background: #F0E6D4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.week-accordion .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.day-label {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #1C1614;
+    min-width: 3rem;
+}
+
+.session-title {
+    font-weight: 500;
+    color: #3A2E28;
+    flex: 1;
+}
+
+.badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.session-detail {
+    color: #3A2E28;
+    line-height: 1.7;
+}
+
+.session-detail p {
+    margin-bottom: 0.75rem;
+}
+
+.session-detail p:last-child {
+    margin-bottom: 0;
+}
+
+.session-detail p strong {
+    color: #1C1614;
+}
+
+/* Badge variants used in weeks 9+ */
+.badge-orange { background: #f97316; color: white; }
+
+/* Saturday rest card */
+.saturday-rest {
+    border-left: 3px solid #6B5E54;
+}
+
+/* Race Day Protocol */
+.race-protocol {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.race-protocol h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    color: #1C1614;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.protocol-section {
+    background: #E4DAC8;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.protocol-section h3 {
+    color: #A0522D;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.protocol-section ul {
+    padding-left: 1.25rem;
+    color: #3A2E28;
+    line-height: 1.8;
+}
+
+/* Race Protocol Dropdowns */
+.race-protocol details.protocol-section {
+    padding: 0;
+    overflow: hidden;
+}
+
+.race-protocol summary {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #A0522D;
+    cursor: pointer;
+    padding: 1rem 1.25rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.race-protocol summary::-webkit-details-marker {
+    display: none;
+}
+
+.race-protocol summary::after {
+    content: '+';
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: #A0522D;
+    transition: transform 0.2s ease;
+}
+
+.race-protocol details[open] > summary::after {
+    content: '\2212';
+}
+
+.race-protocol details > *:not(summary) {
+    padding: 0 1.25rem 1.25rem;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.time-block {
+    background: #F0E6D4;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #A0522D;
+}
+
+.time-block strong {
+    color: #A0522D;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.time-block p,
+.time-block ul {
+    color: #3A2E28;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.race-day-mantra {
+    background: rgba(160,82,45,0.12);
+    border: 1px solid rgba(160,82,45,0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    font-style: italic;
+    color: #A0522D;
+    margin-top: 1rem;
+}
 
 /* Glossary */
-.glossary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(max-width:600px){.glossary-grid{grid-template-columns:1fr}}
-.glossary-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.glossary-item dt{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px}
-.glossary-item dd{font-size:12px;color:var(--text-sec);font-weight:300;line-height:1.5}
+.glossary {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.glossary h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    color: #1C1614;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.term {
+    background: #E4DAC8;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.term strong {
+    color: #A0522D;
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.term p {
+    color: #3A2E28;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* Coach Tips */
+.coach-tips {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.coach-tips h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.75rem;
+    color: #1C1614;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.tip {
+    background: #E4DAC8;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    border: 1px solid rgba(28,22,20,0.08);
+}
+
+.tip-icon {
+    width: 40px;
+    height: 40px;
+    background: #A0522D;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tip-icon .material-symbols-outlined {
+    color: white;
+    font-size: 20px;
+}
+
+.tip-content h4 {
+    color: #1C1614;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.tip-content p {
+    color: #3A2E28;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
 
 /* Footer */
-.plan-footer{text-align:center;padding:48px 20px;border-top:1px solid var(--border);margin-top:64px}
-.plan-footer .logo{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px}
-.plan-footer .links{font-size:11px;color:var(--text-ter);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
-.plan-footer .links a{color:var(--text-ter);text-decoration:none;margin:0 8px}
-.plan-footer .links a:hover{color:var(--accent)}
-.plan-footer .links a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.plan-footer .copy{font-size:11px;color:var(--text-ter)}
+.plan-footer {
+    background: #1C1614;
+    color: #F0E6D4;
+    padding: 2rem;
+    margin-top: 3rem;
+}
 
-/* Focus states */
-a:focus-visible,.overview-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.footer-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(240,230,212,0.15);
+}
 
-/* Print */
-@media print{
-  .sticky-header{position:static;background:var(--bg);border-bottom:none}
-  body{background:white;color:black}
-  .week-accordion[open] summary,.week-accordion summary{background:var(--bg-card)}
-  details{display:block!important}
-  details[open]>*{display:block!important}
-  details:not([open]){open:true}
-  details>summary{pointer-events:none}
-  details>.week-content{display:block!important}
-  .overview-cell{cursor:default}
-  .overview-cell:hover{transform:none;box-shadow:none}
-  .upgrade-prompt{display:none!important}
-  .day-card:hover,.overview-cell:hover,.week-accordion summary:hover{background:var(--bg-card);transform:none;box-shadow:none;border-color:var(--border)}
+.footer-brand h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    color: #A0522D;
+    margin-bottom: 0.25rem;
+}
+
+.footer-brand p {
+    color: rgba(240,230,212,0.7);
+    font-size: 0.875rem;
+}
+
+.footer-contact p {
+    color: rgba(240,230,212,0.7);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-contact a {
+    color: #A0522D;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+}
+
+.footer-contact a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    max-width: 900px;
+    margin: 1rem auto 0;
+    text-align: center;
+    color: rgba(240,230,212,0.5);
+    font-size: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .athlete-name {
+        font-size: 2rem;
+    }
+
+    .header {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .day-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .week-accordion > .week-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+}
+
+/* Print Styles */
+@media print {
+    details,
+    .week-accordion {
+        display: block !important;
+    }
+
+    details summary,
+    .week-accordion > .week-header {
+        display: none;
+    }
+
+    .header {
+        position: static;
+    }
 }
 </style>
 </head>
 <body>
-
-<!-- Sticky Header -->
-<div class="sticky-header">
-  <div class="logo">Plan Metric</div>
-  <div class="plan-badge">Starter Plan</div>
-</div>
-
-<div class="container">
-
-<!-- Hero -->
+<header class="header">
+  <div class="header-content">
+    <div class="logo">Plan Metric</div>
+    <div class="premium-badge">Starter Plan</div>
+  </div>
+</header>
 <section class="hero">
-  <h1>5K Elite.<br><span>Sharpen the blade.</span></h1>
-  <p class="subtitle">A 6-week race-specific 5K programme for competitive runners. Threshold work, VO2max intervals, and strategic tapering to deliver your best performance on race day.</p>
-  <div class="stats-row">
-    <div class="stat"><span class="num">6</span><span class="label">Weeks</span></div>
-    <div class="stat"><span class="num">5–6</span><span class="label">Sessions / Wk</span></div>
-    <div class="stat"><span class="num">~45</span><span class="label">Peak km / Wk</span></div>
-    <div class="stat"><span class="num">T2–T4</span><span class="label">Primary Zones</span></div>
-  </div>
-</section>
-
-<!-- Plan Focus -->
-<section style="margin-bottom:48px">
-  <div class="section-label">Plan Focus</div>
-  <div class="card">
-    <p style="color:var(--text-sec);font-weight:300;line-height:1.7;font-size:14px">This is not a base-building plan. You arrive with an aerobic engine. This plan sharpens it. Weeks 1&ndash;2 reintroduce structured threshold and VO2max work. Week 3 is peak load. Week 4 absorbs the training. Weeks 5&ndash;6 strip volume while maintaining intensity, delivering you to the start line with full glycogen stores, fresh legs, and a neuromuscular system primed for race pace. Two key sessions per week. Everything else is recovery or aerobic maintenance. Protect the key sessions.</p>
-  </div>
-</section>
-
-<!-- How To Use This Plan -->
-<section style="margin-bottom:48px">
-  <div class="section-label">How To Use This Plan</div>
-  <div class="card">
-    <ol class="how-to-list">
-      <li>The 2 key sessions each week are non-negotiable. Schedule them first. Everything else supports those sessions.</li>
-      <li>Recovery weeks are programmed deliberately. Do not add volume. If you feel good during a recovery week, that means it's working.</li>
-      <li>RPE is your primary intensity guide. Cross-reference with HR or power if available, but on days where data and feel disagree, trust feel.</li>
-      <li>Review each week's check-in question honestly. Self-awareness is the differentiator between athletes who peak and athletes who plateau.</li>
-    </ol>
-  </div>
-</section>
-
-<!-- 6-Week Overview Grid -->
-<section style="margin-bottom:48px">
-  <div class="section-label">6-Week Overview</div>
-  <div class="overview-grid" id="overviewGrid">
-    <div class="overview-cell" data-week="1" tabindex="0"><div class="week-num">Week 1</div><div class="week-focus">Sharpen Base</div><div class="week-km">~38 km</div></div>
-    <div class="overview-cell" data-week="2" tabindex="0"><div class="week-num">Week 2</div><div class="week-focus">VO2max Build</div><div class="week-km">~42 km</div></div>
-    <div class="overview-cell" data-week="3" tabindex="0"><div class="week-num">Week 3</div><div class="week-focus">Peak Load</div><div class="week-km">~45 km</div></div>
-    <div class="overview-cell" data-week="4" tabindex="0"><div class="week-num">Week 4</div><div class="week-focus">Recovery</div><div class="week-km">~22 km</div></div>
-    <div class="overview-cell" data-week="5" tabindex="0"><div class="week-num">Week 5</div><div class="week-focus">Race Sharpen</div><div class="week-km">~32 km</div></div>
-    <div class="overview-cell" data-week="6" tabindex="0"><div class="week-num">Week 6</div><div class="week-focus">Taper + Race</div><div class="week-km">~18 km</div></div>
-  </div>
-</section>
-
-<!-- Training Zones -->
-<section style="margin-bottom:48px">
-  <div class="section-label">Training Zones</div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table class="zones-table">
-      <thead><tr><th>Zone</th><th>Name</th><th>RPE</th><th>How It Feels</th></tr></thead>
-      <tbody>
-        <tr><td>T1</td><td>Recovery</td><td>1&ndash;2</td><td>Very easy, effortless conversation, barely above walking</td></tr>
-        <tr><td>T2</td><td>Aerobic Base</td><td>3&ndash;4</td><td>Easy, comfortable, could talk in full sentences for hours</td></tr>
-        <tr><td>T3</td><td>Tempo / Threshold</td><td>5&ndash;6</td><td>Comfortably hard, short sentences only, sustainable 20&ndash;40 min</td></tr>
-        <tr><td>T4</td><td>VO2max</td><td>7&ndash;8</td><td>Hard, laboured breathing, a few words at most, sustainable 3&ndash;8 min</td></tr>
-        <tr><td>T5</td><td>Anaerobic</td><td>9&ndash;10</td><td>All-out, unsustainable beyond ~2 minutes</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p style="font-size:12px;color:var(--text-ter);margin-top:8px">This plan operates primarily in T2&ndash;T4. Key sessions target T3 (threshold) and T4 (VO2max). Easy days are T1&ndash;T2 &mdash; non-negotiable.</p>
-  <!-- Upgrade Prompt 1 -->
-  <div class="upgrade-prompt">
-    <div class="prompt-brand">Plan Metric</div>
-    <p>This plan uses RPE-based effort guidance. Premium plans include personalised heart rate, pace, and power zones calibrated from your physiological intake data &mdash; with lactate threshold estimation and race-pace targets reviewed by our head coach.</p>
-    <a href="https://planmetric.com.au/plans" class="prompt-link">View Plans &rarr;</a>
-  </div>
-</section>
-
-<!-- WEEK 1 -->
-<section id="week-1" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 1 &mdash; Sharpen Base</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="1">
-    <div class="progress-dots">
-      <span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      <span class="week-indicator">Week 1 of 6</span>
+  <div class="hero-content">
+    <h1 class="athlete-name">Starter Athlete</h1>
+    <div class="race-info">5K</div>
+    <div class="goal-badge">Complete 5K</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Weeks</div></div>
+      <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Days/Week</div></div>
+      <div class="stat-card"><div class="stat-value">4.0h</div><div class="stat-label">Peak Volume</div></div>
     </div>
-    <p class="week-overview">Re-establish structured training. Threshold work on Thursday, VO2max introduction on Tuesday. Volume is moderate &mdash; the goal is to lock in the weekly template and confirm pacing.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">8 km</span></div></div><p class="day-structure">Easy aerobic run. Flat route preferred. Conversational pace throughout.</p><div class="coach-note"><strong>Coach's Note</strong>This is recovery from the weekend and sets up Tuesday's key session. Do not run this hard. If your HR drifts above T2, slow down.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">VO2max Intervals</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">10 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 5 &times; 1 km at 5K race pace, 90-sec jog recovery &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Consistency across reps matters more than the first being fast. Target even splits. If power or pace drops &gt;10% on any rep, end the session. 5 good reps beats 7 deteriorating ones.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">7 km</span></div></div><p class="day-structure">6 km easy &rarr; 4 &times; 100 m strides at 5K pace with walk-back recovery.</p><div class="coach-note"><strong>Coach's Note</strong>Strides maintain neuromuscular activation without adding fatigue. Smooth acceleration, relaxed shoulders, quick turnover.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Threshold Run</span><div class="day-badges"><span class="badge badge-orange">RPE 5&ndash;6</span><span class="badge badge-accent">10 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 2 &times; 10 min at T3 (threshold), 3 min easy jog between &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Threshold pace should feel controlled &mdash; hard but not desperate. If you can't speak in short sentences, you're above threshold. Pull back.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest. Pre-hydrate for Saturday's effort.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Parkrun Race Effort</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Warm-up: 10 min easy jog &rarr; 4 &times; 100 m strides &rarr; Parkrun at 90&ndash;95% effort. Use it as a controlled time trial. Even splits or slight negative split.</p><div class="coach-note"><strong>Coach's Note</strong>Parkrun is a data point, not a peak performance. Run it controlled. Note your splits. This is baseline data for the block.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Long Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">12 km</span></div></div><p class="day-structure">10 km easy &rarr; final 2 km at T3 (tempo finish). Negative split the session &mdash; start slow, finish controlled.</p><div class="coach-note"><strong>Coach's Note</strong>The tempo finish teaches you to run quality on fatigued legs. If the last 2 km feel unsustainable, you started the easy portion too fast.</div></div>
-
-    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workouts &mdash; Tuesday &amp; Thursday</h4><p>Tuesday introduces VO2max stimulus. Thursday develops lactate clearance at threshold. These are the sessions that move the needle. Everything else protects your ability to execute them.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep 8+ hours. Post-key-session nutrition within 30 minutes: 1.2g/kg carbs, 0.3g/kg protein. Foam roll or massage gun on calves and quads for 10 min on Wednesday and Friday.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Were my VO2max reps consistent, or did I fade? If I faded, was the starting pace too aggressive, or is my aerobic base the limiter?"</p></div>
   </div>
-</details>
 </section>
-
-<!-- WEEK 2 -->
-<section id="week-2" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 2 &mdash; VO2max Build</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="2">
-    <div class="progress-dots">
-      <span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      <span class="week-indicator">Week 2 of 6</span>
+<div class="container">
+<section class="section">
+  <h2 class="section-title"><span class="material-symbols-outlined">speed</span> Your Training Zones</h2>
+  <div class="zones-grid">
+    <div class="zone-discipline">
+      <h3 class="discipline-title"><span class="material-symbols-outlined">directions_run</span> Running Zones</h3>
+      <div class="zone-item"><span class="zone-name">Zone 1 — Recovery</span><div class="zone-values">119–133 BPM | 5:35+/km | RPE 1–2<br><small>Very easy, conversational. Active recovery.</small></div></div>
+      <div class="zone-item"><span class="zone-name">Zone 2 — Aerobic</span><div class="zone-values">133–147 BPM | 5:15/km | RPE 3–4<br><small>Easy, can hold a conversation. Base building.</small></div></div>
+      <div class="zone-item"><span class="zone-name">Zone 3 — Tempo</span><div class="zone-values">147–162 BPM | 4:50/km | RPE 5–6<br><small>Comfortably hard. Can speak in short sentences.</small></div></div>
+      <div class="zone-item"><span class="zone-name">Zone 4 — Threshold</span><div class="zone-values">162–176 BPM | 4:25/km | RPE 7–8<br><small>Hard effort. A few words at most.</small></div></div>
+      <div class="zone-item"><span class="zone-name">Zone 5 — VO2max</span><div class="zone-values">176–190 BPM | 4:05/km | RPE 9–10<br><small>Maximum effort. Short intervals only.</small></div></div>
     </div>
-    <p class="week-overview">Volume increases slightly. VO2max intervals extend to 6 reps. Hill repeats replace flat threshold to build power and running economy. Parkrun becomes a pacing exercise.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">8 km</span></div></div><p class="day-structure">Easy aerobic run. Conversational. Flat or gently rolling terrain.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">VO2max Intervals</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">11 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 6 &times; 1 km at 5K race pace, 90-sec jog recovery &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>One additional rep. Same rules: even splits, abandon if power drops &gt;10%. The 6th rep should feel hard but executable. If it doesn't, you're sandbagging reps 1&ndash;4.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">7 km</span></div></div><p class="day-structure">6 km easy &rarr; 6 &times; 100 m strides at 5K pace with walk-back recovery.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Hill Repeats</span><div class="day-badges"><span class="badge badge-orange">RPE 7&ndash;8</span><span class="badge badge-accent">9 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 8 &times; 60-sec hill repeats at T4 effort, jog-down recovery &rarr; 2 km cool-down. Find a 5&ndash;8% gradient.</p><div class="coach-note"><strong>Coach's Note</strong>Hill repeats build force production and running economy without the joint impact of flat speed work. Drive the knees, pump the arms, maintain posture. Don't sprint &mdash; these are controlled hard efforts.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Parkrun Race Effort</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Warm-up: 10 min easy jog &rarr; 6 &times; 100 m strides &rarr; Parkrun with a specific pacing strategy: first km at goal 5K pace, hold even, last km push.</p><div class="coach-note"><strong>Coach's Note</strong>Compare splits to Week 1. The goal is tighter variance between km splits, not necessarily a faster overall time. Pacing discipline first, speed second.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Long Run with Tempo Finish</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">13 km</span></div></div><p class="day-structure">10 km easy &rarr; final 3 km at T3 (threshold). Controlled progression &mdash; don't sprint the finish.</p><div class="coach-note"><strong>Coach's Note</strong>The tempo finish extends by 1 km. This teaches race-pace execution on pre-fatigued legs. Keep the first 10 km genuinely easy.</div></div>
-
-    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workouts &mdash; Tuesday &amp; Thursday</h4><p>VO2max volume increases. Hills replace flat threshold &mdash; different stimulus, same energy system. Your legs will feel heavy on Wednesday. That's expected. Wednesday is not a quality day.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Same protocol. If sleep quality has dropped or resting HR is elevated &gt;5bpm above baseline, consider replacing Monday's run with complete rest. Accumulated fatigue compounds &mdash; catch it early.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Were my parkrun km splits tighter than last week? Am I executing the pacing plan or still running by feel?"</p></div>
   </div>
-</details>
 </section>
-
-<!-- WEEK 3 -->
-<section id="week-3" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 3 &mdash; Peak Load</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="3">
-    <div class="progress-dots">
-      <span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      <span class="week-indicator">Week 3 of 6</span>
-    </div>
-    <p class="week-overview">Highest volume and intensity of the block. VO2max intervals hit 8 reps. Threshold extends to 3 &times; 10 min. This is the week that breaks plateaus. Expect fatigue &mdash; that's the point. Week 4 absorbs it.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">8 km</span></div></div><p class="day-structure">Easy aerobic run. Protect this session &mdash; keep it genuinely easy.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">VO2max Intervals</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">12 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 8 &times; 1 km at 5K race pace, 90-sec jog recovery &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Peak VO2max session. 8 reps is significant volume at this intensity. If you hit 6 strong reps and fade on 7, that's still a successful session. Abandon cleanly rather than grinding out junk reps.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">7 km</span></div></div><p class="day-structure">6 km easy &rarr; 6 &times; 100 m strides with walk-back recovery.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Threshold Intervals</span><div class="day-badges"><span class="badge badge-orange">RPE 5&ndash;6</span><span class="badge badge-accent">11 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 3 &times; 10 min at T3 (threshold), 2 min easy jog between &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>30 minutes at threshold in a single session. This is the hardest threshold session of the block. Pace should be controlled &mdash; the third rep should be the hardest, but the pace should be nearly identical to the first. That's the skill.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest. You'll need it.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Parkrun Race Effort</span><div class="day-badges"><span class="badge badge-red">RPE 8</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Warm-up: 10 min easy jog &rarr; 6 &times; 100 m strides &rarr; Parkrun at full race effort. Negative split mandatory &mdash; second half faster than the first.</p><div class="coach-note"><strong>Coach's Note</strong>This parkrun is on tired legs from a peak training week. Your time may not be your best. That's irrelevant. The goal is executing a negative split under fatigue. That's race-day skill.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Long Run with Tempo Finish</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;5</span><span class="badge badge-accent">14 km</span></div></div><p class="day-structure">10 km easy &rarr; final 4 km at T3 (threshold). This is the longest and hardest long run of the block.</p><div class="coach-note"><strong>Coach's Note</strong>4 km tempo on Sunday after Saturday's parkrun and a full peak week. If you can execute this, you're in strong shape. If you can't hold T3 for the full 4 km, pull back to 3 km and note it.</div></div>
-
-    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workouts &mdash; Tuesday &amp; Thursday</h4><p>Peak stimulus. 8 &times; 1 km VO2max on Tuesday. 3 &times; 10 min threshold on Thursday. This is the most demanding week. You will feel tired by Wednesday. That's the plan working. Protect Friday's rest.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>This is the week where recovery practices matter most. Sleep 9 hours if possible. Double your post-session protein intake. Cold water immersion (10&ndash;15 min at 10&ndash;15&deg;C) after Tuesday and Thursday if available. Do not add any extra training.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"How did my body respond to peak load? Where did I feel the fatigue first &mdash; legs, lungs, or motivation? The answer tells me what to monitor during recovery week."</p></div>
-  </div>
-</details>
+<section class="section">
+  <h2 class="section-title"><span class="material-symbols-outlined">menu_book</span> How To Use This Plan</h2>
+  <ul class="instructions-list">
+      <li><span class="material-symbols-outlined">calendar_month</span> Your training days are <strong>Tue, Wed, Thu, Fri, Sat</strong>. Each week follows the same day structure so you can build a consistent routine.</li>
+      <li><span class="material-symbols-outlined">speed</span> All sessions include target zones (HR, pace, or power) plus RPE so you can train by feel if needed. Stay in the prescribed zones — more is not better.</li>
+      <li><span class="material-symbols-outlined">trending_up</span> Volume builds progressively with recovery weeks every 3-4 weeks. Trust the process — the easy weeks are when adaptation happens.</li>
+      <li><span class="material-symbols-outlined">expand_all</span> Click any week to expand it and see your daily sessions. Each session includes warm-up, main set, cool-down, and a coaching note.</li>
+      <li><span class="material-symbols-outlined">health_and_safety</span> Listen to your body. If something hurts beyond normal training fatigue, take an extra rest day. Consistency over heroics.</li>
+  </ul>
 </section>
-
-<!-- Upgrade Prompt 2 -->
-<div class="upgrade-prompt">
-  <div class="prompt-brand">Plan Metric</div>
-  <p>This plan provides structured VO2max and threshold sessions with RPE guidance. Premium plans include interval paces calculated from your lactate threshold, session-by-session power targets, and weekly coach check-ins to adjust load based on your response to training.</p>
-  <a href="https://planmetric.com.au/assessment" class="prompt-link">Start Your Assessment &rarr;</a>
+<div class="disclaimer">
+  <span class="material-symbols-outlined">info</span>
+  <p>This training plan is provided as a general guide only and does not constitute medical advice, professional coaching, or a substitute for consultation with qualified healthcare or fitness professionals. Plan Metric and its creators are not qualified coaches, medical practitioners, or dietitians. You should consult your doctor before starting any new exercise program. By using this plan, you acknowledge that you do so entirely at your own risk. Plan Metric accepts no liability for injury, illness, or loss arising from the use of this plan.</p>
 </div>
-
-<!-- WEEK 4 -->
-<section id="week-4" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 4 &mdash; Recovery</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="4">
-    <div class="progress-dots">
-      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span><span class="dot"></span>
-      <span class="week-indicator">Week 4 of 6</span>
+<section class="section">
+  <h2 class="section-title"><span class="material-symbols-outlined">timeline</span> Your Training Phases</h2>
+  <div class="phase-breakdown">
+    <div class="phase-card">
+      <div class="phase-card-header">
+        <span class="material-symbols-outlined">foundation</span>
+        <h3>Base Building <span class="phase-weeks">Weeks 1–2</span></h3>
+      </div>
+      <p>Foundation building phase focusing purely on aerobic development through easy-pace running. No intensity work or racing - just building the cardiovascular engine and running efficiency that supports all future speed development. Includes highest volume of strength training.</p>
     </div>
-    <p class="week-overview">Volume drops to ~50% of Week 3. No key sessions. No threshold. No VO2max. Easy running only with light strides to maintain neuromuscular sharpness. This is where the adaptation from Weeks 1&ndash;3 is absorbed.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Short and easy. Genuinely recovery pace.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">6 km</span></div></div><p class="day-structure">5 km easy &rarr; 4 &times; 100 m strides with walk-back recovery.</p><div class="coach-note"><strong>Coach's Note</strong>Strides keep your legs remembering what race pace feels like. Everything else is easy. Do not add intensity because you feel good &mdash; feeling good is the recovery working.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Easy and flat. Nothing more.</p></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Rest or Easy Walk</span><div class="day-badges"><span class="badge badge-rest">RPE 1&ndash;2</span><span class="badge badge-rest">30 min</span></div></div><p class="day-structure">Skip parkrun this week. Walk or rest. No racing on a recovery week.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Easy Long Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">8 km</span></div></div><p class="day-structure">Easy throughout. No tempo finish. Just aerobic maintenance.</p></div>
-
-    <div class="key-callout" style="border-color:rgba(46,125,50,0.2);background:rgba(46,125,50,0.05);border-left:3px solid var(--green)"><h4 style="color:var(--green)"><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">spa</span> No Key Workout This Week</h4><p>There is no key workout. The key action is resting. Adaptation happens during recovery, not during the session. If you feel restless, that's a sign your body is ready to absorb the work. Let it.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Sleep is the priority. 9 hours per night. Eat at maintenance or slight surplus &mdash; do not restrict calories. Light mobility work: 10 min daily. Massage or sports massage midweek if accessible. By Sunday you should feel noticeably fresher than you did at the end of Week 3.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Do I feel fresher than I did at the end of Week 3? Is my resting heart rate back to baseline? If not, extend recovery by 2&ndash;3 days before starting Week 5."</p></div>
-  </div>
-</details>
-</section>
-
-<!-- WEEK 5 -->
-<section id="week-5" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 5 &mdash; Race Sharpen</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="5">
-    <div class="progress-dots">
-      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span><span class="dot"></span>
-      <span class="week-indicator">Week 5 of 6</span>
+    <div class="phase-card">
+      <div class="phase-card-header">
+        <span class="material-symbols-outlined">trending_up</span>
+        <h3>Strength &amp; Endurance <span class="phase-weeks">Weeks 3–5</span></h3>
+      </div>
+      <p>Introduction of race-specific intensities and threshold work. Mix of easy aerobic running with structured interval sessions targeting lactate threshold and VO2max. Training load increases as we add quality sessions while maintaining aerobic base. Optional lower-priority races allowed for experience.</p>
     </div>
-    <p class="week-overview">Intensity returns. Volume stays reduced (~70% of peak). Sharp, race-specific sessions &mdash; shorter VO2max reps at slightly faster than race pace, and a race-pace threshold session. The goal is to feel fast without accumulating fatigue.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">7 km</span></div></div><p class="day-structure">Easy aerobic run. Flat route.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">VO2max Sharpeners</span><div class="day-badges"><span class="badge badge-red">RPE 8</span><span class="badge badge-accent">9 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 5 &times; 800 m at slightly faster than 5K pace, 2-min jog recovery &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Shorter reps, slightly faster pace, longer recovery. This is neuromuscular sharpening. You should finish feeling fast, not destroyed. If the last rep feels harder than RPE 8, the pace was too aggressive.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">6 km</span></div></div><p class="day-structure">5 km easy &rarr; 6 &times; 100 m strides at race pace with walk-back recovery.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Race-Pace Threshold</span><div class="day-badges"><span class="badge badge-orange">RPE 6&ndash;7</span><span class="badge badge-accent">9 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 2 &times; 8 min at T3 (threshold), 2 min easy jog between &rarr; 4 &times; 200 m at 5K pace, 200 m jog &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Threshold reps are shorter than Week 3. The 200 m reps afterwards simulate the final-km kick. Run them controlled &mdash; this is rehearsal, not max effort.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">Parkrun Race Effort</span><div class="day-badges"><span class="badge badge-red">RPE 8&ndash;9</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Warm-up: 15 min easy jog &rarr; 6 &times; 100 m strides &rarr; Parkrun at race effort. Execute your pacing plan: even first 3 km, push km 4, all-out final km.</p><div class="coach-note"><strong>Coach's Note</strong>This is a dress rehearsal. Coming off recovery, you should feel sharp. Push harder than previous weeks. Note your splits &mdash; this is your race-day pace reference.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Easy Long Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3&ndash;4</span><span class="badge badge-accent">10 km</span></div></div><p class="day-structure">Easy throughout. No tempo finish. Aerobic maintenance only. Recover from Saturday's effort.</p></div>
-
-    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workouts &mdash; Tuesday &amp; Thursday</h4><p>Race-specific sharpening. Shorter, faster intervals on Tuesday. Threshold + speed on Thursday. You should feel fast and controlled after both sessions. If you feel wrecked, the taper isn't working &mdash; add an extra easy day.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Maintain the recovery habits from Week 4. Sleep 8&ndash;9 hours. Eat well &mdash; slight carbohydrate increase in the back half of the week to begin glycogen loading. Stay hydrated. This is not the week to experiment with anything new.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Do I feel fast? Are my legs responding to pace changes quickly? If Saturday's parkrun felt controlled at a strong pace, the taper is on track."</p></div>
-  </div>
-</details>
-</section>
-
-<!-- WEEK 6 -->
-<section id="week-6" style="margin-bottom:16px">
-<details class="week-accordion">
-  <summary><span>Week 6 &mdash; Taper + Race</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content" data-week="6">
-    <div class="progress-dots">
-      <span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot filled"></span><span class="dot current"></span>
-      <span class="week-indicator">Week 6 of 6</span>
+    <div class="phase-card">
+      <div class="phase-card-header">
+        <span class="material-symbols-outlined">bolt</span>
+        <h3>Peak Fitness <span class="phase-weeks">Weeks 6–7</span></h3>
+      </div>
+      <p>Highest training stress combining maximum volume with sharp race-pace intervals. Final fitness development through race simulations and speed work. Body reaches peak adaptation - highest fitness but also highest fatigue. Requires careful recovery management between sessions.</p>
     </div>
-    <p class="week-overview">Race week. Volume drops to ~40% of peak. Two short sharpening sessions. Then your 5K. The training is done. This week is about execution, not fitness. You cannot gain fitness in the final week, but you can lose it by doing too much.</p>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Monday</span><span class="day-session">Easy Run</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">Short and easy. Keep the legs ticking over.</p></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Tuesday</span><span class="day-session">Race-Pace Sharpener</span><div class="day-badges"><span class="badge badge-red">RPE 7&ndash;8</span><span class="badge badge-accent">7 km</span><span class="badge badge-red">KEY</span></div></div><p class="day-structure">2 km warm-up &rarr; 3 &times; 1 km at 5K race pace, 2-min jog recovery &rarr; 2 km cool-down.</p><div class="coach-note"><strong>Coach's Note</strong>Last quality session. 3 reps only. These should feel smooth and fast. You're reminding your body what race pace feels like. If you nail all 3 reps evenly, you're ready.</div></div>
-
-    <div class="day-card"><div class="day-header"><span class="day-label">Wednesday</span><span class="day-session">Easy Run + Strides</span><div class="day-badges"><span class="badge badge-accent">RPE 3</span><span class="badge badge-accent">5 km</span></div></div><p class="day-structure">4 km easy &rarr; 4 &times; 100 m strides at race pace with walk-back recovery.</p></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Thursday</span><span class="day-session">Easy Shakeout</span><div class="day-badges"><span class="badge badge-accent">RPE 2&ndash;3</span><span class="badge badge-accent">3 km</span></div></div><p class="day-structure">Very short, very easy. 20 minutes maximum. Loosen the legs.</p></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Friday</span><span class="day-session">Rest</span><div class="day-badges"><span class="badge badge-rest">REST</span></div></div><p class="day-structure">Complete rest. Prepare your kit tonight. Race flats, number, watch charged. Reduce morning friction to zero.</p></div>
-
-    <div class="day-card" style="border-color:var(--accent)"><div class="day-header"><span class="day-label">Saturday</span><span class="day-session">5K RACE DAY</span><div class="day-badges"><span class="badge badge-red">RPE 9&ndash;10</span><span class="badge badge-red">RACE</span></div></div><p class="day-structure">Warm-up: 15 min easy jog &rarr; dynamic stretches &rarr; 6 &times; 100 m strides at race pace &rarr; RACE: Start at goal pace from gun. Even splits through 3 km. Push km 4. Final km all-out.</p><div class="coach-note"><strong>Coach's Note</strong>This is it. Start at goal pace, not faster. Even splits or slight negative split through 3 km. At 3 km, assess &mdash; if you have more, push. Final km, empty the tank. You've done the work. Trust it.</div></div>
-
-    <div class="day-card rest"><div class="day-header"><span class="day-label">Sunday</span><span class="day-session">Recovery</span><div class="day-badges"><span class="badge badge-green">RPE 1&ndash;2</span><span class="badge badge-green">20&ndash;30 min</span></div></div><p class="day-structure">Easy walk or very light jog. Stretch. Eat. Rehydrate. Review your race splits. Plan what's next.</p></div>
-
-    <div class="key-callout"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">star</span> Key Workout &mdash; Saturday: Your 5K</h4><p>Six weeks of structured work delivered you here. Start at goal pace. Hold discipline through 3 km. Push the final 2 km. Negative split if possible. Race the clock, not the field.</p></div>
-    <div class="recovery-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">nightlight</span> Recovery</h4><p>Post-race: 10 min easy jog cool-down. Rehydrate immediately. Eat carbs + protein within 30 minutes. Full recovery from a max-effort 5K takes 5&ndash;7 days. Do not return to structured training for at least one week.</p></div>
-    <div class="checkin-box"><h4><span class="material-symbols-outlined" style="font-size:16px;margin-right:4px">psychology</span> Weekly Check-In</h4><p>"Did I execute my pacing plan? Were my splits even or negative? What would I do differently next time? The answer determines the next training block."</p></div>
-  </div>
-</details>
-</section>
-
-<!-- What's Next? -->
-<section style="margin-top:48px;margin-bottom:48px">
-  <div class="section-label">What's Next?</div>
-  <p style="color:var(--text-sec);font-weight:300;line-height:1.7;font-size:14px;margin-bottom:24px">You just executed a structured 5K race block. The fitness you've built is transferable. Here's where Metric Athletes go from here.</p>
-  <div class="whats-next-grid">
-    <div class="next-card">
-      <h4>10K Elite Plan</h4>
-      <p>Apply your 5K speed to the 10K distance. 8 weeks of race-specific 10K preparation.</p>
-      <a href="https://planmetric.com.au/plans">View Plan &rarr;</a>
+    <div class="phase-card">
+      <div class="phase-card-header">
+        <span class="material-symbols-outlined">self_improvement</span>
+        <h3>Taper &amp; Race Prep <span class="phase-weeks">Weeks 8–8</span></h3>
+      </div>
+      <p>Planned reduction in training volume while maintaining intensity touches. Body recovers from peak training load while preserving fitness gains. Focus shifts to race preparation, mental readiness, and arriving at start line feeling fresh, confident, and energized to perform.</p>
     </div>
-    <div class="next-card">
-      <h4>Premium Plan</h4>
-      <p>Get a plan built from your data &mdash; personalised zones, coach-reviewed, delivered in 48 hours.</p>
-      <a href="https://planmetric.com.au/assessment">Start Assessment &rarr;</a>
-    </div>
-    <div class="next-card">
-      <h4>Go Multi-Sport</h4>
-      <p>Take your running fitness into triathlon. Olympic Tri Elite plan available.</p>
-      <a href="https://planmetric.com.au/plans">View Plan &rarr;</a>
-    </div>
-  </div>
-  <!-- Upgrade Prompt 3 -->
-  <div class="upgrade-prompt">
-    <div class="prompt-brand">Plan Metric</div>
-    <p>Ready for a plan built around your physiology, your schedule, and your race goals? Premium plans start with an 8-minute assessment and are delivered within 48 hours &mdash; with personalised pace zones, power targets, and weekly coach check-ins.</p>
-    <a href="https://planmetric.com.au/assessment" class="prompt-link">Start Your Assessment &rarr;</a>
   </div>
 </section>
-
-<!-- Important Notes & Tips -->
-<section style="margin-bottom:48px">
-<details class="week-accordion">
-  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Important Notes &amp; Tips</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content">
+<div class="phase-banner">
+  <h2 class="phase-title">Phase 1: Foundation Build</h2>
+  <p class="phase-subtitle">Weeks 1–2</p>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 1 — BASE</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">2.2h</span>
+        <span>13 Apr–19 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Welcome to your elite 5K training journey! This first week focuses on establishing your aerobic base with controlled intensities. At 55% of peak volume, we're building the foundation for harder work ahead. Keep all easy runs truly conversational - this discipline will pay dividends as training intensifies.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Base Building Easy Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 min walk/jog at very easy pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 12 min steady run at 5:30-5:45/km (Z1-Z2), fully conversational pace</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Focus on establishing your easy pace rhythm - you should be able to hold a conversation throughout. This pace builds your aerobic engine without stress. Land with a slight forward lean, maintain 170-180 steps per minute cadence.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - Tempo Introduction (5:30am–5:55am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z3</span>
+      <span class="badge">25min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 8 min easy jog building to moderate effort</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 12 min tempo at comfortably hard effort (4:45-5:00/km), should feel controlled but challenging</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 min easy jog/walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 25 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your first tempo session should feel 'comfortably hard' - harder than easy pace but sustainable for the duration. Focus on smooth breathing rhythm (3:2 or 2:2 pattern). This effort improves your lactate threshold, crucial for 5K performance.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Recovery Run + Strength (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 3 min walk building to easy jog</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 15 min easy recovery run at 5:45-6:00/km, focus on movement quality</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 2 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Keep this genuinely easy - slower than Tuesday's pace. Schedule strength training 3-6 hours after this run or on a separate day entirely. Focus on hip stability (single-leg squats, glute bridges) and core strength. Two sessions per week during base phase maximizes strength gains without interference.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Midweek Easy Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 13 min steady easy running at 5:30-5:45/km, relaxed effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Another foundation session to accumulate easy aerobic volume. Check your form: relaxed shoulders, slight forward lean, midfoot landing. If you're breathing hard or can't chat, slow down - easy days must be genuinely easy for the system to work.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Foundation Long Run (5:30am–6:20am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">50min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 8 min gradual build from walk to easy running pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 35 min continuous run at 5:30-5:45/km, maintain conversational effort throughout</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 7 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 50 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your most important session of the week! This builds aerobic capacity and mental resilience. Stay disciplined with pacing - the goal is time on feet, not speed. Practice your race day fueling strategy if the session approaches 60 minutes. Focus on running relaxed and enjoying the process.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 2 — BASE</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">3.2h</span>
+        <span>20 Apr–26 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Building on last week's foundation with increased volume at 80% of peak. Your aerobic system is adapting well - maintain the discipline of keeping easy runs truly easy while we extend the tempo work. This volume increase trains your body to handle more training stress.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Extended Base Run (5:30am–6:00am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">30min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 6 min walk/jog progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 20 min steady running at 5:30-5:45/km, conversational throughout</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 4 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 30 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Ten more minutes than last week - your aerobic system is adapting! Maintain the same relaxed effort as Week 1 but for longer duration. This teaches your body to use fat as fuel efficiently. Check in with your breathing and form every 5 minutes.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - Extended Tempo (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z3</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 min easy jog with 4 x 20-second pickups in final 3 minutes</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 18 min tempo at 4:40-4:55/km, controlled hard effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 7 min easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Six more minutes at tempo than last week - this is where fitness gains happen! The effort should feel challenging but controlled, like you could hold it for 5-10 more minutes if needed. Focus on smooth rhythm and efficient form. Hydrate well during the cooldown.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Recovery Run + Strength (5:30am–6:00am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">30min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 min walk building to gentle jog</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 21 min recovery pace at 5:45-6:00/km, focus on easy movement</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 4 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 30 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Longer recovery run to accumulate volume while staying stress-free. Your legs might feel slightly heavy from yesterday's tempo - this easy movement promotes blood flow and recovery. Continue with 2x/week strength training, emphasizing compound movements and plyometrics for running economy gains.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Midweek Base Builder (5:30am–6:00am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">30min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 6 min progressive warm-up</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 19 min easy running at 5:30-5:45/km</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 min walk/jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 30 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Solid aerobic base work - you're building the engine for faster running ahead. Stay patient with pacing and trust the process. Your cardiovascular system is strengthening with each easy mile. Practice your pre-run routine and post-run stretching consistently.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Progressive Long Run (5:30am–6:40am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">70min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 min easy build-up</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 50 min continuous run: first 35 min at 5:30-5:45/km, final 15 min at 5:15-5:30/km</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 70 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your longest run yet! Start conservatively for the first 35 minutes, then gradually pick up the pace for the final quarter. This teaches pacing discipline and practices the negative split strategy crucial for 5K racing. Hydrate during and after - sessions over 60 minutes require attention to fluid balance.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="phase-banner">
+  <h2 class="phase-title">Phase 2: Aerobic Development</h2>
+  <p class="phase-subtitle">Weeks 3–5</p>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 3 — BUILD</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">3.2h</span>
+        <span>27 Apr–3 May 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Entering the BUILD phase with more specific 5K training. We're introducing proper intervals while maintaining aerobic base. The intensity distribution shifts toward race-specific efforts. Your body is ready for this progression after two weeks of solid foundation work.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Base Maintenance Run (5:30am–5:55am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">25min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 min easy progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 16 min steady running at 5:30-5:45/km</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 4 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 25 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Slightly shorter today to prepare for tomorrow's harder tempo session. Keep this genuinely easy - your legs need to be fresh for quality work ahead. Focus on relaxed running form and efficient breathing patterns.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - 5K-Specific Tempo (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z3-Z4</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 12 min easy jog with 6 x 20-second buildups</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 15 min tempo at 4:35-4:50/km (just faster than 5K race pace), strong controlled effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 8 min easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Now we're getting race-specific! This pace is slightly faster than your target 5K pace, building speed endurance. The effort should feel challenging but sustainable - think '8 out of 10' intensity. Focus on maintaining form as fatigue builds. This session builds lactate buffering capacity essential for 5K performance.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Active Recovery + Strength (5:30am–6:00am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">30min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 6 min gentle progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 19 min easy recovery running at 5:45-6:00/km</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 30 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Essential recovery between hard sessions while maintaining training stimulus. Keep effort minimal - this promotes blood flow and speeds adaptation from yesterday's tempo work. Strength training remains crucial in build phase - focus on maintenance rather than maximum gains. Single-leg exercises and core stability work best support running economy.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - 5K Interval Session (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 15 min easy jog building to moderate, include 4 x 100m buildups</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 6 x 3 minutes at 5K race pace (4:25-4:30/km) with 90 seconds easy jog recovery</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 8 min easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your first proper 5K interval session! Each 3-minute rep should be run at your target race pace - practice this exact effort and rhythm. The 90-second recoveries should be easy jogging, not standing still. Focus on consistent splits and smooth running form. This session trains your VO2max and race pace neuromuscular patterns.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Aerobic Long Run (5:30am–6:40am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">70min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 min progressive build</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 50 min steady aerobic running at 5:20-5:35/km, relaxed but purposeful</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 70 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Maintaining aerobic base while building weekly volume. This pace sits between easy and tempo - comfortably aerobic but with purpose. You should still be able to speak in short sentences throughout. This effort improves aerobic power while teaching your body to clear lactate efficiently. Hydrate well and practice your post-run recovery routine.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 4 — BUILD (Recovery)</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">2.2h</span>
+        <span>4 May–10 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Essential recovery week at 55% volume. Your body has absorbed significant training stress and needs time to adapt and strengthen. Don't underestimate the importance of this week - fitness gains happen during recovery, not just training. Stay patient and trust the process.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Gentle Base Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 13 min relaxed running at 5:45-6:00/km, no pressure on pace</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    First session of recovery week - embrace the easier pace and reduced volume. Your body is consolidating the adaptations from the previous three weeks. Focus on running with joy and movement quality rather than pace targets.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - Recovery Flow Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 min gentle progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 13 min easy flowing at 5:45-6:00/km, focus on rhythm and relaxation</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Continue the recovery theme with another stress-free session. Pay attention to how your body feels - legs should be feeling fresher than earlier in the week. Use this time to work on running technique and efficiency rather than fitness gains.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Easy Movement + Strength (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 min walk to easy jog</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 13 min gentle running at 5:45-6:00/km, minimal effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Recovery week extends to strength training too - reduce volume by 50% but maintain movement patterns. Focus on mobility, activation exercises, and lighter loads. Your neuromuscular system needs this break to adapt and come back stronger. Listen to your body and don't rush the process.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Refresher Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 min progressive warm-up</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 13 min comfortable running at 5:30-5:45/km, building confidence</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Slightly more purposeful today as we prepare for next week's return to harder training. You should be feeling refreshed and eager to run. This is exactly what recovery week is designed to achieve - physical and mental restoration.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Recovery Long Run (5:30am–6:20am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">50min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 8 min gradual build</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 35 min relaxed aerobic running at 5:30-5:45/km, enjoy the process</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 7 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 50 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Even the long run gets scaled back this week. Focus on enjoying the movement and perhaps exploring new routes or running surfaces. Your aerobic fitness won't decline in one easy week - instead, your body is preparing for the harder training block ahead. Trust in the recovery process.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 5 — BUILD</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">3.8h</span>
+        <span>11 May–17 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Peak volume week at 95% intensity! You should feel refreshed from last week's recovery and ready to tackle your biggest training load. This week includes longer tempo work and more challenging intervals. Your fitness is building toward race readiness - embrace the challenge.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Strong Base Run (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 7 min progressive build-up</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 23 min steady aerobic running at 5:20-5:35/km, controlled effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 min easy jog/walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Starting the week with solid aerobic volume. This pace should feel comfortably aerobic but more purposeful than easy recovery pace. You're building the platform for this week's harder sessions while accumulating valuable training volume.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - Extended Race Pace Tempo (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z3-Z4</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 15 min easy jog with 6 x 30-second buildups in final 5 minutes</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 20 min tempo at 4:30-4:45/km (around 5K race pace), strong sustained effort</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 min easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your longest tempo session yet at race-specific intensity! Twenty minutes at this effort builds exceptional lactate buffering and mental toughness. Break it into 5-minute segments mentally, focusing on smooth rhythm and efficient form. This session directly translates to 5K race performance. Hydrate well during cooldown.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Volume Recovery + Strength (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 7 min gentle progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 23 min easy recovery at 5:45-6:00/km, promoting adaptation</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 min walk</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Higher volume recovery run to balance the week's training stress. Keep effort minimal despite the longer duration - think active recovery that promotes blood flow and adaptation. Return to full strength training this week with emphasis on maintaining power and movement quality. Compound movements and plyometrics remain priorities.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Advanced 5K Intervals (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 15 min easy jog building to moderate, include 6 x 100m buildups</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 8 x 400m at slightly faster than 5K pace (4:15-4:25/km) with 400m easy jog recovery</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 min easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Peak interval session targeting VO2max and speed endurance! Eight reps is significant volume at this intensity - focus on consistent splits and maintaining form as fatigue builds. Each 400m should be slightly faster than race pace, training your ability to change gears during the race. Recovery jogs should be truly easy. This session builds the top-end speed essential for competitive 5K racing.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Peak Long Run (5:30am–6:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">80min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 12 min gradual progression</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 58 min aerobic running: 45 min at 5:20-5:35/km, final 13 min building to 5:00-5:15/km</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 min walk/easy jog</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 80 min</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your longest training run! Start conservatively for 45 minutes, then practice negative split execution in the final portion. This builds aerobic power, mental toughness, and race pacing skills simultaneously. The final pickup should feel controlled but strong - similar to how you'll finish your 5K race. Maintain hydration throughout and practice your post-run recovery protocol. This session builds confidence for race day execution.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="phase-banner">
+  <h2 class="phase-title">Phase 3: Strength Endurance</h2>
+  <p class="phase-subtitle">Weeks 6–7</p>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 6 — PEAK</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">3.8h</span>
+        <span>18 May–24 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Peak intensity week at 95% volume - your fitness is peaking and we're sharpening your speed. Two quality interval sessions this week will dial in your 5K race pace while maintaining aerobic base with easy runs and a solid 80-minute long run.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Easy Run (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 minutes easy jog at 5:45/km pace to activate muscles and joints</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 25 minutes steady running at 5:15/km (Z1-Z2) - focus on relaxed breathing and efficient form</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 minutes walking with light stretching of calves, quads and hamstrings</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Keep this genuinely easy - you should be able to hold a conversation throughout. This is active recovery between your quality sessions, so resist any temptation to push the pace. Focus on smooth, efficient running form and let your body absorb the training adaptations from yesterday's session.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - 5K Interval Training (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 minutes progressive warm-up: start at 6:00/km, gradually increase to 5:00/km pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 6 × 800m at 4:40/km (5K race pace) with 400m easy jog recovery between intervals - focus on consistent pacing and strong finish</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 minutes easy jog at 5:45/km followed by dynamic stretching routine</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    This is peak sharpening work - each 800m should feel comfortably hard, like a pace you could sustain for 5K. Hit your target pace from the first interval and maintain it throughout. The recovery jogs are crucial - use them to prepare mentally for the next repeat while staying loose and relaxed.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Easy Run + Strength (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 minutes easy jog building from 6:00/km to 5:30/km pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 25 minutes relaxed running at 5:15/km - maintain conversational effort throughout</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 minutes walking with gentle stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Another easy day to allow recovery between interval sessions. Follow this run with 15-20 minutes of strength work focusing on core stability and glute activation - single-leg squats, planks, and glute bridges work well. Keep the strength session light (bodyweight only) as we're in peak phase - the goal is maintenance, not building new strength.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - 5K Race Pace Intervals (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 minutes building from easy jog to moderate pace, including 4 × 100m strides</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 5 × 1000m at 4:45/km (slightly faster than 5K race pace) with 2 minutes walking recovery - practice race focus and finishing kick</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 minutes easy jog and full stretching routine</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Final quality session before your long run - these 1000m repeats are slightly faster than 5K race pace to build confidence and speed reserve. Focus on smooth acceleration into each interval and maintaining form as you fatigue. The walking recoveries allow full preparation for each effort, simulating how you'll feel fresh at the start line.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Long Aerobic Run (5:30am–6:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">80min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 minutes easy building from 6:00/km to 5:30/km pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 60 minutes steady aerobic running at 5:15-5:25/km - stay conversational and build aerobic strength</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 minutes easy walk with dynamic stretching and hydration</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 80 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your longest run of the week builds aerobic capacity and mental resilience. Stay in Z1-Z2 throughout - you should be able to speak in full sentences. This 14-15km effort develops the aerobic engine that supports your speed work. Carry water and take small sips every 15-20 minutes to maintain hydration in this longer session.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 7 — PEAK</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">4.0h</span>
+        <span>25 May–31 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Peak volume week at 100% - this is your highest training load. Two sharp interval sessions bookend the week with your longest run building to 85 minutes. Your fitness is at its peak - trust the process and execute with confidence.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Easy Aerobic Run (5:30am–6:05am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">35min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 minutes gentle jogging starting at 6:00/km pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 25 minutes comfortable running at 5:15/km - focus on rhythm and relaxation</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 minutes walking and light stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 35 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Start your peak week with complete aerobic comfort - this should feel almost effortlessly easy. Your body is carrying significant training load, so respect the easy pace and use this session to prime your legs for tomorrow's intervals. Focus on landing efficiency and breathing rhythm rather than pace or effort.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - VO2max Intervals (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 12 minutes progressive build from easy jog to race pace, including 6 × 100m strides</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 8 × 400m at 4:35/km (faster than 5K pace) with equal time jogging recovery - develop speed and anaerobic power</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 8 minutes easy jog and comprehensive stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Peak power session targeting your VO2max and speed development. Each 400m should feel challenging but controlled - about 90% effort with excellent form. These shorter, faster intervals develop the top-end speed and anaerobic capacity that will make 5K pace feel more manageable on race day. Recovery jogs should be very easy to ensure quality on each repeat.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Easy Run + Strength (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 5 minutes easy running building gradually to comfortable pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 30 minutes relaxed running at 5:15-5:25/km, staying well within aerobic comfort zone</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 5 minutes walking and gentle mobility work</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Longest easy run of the week allows deeper aerobic development while maintaining recovery between quality days. Follow immediately with 15-20 minutes of maintenance strength work - focus on core stability, hip strength, and running-specific movements. Keep intensity very light (60-70% effort) as we're prioritizing recovery and maintaining strength rather than building it during peak phase.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Tempo Intervals (5:30am–6:10am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z4-Z5</span>
+      <span class="badge">40min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 minutes building from easy pace to moderate, finishing with 4 × 150m accelerations</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 4 × 1200m at 4:50/km (10K race pace) with 90 seconds easy jog recovery - build lactate tolerance</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 minutes easy jogging and thorough stretching routine</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 40 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Final quality session of your peak week focuses on lactate threshold development. These longer intervals at 10K pace build the physiological foundation that supports your 5K speed. Aim for steady, controlled effort throughout each repeat - it should feel comfortably hard but sustainable. The shorter recoveries teach your body to clear lactate efficiently between efforts.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Peak Long Run (5:30am–6:55am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">85min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 10 minutes progressive warm-up from 6:00/km to 5:30/km pace</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 65 minutes steady aerobic running at 5:15-5:25/km - build mental toughness and aerobic power</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 10 minutes easy walking with full stretching and hydration focus</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 85 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Your longest training run develops both physical and mental strength for racing. This 15-16km effort at aerobic pace builds the cardiovascular foundation supporting all your speed work. Stay conversational throughout and practice race-day nutrition if needed. Carry water and sip regularly - this longer session is perfect for practicing hydration strategies you'll use in longer races.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+<div class="phase-banner">
+  <h2 class="phase-title">Phase 4: Taper and Race Preparation</h2>
+  <p class="phase-subtitle">Weeks 8–8</p>
+</div>
+<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week 8 — TAPER</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">1.8h</span>
+        <span>1 Jun–7 2026</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">Taper week at 45% volume - time to freshen up and let your fitness shine. All runs are easy and shorter, allowing your body to absorb the training adaptations and arrive at race day feeling sharp and energized.</div>
+      <div class="days-grid">
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Tue - Easy Recovery Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 3 minutes gentle walking transitioning to very easy jogging</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 14 minutes comfortable running at 5:25-5:35/km - focus purely on movement quality</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 minutes walking and light stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Begin your taper with pure movement quality - this should feel almost ridiculously easy. The goal is active recovery and maintaining running rhythm without any training stress. Your legs may feel heavy initially as your body processes the peak training load, but this is completely normal and will resolve as the week progresses.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Wed - Easy Maintenance Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 3 minutes easy walking building to gentle jogging</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 14 minutes relaxed running at 5:20-5:30/km with focus on smooth form</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 minutes walking and gentle stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Continue the taper process with another short, easy effort. Your body is busy adapting and supercompensating from the peak training weeks - give it space to complete this process. Focus on running efficiency and rhythm rather than pace or effort. You should finish feeling refreshed and energized, not fatigued.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Thu - Easy Run + Light Strength (5:30am–5:55am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">25min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 4 minutes progressive warm-up from walking to comfortable jogging</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 17 minutes easy running at 5:20/km - maintain aerobic base without stress</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 4 minutes walking and mobility work</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 25 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Slightly longer easy run maintains your aerobic system without adding fatigue. Follow with just 10-15 minutes of very light strength work - basic core activation and glute firing exercises only. Focus on movement quality and activation rather than strength building. Your strength sessions should leave you feeling energized and loose, not tired.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Fri - Pre-Race Shakeout (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 3 minutes easy walking progressing to light jogging</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 14 minutes comfortable running at 5:20/km including 4 × 100m smooth accelerations</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 minutes walking and gentle stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Perfect pre-race preparation run with a few smooth accelerations to activate your speed. The accelerations should feel controlled and effortless - just reminding your legs how to move at faster paces. This session maintains neuromuscular readiness without creating fatigue. You should finish feeling loose, quick, and ready to race.
+  </div>
+</div>
+        <div class="day-card">
+  <div class="day-header">
+    <h4 class="day-title">Sat - Final Easy Run (5:30am–5:50am)</h4>
+    <div class="day-badges">
+      <span class="badge badge-run">RUN</span>
+      <span class="badge">Z1-Z2</span>
+      <span class="badge">20min</span>
+    </div>
+  </div>
+  <div class="session-structure">
+    <div class="structure-item"><span class="structure-label">Warm-up:</span> 3 minutes easy walking transitioning to gentle jogging</div>
+    <div class="structure-item"><span class="structure-label">Main Set:</span> 14 minutes relaxed running at 5:25/km - pure movement maintenance</div>
+    <div class="structure-item"><span class="structure-label">Cool-down:</span> 3 minutes walking and thorough stretching</div>
+    <div class="structure-item"><span class="structure-label">Total:</span> 20 minutes</div>
+  </div>
+  <div class="coaching-note">
+    <div class="note-title">Coach's Note:</div>
+    Final training run before race week - keep it simple and stress-free. This short effort maintains running rhythm and keeps your legs turning over without any training load. Focus on enjoying the movement and feeling grateful for all the training you've completed. You're ready to race - trust your preparation and look forward to showing your fitness.
+  </div>
+</div>
+      </div>
+    </div>
+  </details>
+</div>
+</div>
+<section class="race-protocol">
+  <h2><span class="material-symbols-outlined">flag</span> Race Day Protocol</h2>
+  <details class="protocol-section" open>
+    <summary>Pre-Race Timeline</summary>
+    <div><div class='time-block'><strong>3-4 hours before:</strong> High-carb breakfast (oatmeal, banana, toast with honey) - aim for 1-4g carbs per kg bodyweight. Include familiar foods only.</div><div class='time-block'><strong>2 hours before:</strong> Stop eating solid food. Begin hydration with 500-750ml sports drink or water. Complete gear check and mental preparation.</div><div class='time-block'><strong>60-90 minutes before:</strong> Arrive at venue. Complete registration, familiarize with course, set up transition if applicable. Light dynamic stretching.</div><div class='time-block'><strong>30-45 minutes before:</strong> Begin warm-up routine. 10 minutes easy jogging, building to moderate pace. Include 4-6 × 100m strides at race pace to activate fast-twitch fibers.</div><div class='time-block'><strong>15 minutes before:</strong> Final preparation. Use bathroom, final hydration sips, put on race gear. Move to start line with 5 minutes to spare.</div><div class='time-block'><strong>5 minutes before:</strong> Mental focus routine. Three deep breaths, visualize race start, trust your fitness. You're ready.</div></div>
+  </details>
+  <details class="protocol-section">
+    <summary>Your Race Strategy</summary>
+    <div><p><strong>Start Strategy:</strong> Position yourself appropriately in the field - not too far forward (you'll go out too fast) or too far back (you'll weave through slower runners). Aim for 5-10 seconds per km slower than goal pace for the first 800m while settling in.</p><p><strong>Middle 3K (800m-3800m):</strong> This is your bread and butter section. Settle into goal race pace (4:45/km for elite 5K) and maintain steady, controlled effort. Focus on smooth breathing rhythm and efficient form. Pass conservatively and maintain position when possible.</p><p><strong>Final 1200m:</strong> Begin gradual acceleration from 3800m mark. Increase effort progressively - you should reach 85% perceived effort by 4500m and 95% effort for the final 500m. Trust your speed training and finish strong.</p><p><strong>Pacing Target:</strong> Negative split approach - aim for second half 10-15 seconds faster than first half through controlled acceleration rather than dramatic pace changes.</p></div>
+  </details>
+  <details class="protocol-section">
+    <summary>Mental Strategy</summary>
+    <div><p><strong>Pre-Race Mantras:</strong> 'I am fit, I am ready, I belong here' and 'Trust the training, trust the pace.' Use these during warm-up and at start line to build confidence and focus.</p><p><strong>Race Chunking:</strong> Break the 5K into five 1K segments. Each kilometer gets a specific focus: K1 (settle and find rhythm), K2-3 (steady and strong), K4 (maintain as it gets harder), K5 (everything you have left).</p><p><strong>Discomfort Management:</strong> When the pace feels hard around 3K, remind yourself 'This is supposed to feel challenging - I've trained for this feeling.' Welcome the discomfort as a sign you're racing properly.</p><p><strong>Finishing Mental Cue:</strong> At 4K mark, shift to 'One kilometer of excellence' - give everything to the finish line. Your interval training has prepared you for this final push.</p></div>
+  </details>
+</section>
+<section class="glossary">
+  <h2><span class="material-symbols-outlined">school</span> Glossary</h2>
+  <div class="glossary-grid">
+    <div class="term"><strong>Z1-Z2 (Zone 1-2)</strong><p>Easy aerobic training zones - conversational pace where you can speak in full sentences. Heart rate typically 60-75% of maximum.</p></div>
+    <div class="term"><strong>Z4-Z5 (Zone 4-5)</strong><p>High-intensity training zones - Z4 is lactate threshold/tempo pace, Z5 is VO2max/5K race pace. Heart rate 85-95% of maximum.</p></div>
+    <div class="term"><strong>5K Race Pace</strong><p>The sustainable pace you can maintain for a 5-kilometer race - typically corresponds to your VO2max pace or Zone 5 intensity.</p></div>
+    <div class="term"><strong>VO2max</strong><p>Maximum oxygen uptake - the highest rate your body can consume oxygen during exercise. Trained through high-intensity intervals.</p></div>
+    <div class="term"><strong>Lactate Threshold</strong><p>The exercise intensity where lactate begins accumulating faster than it can be cleared. Corresponds to tempo/threshold pace.</p></div>
+    <div class="term"><strong>Easy Recovery</strong><p>Very low-intensity running used between hard sessions to promote blood flow and adaptation without adding training stress.</p></div>
+    <div class="term"><strong>Interval Training</strong><p>Structured workout alternating periods of high-intensity effort with recovery periods. Develops speed and anaerobic capacity.</p></div>
+    <div class="term"><strong>Negative Split</strong><p>Racing strategy where the second half of a race is faster than the first half, achieved through controlled pacing and gradual acceleration.</p></div>
+    <div class="term"><strong>Taper</strong><p>Planned reduction in training volume before a race to allow the body to recover and peak for performance.</p></div>
+    <div class="term"><strong>Aerobic Base</strong><p>Foundation cardiovascular fitness built through easy-pace running. Supports all higher-intensity training and racing.</p></div>
+    <div class="term"><strong>Strides</strong><p>Short accelerations (50-150m) done at 85-90% effort to activate fast-twitch muscle fibers and improve running form.</p></div>
+    <div class="term"><strong>Progressive Build</strong><p>Gradual increase in pace or effort during a warm-up or training session, allowing the body to prepare for higher intensities.</p></div>
+    <div class="term"><strong>Tempo Pace</strong><p>Comfortably hard pace you could sustain for 45-60 minutes. Typically 15-20 seconds per km slower than 5K race pace.</p></div>
+    <div class="term"><strong>Peak Training</strong><p>Highest volume and intensity phase of training when fitness reaches maximum levels before tapering for race day.</p></div>
+    <div class="term"><strong>Training Load</strong><p>Measure of physiological stress from exercise, considering both volume (duration) and intensity of training sessions.</p></div>
+  </div>
+</section>
+<section class="coach-tips">
+  <h2><span class="material-symbols-outlined">psychology</span> Coach's Tips</h2>
   <div class="tips-grid">
-    <div class="tip-card"><h4>Protect the Key Sessions</h4><p>Two key sessions per week. Everything else exists to support them. If life forces a choice, drop the easy run &mdash; never the interval or threshold session.</p></div>
-    <div class="tip-card"><h4>Easy Means Easy</h4><p>Your easy runs should be genuinely easy &mdash; RPE 3&ndash;4, conversational, boring. If your easy pace feels hard, your body is telling you something. Listen.</p></div>
-    <div class="tip-card"><h4>The 10% Abandon Rule</h4><p>If power or pace drops &gt;10% on any VO2max rep compared to your first rep, end the session. Quality reps only. Junk volume at threshold or above is worse than no volume.</p></div>
-    <div class="tip-card"><h4>Sleep Is Your Best Ergogenic Aid</h4><p>8&ndash;9 hours per night. A single night of poor sleep reduces VO2max output by 3&ndash;5%. Two consecutive bad nights compound. Prioritise sleep over early-morning sessions.</p></div>
-    <div class="tip-card"><h4>Nutrition Timing</h4><p>Post-key-session: 1.2g/kg carbs + 0.3g/kg protein within 30 minutes. Pre-session: familiar foods, 2&ndash;3 hours before. Race week: increase carbohydrate intake by 20&ndash;30%.</p></div>
-    <div class="tip-card"><h4>Resting Heart Rate</h4><p>Track it daily. A sustained elevation &gt;5bpm above your baseline indicates accumulated fatigue. Replace the next quality session with easy running and reassess.</p></div>
-    <div class="tip-card"><h4>Strides Are Not Sprints</h4><p>Smooth acceleration to ~90% effort for 15&ndash;20 seconds. Focus on cadence, posture, and relaxation. Walk-back recovery. These maintain neuromuscular sharpness without adding training stress.</p></div>
-    <div class="tip-card"><h4>Race the Clock, Not the Field</h4><p>Parkruns and races are pacing exercises. Execute your plan. If someone passes you at km 1, let them. You'll likely pass them at km 4.</p></div>
-    <div class="tip-card"><h4>Recovery Weeks Are Sacred</h4><p>Week 4 exists because Weeks 1&ndash;3 created a stimulus your body needs time to absorb. Adding volume during recovery weeks is the most common mistake competitive runners make.</p></div>
-    <div class="tip-card"><h4>Trust the Taper</h4><p>You will feel restless during Weeks 5&ndash;6. You'll want to add sessions. Don't. Taper anxiety is universal. The fitness is already banked. Your job now is to not waste it.</p></div>
-  </div>
-  </div>
-</details>
-</section>
-
-<!-- Glossary -->
-<section style="margin-bottom:48px">
-<details class="week-accordion">
-  <summary><span><span style="font-size:8px;color:var(--accent);margin-right:8px">&#9670;</span> Glossary</span><span class="material-symbols-outlined chevron">expand_more</span></summary>
-  <div class="week-content">
-  <dl class="glossary-grid">
-    <div class="glossary-item"><dt>RPE</dt><dd>Rate of Perceived Exertion &mdash; a 1&ndash;10 scale of how hard a session feels. The primary intensity measure in this plan.</dd></div>
-    <div class="glossary-item"><dt>Lactate Threshold</dt><dd>The intensity above which lactate accumulates faster than it can be cleared. Corresponds to T3 &mdash; the highest intensity sustainable for 20&ndash;40 minutes. Key limiter for 5K performance.</dd></div>
-    <div class="glossary-item"><dt>VO2max</dt><dd>Maximum rate of oxygen consumption during exercise. Corresponds to T4 effort. Trainable through intervals at 5K race pace. The primary physiological target of this plan.</dd></div>
-    <div class="glossary-item"><dt>Fartlek</dt><dd>Unstructured speed play &mdash; alternating fast and easy running by feel rather than fixed intervals. Useful for active recovery days or as an alternative to structured intervals when mentally fatigued.</dd></div>
-    <div class="glossary-item"><dt>Negative Split</dt><dd>Running the second half of a distance faster than the first half. The optimal 5K pacing strategy for experienced runners. Requires discipline in the first 2 km.</dd></div>
-    <div class="glossary-item"><dt>Zone 2 (T2)</dt><dd>Aerobic base. Easy and conversational. Where 80% of your weekly volume should be. Builds mitochondrial density, fat oxidation, and capillary networks.</dd></div>
-    <div class="glossary-item"><dt>Zone 3 (T3)</dt><dd>Tempo / threshold. Comfortably hard. Short sentences only. Sustainable for 20&ndash;40 minutes. Develops lactate clearance capacity.</dd></div>
-    <div class="glossary-item"><dt>Zone 4 (T4)</dt><dd>VO2max intensity. Hard. A few words at most. Sustainable for 3&ndash;8 minutes per rep. Develops maximal aerobic power.</dd></div>
-    <div class="glossary-item"><dt>Strides</dt><dd>Short accelerations (15&ndash;20 seconds) at 5K pace or faster. Develops running economy and neuromuscular coordination. Not sprints.</dd></div>
-    <div class="glossary-item"><dt>Tempo Finish</dt><dd>Ending a long run with a threshold-pace segment. Develops the ability to run fast on pre-fatigued legs &mdash; directly simulating the final km of a 5K.</dd></div>
-    <div class="glossary-item"><dt>Taper</dt><dd>Planned reduction in training volume (20&ndash;50%) while maintaining intensity in the 1&ndash;2 weeks before a race. Allows full physiological adaptation and glycogen restoration.</dd></div>
-    <div class="glossary-item"><dt>Progressive Overload</dt><dd>Gradually increasing training stress week over week followed by planned recovery. The fundamental principle behind all structured training.</dd></div>
-  </dl>
-  </div>
-</details>
-</section>
-
-<!-- Race Day Protocol -->
-<section style="margin-bottom:48px">
-  <div class="section-label">Race Day Protocol</div>
-  <div class="card">
-    <h3 style="font-size:18px;margin-bottom:16px">Your 5K Race Execution Plan</h3>
-    <div style="display:grid;gap:16px">
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Night Before</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Carbohydrate-rich dinner. Nothing new &mdash; familiar foods only. Hydrate well. Prepare race kit: flats, number, watch, gels. Get to bed early. Accept that pre-race sleep may be light &mdash; it doesn't affect performance.</p></div>
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Race Morning (3 hrs before)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Pre-race meal: 1&ndash;2g carbs per kg body weight. Toast with honey, banana, or porridge. Low fibre, low fat. Coffee if part of your routine. Optional: gel or energy chew 15 min before start for a small top-up.</p></div>
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:4px">Arrival (60 min early)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">Collect number. Walk the start area. Use toilets. Begin mental preparation. Visualise your pacing plan km by km.</p></div>
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--red);margin-bottom:4px">Warm-Up (15 min before start)</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6"><strong style="color:var(--text)">Thorough warm-up is non-negotiable at this level.</strong> 15 min easy jog &rarr; dynamic stretches (leg swings, high knees, A-skips) &rarr; 6 &times; 100 m strides at race pace, building to faster than race pace on the last 2. Arrive at the start line with warm muscles and elevated HR.</p></div>
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--red);margin-bottom:4px">Pacing Strategy</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6"><strong style="color:var(--text)">Start at goal pace from the gun.</strong> Even splits through 3 km. At 3 km, assess &mdash; if you have capacity, begin to push. Km 4 is where races are won or lost. Final km: all-out. Negative split or dead-even is the target. If your first km is your fastest, you've blown the pacing plan.</p></div>
-      <div><h4 style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:4px">Post-Race</h4><p style="font-size:13px;color:var(--text-sec);font-weight:300;line-height:1.6">10 min easy jog cool-down. Rehydrate immediately. Carbs + protein within 30 minutes. Review splits within 24 hours while memory is fresh. Allow 5&ndash;7 days of easy running or rest before resuming structured training.</p></div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">schedule</span></div>
+      <div class="tip-content"><h4>Timing Your Intervals</h4><p>Start your interval sessions within 30 seconds of target pace from the first repeat. Consistent pacing builds better physiological adaptations than starting slow and speeding up.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">directions_run</span></div>
+      <div class="tip-content"><h4>Easy Day Discipline</h4><p>Your easy runs should be genuinely conversational. If you can't speak in full sentences, you're running too hard and compromising your hard day quality.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">psychology</span></div>
+      <div class="tip-content"><h4>Race Simulation Practice</h4><p>Use your interval sessions to practice race-day mental strategies. Rehearse mantras, practice staying relaxed under pressure, and build confidence at goal pace.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">local_drink</span></div>
+      <div class="tip-content"><h4>Hydration Strategy</h4><p>For runs over 60 minutes, carry water and take small sips every 15-20 minutes. Practice this during long runs to prepare for longer races.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">fitness_center</span></div>
+      <div class="tip-content"><h4>Strength Training Integration</h4><p>Schedule strength sessions immediately after easy runs, never before quality sessions. Focus on core stability and hip strength - these have the highest injury prevention value.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">hotel</span></div>
+      <div class="tip-content"><h4>Recovery Week Importance</h4><p>Recovery weeks aren't lost fitness - they're when your body adapts and gets stronger. Embrace the easier training and trust the supercompensation process.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">trending_up</span></div>
+      <div class="tip-content"><h4>Progressive Training Load</h4><p>Increase your weekly training volume by no more than 10% each week. Consistent, gradual progression prevents injury and ensures sustainable fitness gains.</p></div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon"><span class="material-symbols-outlined">psychology_alt</span></div>
+      <div class="tip-content"><h4>Taper Week Mindset</h4><p>During taper week, your legs may feel heavy or sluggish - this is normal as your body processes training adaptations. Trust the process and focus on feeling fresh for race day.</p></div>
     </div>
   </div>
 </section>
-
-</div><!-- /container -->
-
-<!-- Footer -->
-<div class="plan-footer">
-  <div class="logo">Plan Metric</div>
-  <div class="links"><a href="https://planmetric.com.au/terms">Terms</a> / <a href="https://planmetric.com.au/privacy">Privacy</a> / <a href="https://instagram.com/planmetric">Instagram</a></div>
-  <div class="copy">&copy; 2026 Plan Metric. Precision Endurance.</div>
-</div>
-
-<script>
-// Accordion — click overview grid cell to open week
-document.querySelectorAll('.overview-cell').forEach(cell => {
-  cell.addEventListener('click', () => {
-    const week = cell.dataset.week;
-    const target = document.getElementById('week-' + week);
-    if (!target) return;
-    const details = target.querySelector('details');
-    if (details && !details.open) details.open = true;
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  // Keyboard support for overview cells
-  cell.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      cell.click();
-    }
-  });
-});
-
-// Print: force all details open
-window.addEventListener('beforeprint', () => {
-  document.querySelectorAll('details').forEach(d => d.open = true);
-});
-</script>
-</body>
-</html>
+<footer class="plan-footer">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <h3>Plan Metric</h3>
+      <p>Personalised endurance training plans</p>
+    </div>
+    <div class="footer-contact">
+      <p>Questions about your plan?</p>
+      <a href="mailto:pete@planmetric.com.au"><span class="material-symbols-outlined">email</span> pete@planmetric.com.au</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 Plan Metric. All rights reserved.
+  </div>
+</footer>
+</body></html>
