@@ -242,7 +242,7 @@ function renderStatCard(value: string, label: string): string {
 function renderZonesSection(zones: TrainingZones, eventType: EventType): string {
   const disciplines: string[] = [];
 
-  if (zones.run && zones.run.length > 0) {
+  if (zones.run && zones.run.length > 0 && isRunEvent(eventType)) {
     disciplines.push(renderZoneDiscipline("Running Zones", "directions_run", zones.run));
   }
   if (zones.bike && zones.bike.length > 0 && isCyclingEvent(eventType)) {
@@ -598,4 +598,8 @@ function isCyclingEvent(eventType: EventType): boolean {
 
 function isSwimEvent(eventType: EventType): boolean {
   return /triathlon|ironman/i.test(eventType);
+}
+
+function isRunEvent(eventType: EventType): boolean {
+  return !/cycling event/i.test(eventType);
 }

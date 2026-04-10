@@ -71,10 +71,22 @@ export async function POST(req: NextRequest) {
       isNaN(age as number) ? undefined : age,
     );
 
-    /* ── Loop through all remaining chunks ────────────────── */
+    /* ── Detect actual progress in part1 to prevent duplicate weeks ── */
+    const part1Html = sub.generated_plan_part1 as string;
+    const weekMatches = part1Html.match(/Week\s+(\d+)/g) || [];
+    const maxWeekInPart1 = weekMatches.length > 0
+      ? Math.max(...weekMatches.map(m => parseInt(m.replace(/\D/g, ""))))
+      : 0;
+
+    // If part1 already has weeks beyond startWeek, skip ahead to avoid duplicates
     let currentStart = startWeek;
+    if (maxWeekInPart1 >= startWeek) {
+      currentStart = maxWeekInPart1 + 1;
+      console.log(`Part1 already has weeks up to ${maxWeekInPart1}. Skipping ahead to week ${currentStart}.`);
+    }
+
     let currentPhase: Phase | null = (lastPhase as Phase) || null;
-    let accumulatedHtml = sub.generated_plan_part1 as string;
+    let accumulatedHtml = part1Html;
 
     while (currentStart <= totalWeeks) {
       const currentEnd = Math.min(currentStart + CHUNK_SIZE - 1, totalWeeks);
