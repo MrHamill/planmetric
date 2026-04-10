@@ -78,6 +78,13 @@ export interface AthleteInputs {
   // Current volume for scaling
   weeklyRunDistance?: number;
   easyRunPace?: string;        // "X:XX" min/km
+  weeklyBikeVolume?: number;   // km per week
+  avgBikeSpeed?: number;       // km/h
+  weeklySwimVolume?: string;   // e.g. "5-7km" or "3km"
+  longestRide?: number;        // km
+  longestRun?: number;         // km
+  longestSwim?: number;        // metres
+  currentVolumeMinutes?: number; // calculated: athlete's current weekly training volume in minutes
 }
 
 /* ─── Constants ──────────────────────────────────────────────── */
@@ -125,7 +132,7 @@ export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
   for (let w = 1; w <= totalWeeks; w++) {
     const phase = getPhaseForWeek(w, phases);
     const isRecovery = recoveryWeeks.has(w);
-    const volumePercent = calculateWeekVolume(w, totalWeeks, phase, isRecovery, phases);
+    const volumePercent = calculateWeekVolume(w, totalWeeks, phase, isRecovery, phases, inputs.currentVolumeMinutes, peakVolumeMinutes);
     const totalMinutes = Math.round(peakVolumeMinutes * volumePercent / 100);
     const dateRange = calculateDateRange(w, inputs.raceDate, totalWeeks);
 
@@ -174,7 +181,7 @@ export function parseAthleteInputs(d: Record<string, unknown>, sub: Record<strin
     ? (d.availableDays as string[])
     : ALL_DAYS.slice();
 
-  return {
+  const parsed: AthleteInputs = {
     trainingFor: (d.trainingFor || sub.training_for || "Marathon") as EventType,
     availableDays,
     trainingDaysPerWeek: parseInt(String(d.trainingDaysPerWeek || "4"), 10),
@@ -190,7 +197,52 @@ export function parseAthleteInputs(d: Record<string, unknown>, sub: Record<strin
     doubleDays: d.doubleDays ? String(d.doubleDays) : undefined,
     weeklyRunDistance: d.weeklyRunDistance ? parseFloat(String(d.weeklyRunDistance)) : undefined,
     easyRunPace: d.easyRunPace ? String(d.easyRunPace) : undefined,
+    weeklyBikeVolume: d.weeklyBikeVolume ? parseFloat(String(d.weeklyBikeVolume)) : undefined,
+    avgBikeSpeed: d.avgBikeSpeed ? parseFloat(String(d.avgBikeSpeed)) : undefined,
+    weeklySwimVolume: d.weeklySwimVolume ? String(d.weeklySwimVolume) : undefined,
+    longestRide: d.longestRide ? parseFloat(String(d.longestRide)) : undefined,
+    longestRun: d.longestRun ? parseFloat(String(d.longestRun)) : undefined,
+    longestSwim: d.longestSwim ? parseFloat(String(d.longestSwim)) : undefined,
   };
+
+  // Calculate current weekly volume in minutes from available data
+  parsed.currentVolumeMinutes = estimateCurrentVolume(parsed);
+
+  return parsed;
+}
+
+function estimateCurrentVolume(inputs: AthleteInputs): number | undefined {
+  let totalMinutes = 0;
+  let hasData = false;
+
+  // Running: distance / pace
+  if (inputs.weeklyRunDistance && inputs.easyRunPace) {
+    const parts = inputs.easyRunPace.split(":");
+    const paceMinPerKm = parseInt(parts[0], 10) + (parseInt(parts[1] || "0", 10) / 60);
+    totalMinutes += inputs.weeklyRunDistance * paceMinPerKm;
+    hasData = true;
+  }
+
+  // Cycling: distance / speed
+  if (inputs.weeklyBikeVolume && inputs.avgBikeSpeed) {
+    totalMinutes += (inputs.weeklyBikeVolume / inputs.avgBikeSpeed) * 60;
+    hasData = true;
+  }
+
+  // Swimming: parse volume string (e.g. "5-7km" → take midpoint)
+  if (inputs.weeklySwimVolume) {
+    const match = inputs.weeklySwimVolume.match(/(\d+(?:\.\d+)?)\s*(?:-\s*(\d+(?:\.\d+)?))?\s*km/i);
+    if (match) {
+      const low = parseFloat(match[1]);
+      const high = match[2] ? parseFloat(match[2]) : low;
+      const avgKm = (low + high) / 2;
+      // ~2 min per 100m is a reasonable average swim pace
+      totalMinutes += avgKm * 10 * 2;
+      hasData = true;
+    }
+  }
+
+  return hasData ? Math.round(totalMinutes) : undefined;
 }
 
 function parseSessionDuration(str: string): number {
@@ -280,8 +332,18 @@ function assignRecoveryWeeks(totalWeeks: number, phases: PhaseRange[], age: numb
 function calculateWeekVolume(
   week: number, totalWeeks: number, phase: Phase,
   isRecovery: boolean, phases: PhaseRange[],
+  currentVolumeMinutes?: number, peakVolumeMinutes?: number,
 ): number {
-  if (isRecovery) return 55; // 50-60% of peak
+  // Calculate the minimum volume percentage based on the athlete's current fitness
+  // If they currently train at X min/week and peak is Y min/week, floor = X/Y * 100
+  const currentFloorPercent = (currentVolumeMinutes && peakVolumeMinutes)
+    ? Math.round((currentVolumeMinutes / peakVolumeMinutes) * 100)
+    : 0;
+
+  if (isRecovery) {
+    // Recovery weeks: 50-60% of peak, but never below 70% of current volume
+    return Math.max(55, Math.round(currentFloorPercent * 0.7));
+  }
 
   const taperPhase = phases.find(p => p.phase === "TAPER")!;
 
@@ -291,7 +353,6 @@ function calculateWeekVolume(
     // Progressive decrease: 65% → 45% → 30%
     if (taperTotal === 1) return 45;
     if (taperTotal === 2) return taperWeek === 1 ? 60 : 35;
-    // 3+ weeks
     const step = (65 - 30) / (taperTotal - 1);
     return Math.round(65 - step * (taperWeek - 1));
   }
@@ -300,16 +361,18 @@ function calculateWeekVolume(
     const basePhase = phases.find(p => p.phase === "BASE")!;
     const baseWeek = week - basePhase.startWeek;
     const baseTotal = basePhase.endWeek - basePhase.startWeek;
-    // Ramp from 55% to 80%
-    return baseTotal === 0 ? 70 : Math.round(55 + (80 - 55) * (baseWeek / baseTotal));
+    // Default ramp from 55% to 80%
+    const defaultPercent = baseTotal === 0 ? 70 : Math.round(55 + (80 - 55) * (baseWeek / baseTotal));
+    // Floor: never go below athlete's current volume
+    return Math.max(defaultPercent, currentFloorPercent);
   }
 
   if (phase === "BUILD") {
     const buildPhase = phases.find(p => p.phase === "BUILD")!;
     const buildWeek = week - buildPhase.startWeek;
     const buildTotal = buildPhase.endWeek - buildPhase.startWeek;
-    // Ramp from 80% to 95%
-    return buildTotal === 0 ? 88 : Math.round(80 + (95 - 80) * (buildWeek / buildTotal));
+    const defaultPercent = buildTotal === 0 ? 88 : Math.round(80 + (95 - 80) * (buildWeek / buildTotal));
+    return Math.max(defaultPercent, currentFloorPercent);
   }
 
   // PEAK: 95-100%
@@ -337,10 +400,18 @@ function estimatePeakVolume(inputs: AthleteInputs): number {
   // Cap by available time: weekday sessions × count + weekend session
   const weekdayCount = Math.max(0, trainingDaysPerWeek - 1);
   const weekendCount = trainingDaysPerWeek - weekdayCount;
-
   const maxAvailable = (weekdayCount * maxWeekdayMinutes) + (weekendCount * maxWeekendMinutes);
 
-  return Math.min(baseTarget, maxAvailable);
+  let peak = Math.min(baseTarget, maxAvailable);
+
+  // If athlete's current volume is known, peak must be at least 15% above it
+  // so the plan builds FROM their current fitness, not below it
+  if (inputs.currentVolumeMinutes) {
+    const minPeak = Math.round(inputs.currentVolumeMinutes * 1.15);
+    peak = Math.max(peak, Math.min(minPeak, maxAvailable));
+  }
+
+  return peak;
 }
 
 /* ─── Training Day Assignment ────────────────────────────────── */
