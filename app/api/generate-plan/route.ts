@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
@@ -95,25 +95,7 @@ export async function POST(req: NextRequest) {
       .update({ generated_plan_part1: html })
       .eq("id", submission_id);
 
-    /* ── Trigger next chunk ────────────────────────────────── */
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    after(async () => {
-      try {
-        await fetch(`${siteUrl}/api/generate-plan/continue`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            submission_id,
-            totalWeeks,
-            startWeek: endWeek + 1,
-            lastPhase,
-          }),
-        });
-      } catch (e) {
-        console.error("Failed to trigger next chunk:", e);
-      }
-    });
-
+    /* ── Cron will pick up from here and call continue ────── */
     return NextResponse.json({ ok: true, status: "generating", pass: 1, weeksGenerated: endWeek });
   } catch (e: unknown) {
     console.error("Unhandled error in generate-plan:", e);

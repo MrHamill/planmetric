@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import {
@@ -94,25 +94,11 @@ export async function POST(req: NextRequest) {
 
       console.log(`Continue: weeks ${currentStart}-${currentEnd} of ${totalWeeks}${isFinal ? " (FINAL)" : ""}`);
 
-      /* ── Check if approaching timeout — auto-resume if needed ── */
+      /* ── Check if approaching timeout — save progress, cron will resume ── */
       const elapsed = Date.now() - fnStart;
       if (elapsed > TIMEOUT_BUFFER_MS && currentStart > startWeek) {
-        console.log(`Approaching timeout (${Math.round(elapsed / 1000)}s elapsed). Auto-resuming from week ${currentStart}.`);
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-        after(async () => {
-          try {
-            await fetch(`${siteUrl}/api/generate-plan/continue`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                submission_id, totalWeeks, startWeek: currentStart, lastPhase: currentPhase,
-              }),
-            });
-          } catch (e) {
-            console.error("Failed to auto-resume:", e);
-          }
-        });
-        return NextResponse.json({ ok: true, status: "auto-resuming", weeksCompleted: currentStart - 1 });
+        console.log(`Approaching timeout (${Math.round(elapsed / 1000)}s elapsed). Saving progress at week ${currentStart - 1}. Cron will resume.`);
+        return NextResponse.json({ ok: true, status: "timeout-saved", weeksCompleted: currentStart - 1 });
       }
 
       const weeksToGenerate = skeleton.weeks.filter(

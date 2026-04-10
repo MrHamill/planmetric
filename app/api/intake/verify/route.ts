@@ -122,19 +122,9 @@ export async function GET(req: NextRequest) {
         console.error("Starter plan delivery error:", e);
       }
     });
-  } else if (submission.plan === "premium" || submission.plan === "elite") {
-    after(async () => {
-      try {
-        await fetch(`${siteUrl}/api/generate-plan`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ submission_id: submissionId }),
-        });
-      } catch (e) {
-        console.error("Plan generation trigger error:", e);
-      }
-    });
   }
+  // Premium/Elite plan generation is handled by the cron job (/api/cron/resume-plans)
+  // which runs every 5 minutes and picks up paid submissions automatically.
 
   return NextResponse.json({ ok: true, email: submission.email });
 }
