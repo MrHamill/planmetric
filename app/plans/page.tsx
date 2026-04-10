@@ -472,7 +472,6 @@ export default function PlansPage() {
                           </thead>
                           <tbody>
                             {[
-                              ["Easy pace", "7:00–8:00+/km", "5:45–6:30/km", "4:30–5:15/km"],
                               ["5K target", "30–40+ min", "22–30 min", "<17–22 min"],
                               ["10K target", "60–80+ min", "48–65 min", "<38–48 min"],
                               ["Half Marathon", "2:15–2:45+", "1:45–2:15", "<1:25–1:45"],
@@ -505,11 +504,13 @@ export default function PlansPage() {
                           </thead>
                           <tbody>
                             {[
-                              ["Swim (per 100m)", "2:20–2:40+", "1:50–2:20", "<1:30–1:50"],
+                              ["Swim easy", "2:20–2:40+/100m", "1:50–2:20/100m", "<1:30–1:50/100m"],
+                              ["Swim hard", "2:00–2:20+/100m", "1:35–2:00/100m", "<1:15–1:35/100m"],
                               ["Bike easy", "22–26+ km/h", "26–30 km/h", "30–35 km/h"],
                               ["Bike hard", "28–32 km/h", "32–36 km/h", "36–42+ km/h"],
                               ["FTP", "<150W", "150–220W", "220W+"],
                               ["Run easy", "7:00–8:00+/km", "5:45–6:30/km", "4:30–5:15/km"],
+                              ["Run hard", "5:30–6:30+/km", "4:30–5:30/km", "<3:50–4:30/km"],
                             ].map(([label, ...vals]) => (
                               <tr key={label} style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
                                 <td className="py-3 px-4 font-label text-xs tracking-wide" style={{ color: DIM }}>{label}</td>
