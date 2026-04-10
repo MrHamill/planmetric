@@ -423,6 +423,115 @@ export default function PlansPage() {
             ))}
           </div>
 
+          {/* ─── Level guide accordion ─────────────────── */}
+          <div className="mb-12">
+            <button
+              onClick={() => toggleSection("__level_guide__")}
+              className="w-full flex items-center justify-between py-5 px-6 rounded-sm cursor-pointer transition-all duration-200 group"
+              style={{
+                background: openSections.has("__level_guide__") ? "rgba(184,92,44,0.08)" : CARD_BG,
+                border: `1px solid ${openSections.has("__level_guide__") ? ACCENT : CARD_BORDER}`,
+              }}
+            >
+              <span className="font-label text-sm font-bold tracking-widest uppercase" style={{ color: ACCENT }}>
+                Not sure which level? Use these tables to help
+              </span>
+              <motion.svg
+                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                stroke="currentColor" strokeWidth="1.5"
+                style={{ color: DIM }}
+                animate={{ rotate: openSections.has("__level_guide__") ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <path d="M5 8l5 5 5-5" />
+              </motion.svg>
+            </button>
+
+            <AnimatePresence>
+              {openSections.has("__level_guide__") && (
+                <motion.div
+                  className="overflow-hidden"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" as const }}
+                >
+                  <div className="pt-6 pb-4 px-2 space-y-8">
+                    {/* Running table */}
+                    <div>
+                      <h3 className="font-headline text-lg font-bold mb-4">Running</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm font-body" style={{ borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
+                              <th className="text-left py-3 px-4 font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}></th>
+                              {LEVELS.map(l => (
+                                <th key={l} className="text-center py-3 px-4 font-label text-[10px] uppercase tracking-widest" style={{ color: LEVEL_COLORS[l].text }}>{l}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              ["Easy pace", "7:00–8:00+/km", "5:45–6:30/km", "4:30–5:15/km"],
+                              ["5K target", "30–40+ min", "22–30 min", "<17–22 min"],
+                              ["10K target", "60–80+ min", "48–65 min", "<38–48 min"],
+                              ["Half Marathon", "2:15–2:45+", "1:45–2:15", "<1:25–1:45"],
+                              ["Marathon", "4:30–5:30+", "3:30–4:30", "<2:55–3:30"],
+                            ].map(([label, ...vals]) => (
+                              <tr key={label} style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
+                                <td className="py-3 px-4 font-label text-xs tracking-wide" style={{ color: DIM }}>{label}</td>
+                                {vals.map((v, i) => (
+                                  <td key={i} className="text-center py-3 px-4" style={{ color: "rgba(245,245,240,0.8)" }}>{v}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Triathlon table */}
+                    <div>
+                      <h3 className="font-headline text-lg font-bold mb-4">Triathlon</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm font-body" style={{ borderCollapse: "collapse" }}>
+                          <thead>
+                            <tr style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
+                              <th className="text-left py-3 px-4 font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}></th>
+                              {LEVELS.map(l => (
+                                <th key={l} className="text-center py-3 px-4 font-label text-[10px] uppercase tracking-widest" style={{ color: LEVEL_COLORS[l].text }}>{l}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              ["Swim (per 100m)", "2:20–2:40+", "1:50–2:20", "<1:30–1:50"],
+                              ["Bike easy", "22–26+ km/h", "26–30 km/h", "30–35 km/h"],
+                              ["Bike hard", "28–32 km/h", "32–36 km/h", "36–42+ km/h"],
+                              ["FTP", "<150W", "150–220W", "220W+"],
+                              ["Run easy", "7:00–8:00+/km", "5:45–6:30/km", "4:30–5:15/km"],
+                            ].map(([label, ...vals]) => (
+                              <tr key={label} style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
+                                <td className="py-3 px-4 font-label text-xs tracking-wide" style={{ color: DIM }}>{label}</td>
+                                {vals.map((v, i) => (
+                                  <td key={i} className="text-center py-3 px-4" style={{ color: "rgba(245,245,240,0.8)" }}>{v}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <p className="font-body text-xs" style={{ color: DIM }}>
+                      These are approximate ranges &mdash; if you&rsquo;re between levels, choose the lower one and build up.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {/* Event groups — collapsible accordions */}
           <div className="space-y-4">
             {filteredEvents.map((event) => {
