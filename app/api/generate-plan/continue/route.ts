@@ -9,7 +9,7 @@ import type { AiResponse } from "../route";
 import { buildSkeleton, parseAthleteInputs } from "@/lib/plan-skeleton";
 import type { Phase } from "@/lib/plan-skeleton";
 import { calculateZones } from "@/lib/plan-zones";
-import { buildPartialHtml, buildClosingSections, injectCss } from "@/lib/plan-html";
+import { buildPartialHtml, buildClosingSections, injectCss, correctSwimDistances } from "@/lib/plan-html";
 import type { WeekContent, FinalSections } from "@/lib/plan-html";
 import { validatePlan } from "@/lib/validate-plan";
 import type { ValidationResult } from "@/lib/validate-plan";
@@ -139,6 +139,7 @@ export async function POST(req: NextRequest) {
         /* ── Stitch everything together ────────────────────── */
         let fullPlan = accumulatedHtml + "\n\n" + chunkHtml + "\n\n" + closingHtml;
         fullPlan = await injectCss(fullPlan);
+        fullPlan = correctSwimDistances(fullPlan);
 
         /* ── Validate final plan ───────────────────────────── */
         const validationResults = validatePlan(fullPlan, {

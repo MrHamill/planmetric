@@ -136,7 +136,13 @@ export function buildPartialHtml(
     sections.push(renderDisclaimer());
   }
 
+  // If no phase state provided but we're not starting from week 1,
+  // infer the correct phase from the previous week to prevent duplicate banners
   let lastPhase = currentPhaseState;
+  if (!lastPhase && startWeek > 1) {
+    const prevWeek = skeleton.weeks.find(w => w.weekNumber === startWeek - 1);
+    if (prevWeek) lastPhase = prevWeek.phase;
+  }
   const weekContentMap = new Map(weekContents.map(w => [w.weekNumber, w]));
 
   for (const week of skeleton.weeks) {
@@ -545,6 +551,25 @@ export async function injectCss(html: string): Promise<string> {
     return html.replace("</head>", `<style>${css}</style>\n</head>`);
   }
   return html;
+}
+
+/* ─── Swim Distance Correction ─────────────────────────────── */
+
+/**
+ * Round all swim distances to the nearest 50m multiple.
+ * The AI sometimes generates 25m, 75m, 125m etc. despite prompt rules.
+ * This catches and fixes them in the final HTML.
+ */
+export function correctSwimDistances(html: string): string {
+  // Match distances like "75m", "125 m", "225m" that aren't part of pace (e.g. 1:45/100m)
+  return html.replace(/(?<![:/\d])(\d{2,4})\s*m\b/gi, (match, distStr) => {
+    const dist = parseInt(distStr, 10);
+    if (dist >= 25 && dist % 50 !== 0) {
+      const corrected = Math.round(dist / 50) * 50;
+      return match.replace(distStr, String(corrected));
+    }
+    return match;
+  });
 }
 
 /* ─── Helpers ────────────────────────────────────────────────── */

@@ -409,8 +409,11 @@ function assignTrainingDays(inputs: AthleteInputs): {
     training.add(preferredRest);
   }
 
-  const trainingDays = available.filter(d => training.has(d)); // maintain day order
-  const restDays = available.filter(d => !training.has(d));
+  // Sort training and rest days into Mon–Sun calendar order
+  const trainingDays = available.filter(d => training.has(d))
+    .sort((a, b) => ALL_DAYS.indexOf(a as typeof ALL_DAYS[number]) - ALL_DAYS.indexOf(b as typeof ALL_DAYS[number]));
+  const restDays = available.filter(d => !training.has(d))
+    .sort((a, b) => ALL_DAYS.indexOf(a as typeof ALL_DAYS[number]) - ALL_DAYS.indexOf(b as typeof ALL_DAYS[number]));
 
   return { trainingDays, restDays, longDay };
 }
@@ -559,14 +562,15 @@ function assignTriathlonSessions(ctx: SessionAssignmentContext): SessionSlot[] {
       // Can't hit 3/3/3=9 in 5 single sessions — use combo sessions
       roles = ["S", "B", "R", "LB", "LR"];
     } else {
-      roles = ["S", "B", "R", "BQ", "LR"];
+      // Olympic: long ride is essential for the 40km bike leg
+      roles = ["S", "B", "R", "LB", "LR"];
     }
     while (roles.length < n) roles.splice(2, 0, "S");
   } else if (n === 6) {
     if (isLong) {
       roles = ["S", "B", "R", "SQ", "LB", "LR"];
     } else {
-      roles = ["S", "B", "R", "SQ", "BQ", "LR"];
+      roles = ["S", "B", "R", "SQ", "LB", "LR"];
     }
   } else {
     // 7 days
