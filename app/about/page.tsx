@@ -164,8 +164,9 @@ export default function AboutPage() {
                 Let&rsquo;s see if Plan Metric can get me to go sub&#8209;5.
               </p>
               <p style={{ color: TEXT }}>
-                I don&rsquo;t have letters after my name. I have race finishes, thousands of
-                hours of research, and a system that works.
+                I don&rsquo;t have letters after my name. What I have is an
+                obsession with the science behind performance and the
+                conviction that athletes deserve better than a generic plan.
               </p>
             </motion.div>
           </div>
