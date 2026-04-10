@@ -89,11 +89,11 @@ const PLANS = [
 const DIFFERENTIATORS = [
   {
     title: "vs. Training Platforms",
-    body: "TrainingPeaks and Intervals.icu give you tools \u2014 not a plan. You still build it yourself. We do the building.",
+    body: "Most training platforms give you tools \u2014 not a plan. You still have to build it yourself. We do the building for you.",
   },
   {
     title: "vs. Algorithm Apps",
-    body: "TrainerRoad and Zwift offer structured workouts, but they\u2019re one-size-fits-all. No adaptation to your life, injuries, or race date.",
+    body: "Algorithm-driven apps offer structured workouts, but they\u2019re built for an average athlete that doesn\u2019t exist. No adaptation to your life, your injuries, or your race date.",
   },
   {
     title: "vs. Hiring a Coach",
