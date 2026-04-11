@@ -156,7 +156,8 @@ export async function POST(req: NextRequest) {
           },
         };
 
-        const closingHtml = buildClosingSections(skeleton, finalSections);
+        const raceName = String(d.raceName || d.trainingFor || "Race");
+        const closingHtml = buildClosingSections(skeleton, finalSections, raceName, sub.plan || "premium");
 
         /* ── Stitch everything together ────────────────────── */
         let fullPlan = accumulatedHtml + "\n\n" + chunkHtml + "\n\n" + closingHtml;

@@ -64,18 +64,19 @@ export function buildFullPlanHtml(
   const goal = String(d.mainGoal || d.targetTime || "Complete the race");
   const targetTime = String(d.targetTime || "");
 
+  const firstName = name.split(" ")[0];
+  const deliveredDate = new Date().toISOString().split("T")[0];
   const sections: string[] = [];
 
   sections.push(renderHead(name, raceName));
-  sections.push("<body>");
+  sections.push(`<body data-delivered="${deliveredDate}" data-firstname="${esc(firstName)}">`);
   sections.push(renderHeader(planTier));
-  sections.push(renderHero(name, raceName, raceDate, goal, targetTime, skeleton, d));
+  sections.push(renderHero(name, raceName, raceDate, goal));
   sections.push(renderPlanOverview(name, raceName, raceDate, targetTime, skeleton, d));
   sections.push('<div class="container">');
-  sections.push(renderZonesSection(zones, skeleton.eventType));
   sections.push(renderHowToUse(skeleton.eventType, skeleton.trainingDays));
+  sections.push(renderZonesSection(zones, skeleton.eventType));
   sections.push(renderDisclaimer());
-  sections.push(renderPhaseBreakdown(skeleton.phases, finalSections.phaseDescriptions));
 
   // Weeks with phase banners
   let currentPhase: Phase | null = null;
@@ -95,7 +96,10 @@ export function buildFullPlanHtml(
   sections.push(renderRaceDayProtocol(finalSections.raceDayProtocol));
   sections.push(renderGlossary(finalSections.glossary));
   sections.push(renderCoachTips(finalSections.tips));
+  sections.push(renderUpsell(raceName, planTier));
   sections.push(renderFooter());
+  sections.push(renderCheckinPopup());
+  sections.push(renderBottomScripts());
   sections.push("</body></html>");
 
   return sections.join("\n");
@@ -127,14 +131,17 @@ export function buildPartialHtml(
     const goal = String(d.mainGoal || d.targetTime || "Complete the race");
     const targetTime = String(d.targetTime || "");
 
+    const firstName = name.split(" ")[0];
+    const deliveredDate = new Date().toISOString().split("T")[0];
+
     sections.push(renderHead(name, raceName));
-    sections.push("<body>");
+    sections.push(`<body data-delivered="${deliveredDate}" data-firstname="${esc(firstName)}">`);
     sections.push(renderHeader(planTier));
-    sections.push(renderHero(name, raceName, raceDate, goal, targetTime, skeleton, d));
+    sections.push(renderHero(name, raceName, raceDate, goal));
     sections.push(renderPlanOverview(name, raceName, raceDate, targetTime, skeleton, d));
     sections.push('<div class="container">');
-    sections.push(renderZonesSection(zones, skeleton.eventType));
     sections.push(renderHowToUse(skeleton.eventType, skeleton.trainingDays));
+    sections.push(renderZonesSection(zones, skeleton.eventType));
     sections.push(renderDisclaimer());
   }
 
@@ -170,6 +177,8 @@ export function buildPartialHtml(
 export function buildClosingSections(
   skeleton: PlanSkeleton,
   finalSections: FinalSections,
+  raceName?: string,
+  planTier?: string,
 ): string {
   const sections: string[] = [];
   sections.push(renderPhaseBreakdown(skeleton.phases, finalSections.phaseDescriptions));
@@ -177,7 +186,10 @@ export function buildClosingSections(
   sections.push(renderRaceDayProtocol(finalSections.raceDayProtocol));
   sections.push(renderGlossary(finalSections.glossary));
   sections.push(renderCoachTips(finalSections.tips));
+  sections.push(renderUpsell(raceName || "your race", planTier || "premium"));
   sections.push(renderFooter());
+  sections.push(renderCheckinPopup());
+  sections.push(renderBottomScripts());
   sections.push("</body></html>");
   return sections.join("\n");
 }
@@ -195,6 +207,12 @@ function renderHead(athleteName: string, raceName: string): string {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script>
+  function dismissCheckin(){
+    document.getElementById('pm-checkin-overlay').style.display='none';
+    try{localStorage.setItem('pm_checkin_shown','1');}catch(e){}
+  }
+  </script>
 </head>`;
 }
 
@@ -210,35 +228,20 @@ function renderHeader(planTier: string): string {
 
 function renderHero(
   name: string, raceName: string, raceDate: string,
-  goal: string, targetTime: string,
-  skeleton: PlanSkeleton, d: Record<string, unknown>,
+  goal: string,
 ): string {
-  const stats: string[] = [];
-
-  stats.push(renderStatCard(String(skeleton.totalWeeks), "Weeks"));
-  stats.push(renderStatCard(String(skeleton.trainingDays.length), "Days/Week"));
-
-  if (targetTime) {
-    stats.push(renderStatCard(targetTime, "Target Time"));
-  }
-
-  const peakHours = (skeleton.peakVolumeMinutes / 60).toFixed(1);
-  stats.push(renderStatCard(`${peakHours}h`, "Peak Volume"));
-
   return `<section class="hero">
   <div class="hero-content">
     <h1 class="athlete-name">${esc(name)}</h1>
     <div class="race-info">${esc(raceName)}${raceDate ? ` — <span class="race-date">${esc(raceDate)}</span>` : ""}</div>
     <div class="goal-badge">${esc(goal)}</div>
-    <div class="stats-row">
-      ${stats.join("\n      ")}
-    </div>
   </div>
 </section>`;
 }
 
-function renderStatCard(value: string, label: string): string {
-  return `<div class="stat-card"><div class="stat-value">${esc(value)}</div><div class="stat-label">${esc(label)}</div></div>`;
+function renderStatCard(value: string, label: string, highlight = false): string {
+  const cls = highlight ? "stat-card stat-card-highlight" : "stat-card";
+  return `<div class="${cls}"><div class="stat-value">${esc(value)}</div><div class="stat-label">${esc(label)}</div></div>`;
 }
 
 function renderZonesSection(zones: TrainingZones, eventType: EventType): string {
@@ -254,11 +257,13 @@ function renderZonesSection(zones: TrainingZones, eventType: EventType): string 
     disciplines.push(renderZoneDiscipline("Swimming Zones", "pool", zones.swim));
   }
 
-  return `<section class="section">
-  <h2 class="section-title"><span class="material-symbols-outlined">speed</span> Your Training Zones</h2>
-  <div class="zones-grid">
+  return `<section class="section collapsible-section">
+  <details>
+    <summary class="section-summary"><span class="material-symbols-outlined">speed</span> Your Training Zones</summary>
+    <div class="zones-grid">
     ${disciplines.join("\n    ")}
-  </div>
+    </div>
+  </details>
 </section>`;
 }
 
@@ -285,15 +290,17 @@ function renderZoneDiscipline(title: string, icon: string, entries: ZoneEntry[])
   }).join("\n        ");
 
   return `<div class="zone-discipline">
-      <h3 class="discipline-title"><span class="material-symbols-outlined">${icon}</span> ${esc(title)}</h3>
-      <div class="zone-table-wrap">
-        <table class="zone-table">
-          <thead><tr>${headerCols}</tr></thead>
-          <tbody>
-        ${rows}
-          </tbody>
-        </table>
-      </div>
+      <details>
+        <summary class="discipline-title"><span class="material-symbols-outlined">${icon}</span> ${esc(title)}</summary>
+        <div class="zone-table-wrap">
+          <table class="zone-table">
+            <thead><tr>${headerCols}</tr></thead>
+            <tbody>
+          ${rows}
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>`;
 }
 
@@ -315,11 +322,13 @@ function renderHowToUse(eventType: EventType, trainingDays: string[]): string {
     `<li><span class="material-symbols-outlined">${i.icon}</span> ${i.text}</li>`
   ).join("\n      ");
 
-  return `<section class="section">
-  <h2 class="section-title"><span class="material-symbols-outlined">menu_book</span> How To Use This Plan</h2>
-  <ul class="instructions-list">
+  return `<section class="section collapsible-section">
+  <details>
+    <summary class="section-summary"><span class="material-symbols-outlined">menu_book</span> How To Use This Plan</summary>
+    <ul class="instructions-list">
       ${lis}
-  </ul>
+    </ul>
+  </details>
 </section>`;
 }
 
@@ -349,11 +358,13 @@ function renderPhaseBreakdown(phases: PhaseRange[], descriptions: Record<string,
     </div>`;
   }).join("\n    ");
 
-  return `<section class="section">
-  <h2 class="section-title"><span class="material-symbols-outlined">timeline</span> Your Training Phases</h2>
-  <div class="phase-breakdown">
+  return `<section class="section collapsible-section">
+  <details>
+    <summary class="section-summary"><span class="material-symbols-outlined">timeline</span> Your Training Phases</summary>
+    <div class="phase-breakdown">
     ${cards}
-  </div>
+    </div>
+  </details>
 </section>`;
 }
 
@@ -414,11 +425,6 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
     `<span class="badge ${disciplineBadgeClass(d)}">${d.toUpperCase()}</span>`
   ).join(" ");
 
-  const dayCards = week.sessions.map((slot, i) => {
-    const sc = sessionMap.get(i);
-    return renderDayCard(slot, sc);
-  }).join("\n        ");
-
   return `<div class="weekly-accordion">
   <details>
     <summary>
@@ -430,11 +436,8 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
       </div>
     </summary>
     <div class="week-content">
-      ${renderMiniCalendar(week)}
       <div class="weekly-summary">${esc(summary)}</div>
-      <div class="days-grid">
-        ${dayCards}
-      </div>
+      ${renderMiniCalendar(week, sessionMap)}
     </div>
   </details>
 </div>`;
@@ -444,23 +447,60 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
 
 const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
-function renderMiniCalendar(week: WeekSkeleton): string {
-  const sessionsByDay = new Map<string, SessionSlot>();
-  for (const s of week.sessions) {
-    sessionsByDay.set(s.day, s);
+function renderMiniCalendar(week: WeekSkeleton, contentMap: Map<number, SessionContent>): string {
+  const sessionsByDay = new Map<string, { slot: SessionSlot; idx: number }>();
+  week.sessions.forEach((s, i) => sessionsByDay.set(s.day, { slot: s, idx: i }));
+
+  const calId = `cal-${week.weekNumber}`;
+  const tiles: string[] = [];
+  const details: string[] = [];
+
+  for (const day of ALL_DAYS) {
+    const entry = sessionsByDay.get(day);
+    if (entry) {
+      const { slot, idx } = entry;
+      const cls = disciplineBadgeClass(slot.discipline);
+      const timeLabel = slot.timeSlot ? `<span class="cal-time">${esc(slot.timeSlot)}</span>` : "";
+      const content = contentMap.get(idx);
+      const sessionName = content?.sessionName || formatSessionType(slot.sessionType);
+      const warmUp = content?.warmUp || "";
+      const mainSet = content?.mainSet || "";
+      const coolDown = content?.coolDown || "";
+      const total = content?.total || `${slot.durationMinutes} min`;
+      const coachNote = content?.coachingNote || "";
+      const detailId = `${calId}-${day}`;
+
+      tiles.push(`<div class="cal-day cal-active" data-cal="${calId}" data-detail="${detailId}">
+        <span class="cal-label">${day}</span>
+        <span class="badge ${cls} cal-badge">${slot.discipline.toUpperCase()}</span>
+        ${timeLabel}
+        <span class="cal-dur">${slot.durationMinutes}min</span>
+        <span class="cal-zone">${esc(slot.zone)}</span>
+      </div>`);
+
+      details.push(`<div class="cal-detail" id="${detailId}">
+        <div class="cal-detail-inner">
+          <h4 class="cal-detail-title">${esc(sessionName)}</h4>
+          <div class="structure-item"><span class="structure-label">Warm-up:</span> ${esc(warmUp)}</div>
+          <div class="structure-item"><span class="structure-label">Main Set:</span> ${esc(mainSet)}</div>
+          <div class="structure-item"><span class="structure-label">Cool-down:</span> ${esc(coolDown)}</div>
+          <div class="structure-item"><span class="structure-label">Total:</span> ${esc(total)}</div>
+          <div class="coaching-note"><div class="note-title">Coach's Note:</div>${esc(coachNote)}</div>
+        </div>
+      </div>`);
+    } else {
+      tiles.push(`<div class="cal-day cal-rest"><span class="cal-label">${day}</span><span class="cal-off">Rest</span></div>`);
+    }
   }
 
-  const cells = ALL_DAYS.map(day => {
-    const session = sessionsByDay.get(day);
-    if (session) {
-      const cls = disciplineBadgeClass(session.discipline);
-      return `<div class="cal-day cal-active"><span class="cal-label">${day}</span><span class="badge ${cls} cal-badge">${session.discipline.toUpperCase()}</span></div>`;
-    }
-    return `<div class="cal-day cal-rest"><span class="cal-label">${day}</span><span class="cal-off">Rest</span></div>`;
-  }).join("\n      ");
-
-  return `<div class="mini-calendar">
-      ${cells}
+  return `<div class="mini-calendar-wrap" data-cal="${calId}">
+      <div class="mini-calendar">
+      ${tiles.join("\n      ")}
+      </div>
+      <div class="cal-details-container">
+      ${details.join("\n      ")}
+      </div>
+      <div class="cal-hint" data-cal-hint="${calId}">Tap a day to view the session</div>
     </div>`;
 }
 
@@ -525,7 +565,7 @@ function renderRaceDayProtocol(raceDayContent: RaceDayContent): string {
 
   return `<section class="race-protocol">
   <h2><span class="material-symbols-outlined">flag</span> Race Day Protocol</h2>
-  <details class="protocol-section" open>
+  <details class="protocol-section">
     <summary>Pre-Race Timeline</summary>
     <div>${raceDayContent.preRaceTimeline}</div>
   </details>
@@ -549,11 +589,13 @@ function renderGlossary(terms: GlossaryTerm[]): string {
     `<div class="term"><strong>${esc(t.term)}</strong><p>${esc(t.definition)}</p></div>`
   ).join("\n    ");
 
-  return `<section class="glossary">
-  <h2><span class="material-symbols-outlined">school</span> Glossary</h2>
-  <div class="glossary-grid">
+  return `<section class="section collapsible-section">
+  <details>
+    <summary class="section-summary"><span class="material-symbols-outlined">school</span> Glossary</summary>
+    <div class="glossary-grid">
     ${items}
-  </div>
+    </div>
+  </details>
 </section>`;
 }
 
@@ -575,6 +617,88 @@ function renderCoachTips(tips: CoachTip[]): string {
     ${items}
   </div>
 </section>`;
+}
+
+/* ─── Bottom Scripts ─────────────────────────────────────────── */
+
+function renderBottomScripts(): string {
+  return `<script>
+(function(){
+  function initCalendars(){
+    var days=document.querySelectorAll('.cal-day.cal-active');
+    days.forEach(function(day){
+      day.style.cursor='pointer';
+      day.addEventListener('click',function(){
+        var detailId=day.getAttribute('data-detail');
+        var wrap=day.closest('.mini-calendar-wrap');
+        if(!wrap||!detailId)return;
+        var detail=document.getElementById(detailId);
+        if(!detail)return;
+        var allDays=wrap.querySelectorAll('.cal-day');
+        var allDetails=wrap.querySelectorAll('.cal-detail');
+        var isOpen=detail.classList.contains('cal-open');
+        allDays.forEach(function(d){d.classList.remove('cal-selected');});
+        allDetails.forEach(function(d){d.classList.remove('cal-open');});
+        if(!isOpen){
+          detail.classList.add('cal-open');
+          day.classList.add('cal-selected');
+          setTimeout(function(){detail.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+        }
+        var hint=wrap.querySelector('.cal-hint');
+        if(hint){hint.style.display='none';try{localStorage.setItem('pm-cal-hint','1');}catch(e){}}
+      });
+    });
+  }
+  // Check-in popup
+  function initCheckin(){
+    try{
+      if(localStorage.getItem('pm_checkin_shown'))return;
+      var delivered=document.body.getAttribute('data-delivered');
+      if(!delivered)return;
+      var diff=(Date.now()-new Date(delivered).getTime())/(1000*60*60*24);
+      if(diff<6)return;
+      var name=document.body.getAttribute('data-firstname')||'there';
+      var nameEl=document.getElementById('pm-checkin-name');
+      if(nameEl)nameEl.textContent=name;
+      setTimeout(function(){var o=document.getElementById('pm-checkin-overlay');if(o)o.style.display='flex';},1500);
+    }catch(e){}
+  }
+  // Cal hint
+  function initHints(){
+    try{if(localStorage.getItem('pm-cal-hint')){document.querySelectorAll('.cal-hint').forEach(function(h){h.style.display='none';});}}catch(e){}
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){initCalendars();initCheckin();initHints();});
+  }else{
+    initCalendars();initCheckin();initHints();
+  }
+})();
+</script>`;
+}
+
+/* ─── Check-in Popup ────────────────────────────────────────── */
+
+function renderCheckinPopup(): string {
+  return `<div class="checkin-overlay" id="pm-checkin-overlay" style="display:none">
+  <div class="checkin-card">
+    <p class="checkin-msg">Hey <span id="pm-checkin-name"></span> — you're a week in. How's it going so far? If the plan is working for you, a quick review means a lot to us.</p>
+    <div class="checkin-actions">
+      <a href="https://g.page/r/CQ2V9BqDaaR0EBM/review" target="_blank" rel="noopener" class="checkin-btn checkin-btn-primary" onclick="dismissCheckin()">Leave a Review</a>
+      <button class="checkin-btn checkin-btn-secondary" onclick="dismissCheckin()">Maybe Later</button>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ─── Upsell Card ───────────────────────────────────────────── */
+
+function renderUpsell(raceName: string, planTier: string): string {
+  if (planTier === "elite") return "";
+
+  return `<div class="upsell-card">
+  <p>Loved your plan? If your goals change after ${esc(raceName)} or you want a coach in your corner month to month, the Elite plan adapts your training as your fitness grows.</p>
+  <a href="https://planmetric.com.au/pricing" class="upsell-link">See Elite Plan &rarr;</a>
+</div>`;
 }
 
 /* ─── Footer ─────────────────────────────────────────────────── */
@@ -772,17 +896,23 @@ function renderPlanOverview(
 
   const paras = [p1, p2, p3].filter(p => p !== "");
 
-  // Stats row — key numbers at a glance
+  // Stats row — four boxes, always
   const stats: string[] = [];
   stats.push(renderStatCard(String(totalWeeks), "Weeks"));
   stats.push(renderStatCard(String(daysPerWeek), "Days/Week"));
-  if (targetTime) stats.push(renderStatCard(targetTime, "Target"));
-  if (comparisonSeconds && targetSeconds && comparisonSeconds > targetSeconds) {
-    const gapPct = ((comparisonSeconds - targetSeconds) / comparisonSeconds * 100).toFixed(1);
-    stats.push(renderStatCard(`${gapPct}%`, "Improvement"));
+  if (targetTime) {
+    stats.push(renderStatCard(targetTime, "Target Time", true));
   }
-  const peakHours = (skeleton.peakVolumeMinutes / 60).toFixed(1);
-  stats.push(renderStatCard(`${peakHours}h`, "Peak Volume"));
+
+  // Fourth box: Peak Volume for experienced athletes, Race Date for beginners
+  const consistency = d.trainingConsistency ? String(d.trainingConsistency) : "";
+  const isBeginner = /^(<\s*3|3.{0,3}6)\s*month/i.test(consistency);
+  if (isBeginner && raceDate) {
+    stats.push(renderStatCard(raceDate, "Race Day"));
+  } else {
+    const peakHours = (skeleton.peakVolumeMinutes / 60).toFixed(1);
+    stats.push(renderStatCard(`${peakHours}h`, "Peak Volume"));
+  }
 
   return `<section class="plan-overview">
   <div class="overview-content">

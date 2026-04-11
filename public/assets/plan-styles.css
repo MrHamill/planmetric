@@ -21,8 +21,8 @@ h1, h2, h3, h4, h5, h6 {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: #E4DAC8;
-    border-bottom: 1px solid rgba(28,22,20,0.08);
+    background: #1C1614;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
     padding: 1rem 2rem;
 }
 
@@ -42,8 +42,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .premium-badge {
-    background: linear-gradient(135deg, #A0522D, #8B4513);
-    color: white;
+    background: rgba(160, 82, 45, 0.2);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(160, 82, 45, 0.4);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.875rem;
@@ -110,6 +111,11 @@ h1, h2, h3, h4, h5, h6 {
 .stat-value {
     font-size: 1.5rem;
     font-weight: 600;
+    color: #A0522D;
+}
+
+.stat-card-highlight .stat-value {
+    font-size: 1.75rem;
     color: #A0522D;
 }
 
@@ -198,6 +204,75 @@ h1, h2, h3, h4, h5, h6 {
 
 .section-title .material-symbols-outlined {
     color: #A0522D;
+}
+
+/* Collapsible Sections */
+.collapsible-section > details > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.collapsible-section > details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.section-summary {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1C1614;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    transition: color 0.15s ease;
+}
+
+.section-summary::after {
+    content: '+';
+    margin-left: auto;
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: #A0522D;
+    transition: transform 0.2s ease;
+}
+
+details[open] > .section-summary::after {
+    content: '\2212';
+}
+
+.section-summary .material-symbols-outlined {
+    color: #A0522D;
+}
+
+.collapsible-section > details > *:not(summary) {
+    margin-top: 1.25rem;
+}
+
+/* Zone discipline subsection summaries */
+.zone-discipline > details > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.zone-discipline > details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.zone-discipline > details > .discipline-title::after {
+    content: '+';
+    margin-left: auto;
+    font-size: 1rem;
+    font-weight: 300;
+    color: #A0522D;
+}
+
+.zone-discipline > details[open] > .discipline-title::after {
+    content: '\2212';
+}
+
+.zone-discipline > details > *:not(summary) {
+    margin-top: 0.75rem;
 }
 
 /* Training Zones */
@@ -390,45 +465,26 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Phase Banner */
 .phase-banner {
-    background: linear-gradient(135deg, #A0522D, #8B4513);
-    color: white;
-    padding: 2rem;
-    border-radius: 16px;
-    text-align: center;
-    margin: 2rem 0;
+    background: rgba(160, 82, 45, 0.06);
+    border-left: 4px solid #A0522D;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0 1rem;
 }
 
-.phase-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.phase-subtitle {
-    font-size: 1.125rem;
-    opacity: 0.9;
-}
-
+.phase-title,
 .phase-banner h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #A0522D;
+    margin-bottom: 0.15rem;
 }
 
+.phase-subtitle,
 .phase-banner p {
-    font-size: 1.125rem;
-    opacity: 0.9;
-}
-
-/* Phase banner variants */
-.phase-banner.build-2,
-.phase-banner.build-3 {
-    background: linear-gradient(135deg, #A0522D, #8B4513);
-    color: white;
-    padding: 2rem;
-    border-radius: 16px;
-    text-align: center;
-    margin: 2rem 0;
+    font-size: 0.8rem;
+    color: #6B5E54;
+    opacity: 1;
 }
 
 /* Weekly Accordions */
@@ -481,11 +537,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Mini Calendar */
+.mini-calendar-wrap {
+    margin-bottom: 1.25rem;
+}
+
 .mini-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    align-items: start;
 }
 
 .cal-day {
@@ -495,12 +555,24 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
-.cal-active {
+.cal-day.cal-active {
     background: rgba(160, 82, 45, 0.1);
     border: 1px solid rgba(160, 82, 45, 0.2);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cal-day.cal-active:hover {
+    background: rgba(160, 82, 45, 0.2);
+    transform: translateY(-2px);
+}
+
+.cal-day.cal-selected {
+    background: rgba(160, 82, 45, 0.28);
+    border: 1.5px solid #A0522D;
 }
 
 .cal-rest {
@@ -525,9 +597,77 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.1rem 0.4rem !important;
 }
 
+.cal-time {
+    font-size: 0.6rem;
+    color: #6B5E54;
+}
+
+.cal-dur {
+    font-size: 0.6rem;
+    color: #3A2E28;
+    font-weight: 500;
+}
+
+.cal-zone {
+    font-size: 0.55rem;
+    color: #6B5E54;
+}
+
 .cal-off {
     font-size: 0.65rem;
     color: #6B5E54;
+}
+
+/* Calendar detail panel */
+.cal-details-container {
+    /* Holds all detail panels below the calendar grid */
+}
+
+.cal-detail {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.45s ease, opacity 0.35s ease, margin-top 0.3s ease;
+}
+
+.cal-detail.cal-open {
+    max-height: 1400px;
+    opacity: 1;
+    margin-top: 0.75rem;
+}
+
+.cal-detail-inner {
+    background: #E4DAC8;
+    border-left: 4px solid #A0522D;
+    border-radius: 10px;
+    padding: 1.25rem;
+}
+
+.cal-detail-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #A0522D;
+    margin-bottom: 0.75rem;
+}
+
+.cal-detail .structure-item {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.cal-detail .coaching-note {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Hint label */
+.cal-hint {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #6B5E54;
+    font-style: italic;
+    margin-top: 0.5rem;
 }
 
 .weekly-summary {
@@ -927,6 +1067,110 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.6;
 }
 
+/* Check-in Popup */
+.checkin-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.checkin-card {
+    background: #F0E6D4;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.checkin-msg {
+    color: #3A2E28;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+}
+
+.checkin-msg span {
+    font-weight: 600;
+}
+
+.checkin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checkin-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+}
+
+.checkin-btn-primary {
+    background: #A0522D;
+    color: white;
+}
+
+.checkin-btn-primary:hover {
+    background: #8B4513;
+}
+
+.checkin-btn-secondary {
+    background: transparent;
+    color: #6B5E54;
+    border: 1px solid rgba(28, 22, 20, 0.12);
+}
+
+.checkin-btn-secondary:hover {
+    background: rgba(28, 22, 20, 0.04);
+}
+
+/* Upsell Card */
+.upsell-card {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: rgba(160, 82, 45, 0.06);
+    border: 1px solid rgba(160, 82, 45, 0.15);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.upsell-card p {
+    color: #3A2E28;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+}
+
+.upsell-link {
+    color: #A0522D;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.upsell-link:hover {
+    text-decoration: underline;
+}
+
 /* Footer */
 .plan-footer {
     background: #1C1614;
@@ -1059,7 +1303,7 @@ h1, h2, h3, h4, h5, h6 {
         order: -1;
     }
 
-    /* Mini calendar: smaller on mobile */
+    /* Mini calendar: mobile */
     .mini-calendar {
         gap: 0.25rem;
     }
@@ -1075,6 +1319,14 @@ h1, h2, h3, h4, h5, h6 {
     .cal-badge {
         font-size: 0.55rem !important;
         padding: 0.1rem 0.3rem !important;
+    }
+
+    .cal-time, .cal-dur, .cal-zone {
+        display: none;
+    }
+
+    .cal-detail-inner {
+        padding: 1rem;
     }
 
     .week-accordion > .week-header {
@@ -1115,6 +1367,14 @@ h1, h2, h3, h4, h5, h6 {
 
     .cal-active {
         border-bottom: 2px solid #A0522D;
+    }
+
+    .cal-detail-inner {
+        padding: 0.75rem;
+    }
+
+    .cal-detail .structure-item {
+        font-size: 0.85rem;
     }
 }
 

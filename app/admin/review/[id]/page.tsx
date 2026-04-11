@@ -277,7 +277,7 @@ export default function AdminReviewPage() {
                   title="Plan Preview"
                   className="w-full border-0"
                   style={{ height: "80vh", background: "#F0E6D4" }}
-                  sandbox="allow-same-origin"
+                  sandbox="allow-same-origin allow-scripts"
                 />
               </div>
             ) : (
@@ -295,7 +295,7 @@ export default function AdminReviewPage() {
                     title="Edit Preview"
                     className="w-full h-full border-0"
                     style={{ background: "#F0E6D4" }}
-                    sandbox="allow-same-origin"
+                    sandbox="allow-same-origin allow-scripts"
                   />
                 </div>
               </div>
