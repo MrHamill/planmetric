@@ -21,7 +21,7 @@ interface FD {
   maxHR: string; maxHRUnknown: boolean; restingHR: string; restingHRUnknown: boolean;
   // S4 — Swim
   swimPaceEasy: string; swimPaceHard: string; weeklySwimVolume: string;
-  longestSwim: string; bilateralBreathing: string;
+  longestSwim: string;
   poolAccess: string; openWaterAccess: string; wetsuit: string;
   // S5 — Bike
   avgBikeSpeed: string; weeklyBikeVolume: string; longestRide: string;
@@ -30,14 +30,14 @@ interface FD {
   weeklyRunDistance: string; longestRun: string; easyRunPace: string;
   recentRunRace: string; treadmillAccess: string;
   // S7 — Discipline Ranking
-  weakestDiscipline: string; strongestDiscipline: string;
+  weakestDiscipline: string;
   // S8 — Schedule
-  trainingDaysPerWeek: string; restDaysPerWeek: string;
+  trainingDaysPerWeek: string;
   preferredTimes: string[]; availableDays: string[];
   maxWeekdaySession: string; maxWeekendSession: string;
   doubleDays: string; doubleDayCombos: string[];
   preferredLongDay: string; preferredRestDay: string;
-  workShifts: string; unavailableWeeks: string;
+  workShifts: string; unavailableDates: {start: string; end: string}[];
   // S12 — Other Sports
   otherSports: string;
   otherSport1Name: string; otherSport1Days: string[]; otherSport1Time: string;
@@ -45,13 +45,13 @@ interface FD {
   otherSport2Name: string; otherSport2Days: string[]; otherSport2Time: string;
   otherSport2Duration: string; otherSport2Intensity: string;
   // S9 — Equipment
-  gpsWatch: string; gymAccess: string; equipmentBudget: string;
+  gpsWatch: string; gymAccess: string;
   // S10 — Health
   currentInjuries: string; injuryDescription: string; injuryHistory: string;
   avgSleep: string; stressLevel: string; raceNutrition: string;
-  dietaryRestrictions: string; strengthTraining: string;
+  dietaryRestrictions: string; strengthTraining: string; strengthDays: string[];
   // S11 — Motivation
-  trainingPreference: string; intensityFeeling: string;
+  trainingPreference: string;
   trainingBlockers: string; motivation: string; successDefinition: string;
   // S13 — Final
   hasAnythingElse: string; anythingElse: string;
@@ -65,21 +65,21 @@ const INIT: FD = {
   splitSwim: "", splitT1: "", splitBike: "", splitT2: "", splitRun: "",
   maxHR: "", maxHRUnknown: false, restingHR: "", restingHRUnknown: false,
   swimPaceEasy: "", swimPaceHard: "", weeklySwimVolume: "", longestSwim: "",
-  bilateralBreathing: "", poolAccess: "", openWaterAccess: "", wetsuit: "",
+  poolAccess: "", openWaterAccess: "", wetsuit: "",
   avgBikeSpeed: "", weeklyBikeVolume: "", longestRide: "", ftp: "",
   ftpUnknown: false, bikeType: "", powerMeter: "", indoorTrainer: "",
   weeklyRunDistance: "", longestRun: "", easyRunPace: "", recentRunRace: "", treadmillAccess: "",
-  weakestDiscipline: "", strongestDiscipline: "",
-  trainingDaysPerWeek: "", restDaysPerWeek: "", preferredTimes: [], availableDays: [],
+  weakestDiscipline: "",
+  trainingDaysPerWeek: "", preferredTimes: [], availableDays: [],
   maxWeekdaySession: "", maxWeekendSession: "", doubleDays: "", doubleDayCombos: [],
-  preferredLongDay: "", preferredRestDay: "", workShifts: "", unavailableWeeks: "",
+  preferredLongDay: "", preferredRestDay: "", workShifts: "", unavailableDates: [],
   otherSports: "",
   otherSport1Name: "", otherSport1Days: [], otherSport1Time: "", otherSport1Duration: "", otherSport1Intensity: "",
   otherSport2Name: "", otherSport2Days: [], otherSport2Time: "", otherSport2Duration: "", otherSport2Intensity: "",
-  gpsWatch: "", gymAccess: "", equipmentBudget: "",
+  gpsWatch: "", gymAccess: "",
   currentInjuries: "", injuryDescription: "", injuryHistory: "",
-  avgSleep: "", stressLevel: "", raceNutrition: "", dietaryRestrictions: "", strengthTraining: "",
-  trainingPreference: "", intensityFeeling: "", trainingBlockers: "", motivation: "", successDefinition: "",
+  avgSleep: "", stressLevel: "", raceNutrition: "", dietaryRestrictions: "", strengthTraining: "", strengthDays: [],
+  trainingPreference: "", trainingBlockers: "", motivation: "", successDefinition: "",
   hasAnythingElse: "", anythingElse: "",
 };
 
@@ -310,7 +310,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         return s("trainingConsistency") && s("recentRaceResult");
 
       case 4: // Swim (triathlon)
-        return s("weeklySwimVolume") && s("longestSwim") && s("bilateralBreathing") && s("poolAccess") && s("openWaterAccess") && s("wetsuit");
+        return s("weeklySwimVolume") && s("longestSwim") && s("poolAccess") && s("openWaterAccess") && s("wetsuit");
 
       case 5: // Bike
         return s("avgBikeSpeed") && s("weeklyBikeVolume") && s("longestRide") && s("bikeType") && s("powerMeter") && s("indoorTrainer");
@@ -319,10 +319,10 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         return s("weeklyRunDistance") && s("longestRun") && s("easyRunPace") && s("treadmillAccess");
 
       case 7: // Discipline ranking
-        return s("weakestDiscipline") && s("strongestDiscipline");
+        return s("weakestDiscipline");
 
       case 8: { // Schedule
-        const base = s("trainingDaysPerWeek") && s("restDaysPerWeek") && s("doubleDays")
+        const base = s("trainingDaysPerWeek") && s("doubleDays")
           && a("preferredTimes") && a("availableDays")
           && s("maxWeekdaySession") && s("maxWeekendSession")
           && s("preferredLongDay") && s("preferredRestDay") && s("workShifts");
@@ -331,16 +331,17 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       }
 
       case 9: // Equipment
-        return s("gpsWatch") && s("gymAccess") && s("equipmentBudget");
+        return s("gpsWatch") && s("gymAccess");
 
       case 10: { // Health
         const base = s("currentInjuries") && s("avgSleep") && s("stressLevel") && s("raceNutrition") && s("strengthTraining");
         if (form.currentInjuries === "Yes" && !s("injuryDescription")) return false;
+        if (form.strengthTraining === "Yes — regularly (2+ times/week)" && !a("strengthDays")) return false;
         return base;
       }
 
       case 11: // Motivation
-        return s("trainingPreference") && s("intensityFeeling") && s("trainingBlockers") && s("motivation") && s("successDefinition");
+        return s("trainingPreference") && s("trainingBlockers") && s("motivation") && s("successDefinition");
 
       case 12: { // Other sports
         if (!s("otherSports")) return false;
@@ -541,9 +542,6 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           <F label="Longest continuous swim in last 4 weeks (metres) *" note="Determines where race-distance building starts" error={mt("longestSwim")}>
             <TextInput value={form.longestSwim} onChange={v => upd("longestSwim", v)} type="number" placeholder="e.g. 1500" error={mt("longestSwim")} />
           </F>
-          <F label="Bilateral breathing (every 3 strokes)? *" error={mt("bilateralBreathing")}>
-            <SelectInput value={form.bilateralBreathing} onChange={v => upd("bilateralBreathing", v)} options={["Yes", "No", "Learning"]} error={mt("bilateralBreathing")} />
-          </F>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <F label="Pool access *" error={mt("poolAccess")}>
               <SelectInput value={form.poolAccess} onChange={v => upd("poolAccess", v)} options={["Year-round", "Seasonal", "No access"]} error={mt("poolAccess")} />
@@ -620,16 +618,11 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         <div className="space-y-6">
           <InfoBox
             title="Why this matters"
-            body="Your weakest discipline gets 35% of training volume. Your strongest gets 25% (maintenance only). This balance is the core of your plan structure."
+            body="Your weakest discipline gets extra training volume so you improve where it matters most. This is the core of your plan structure."
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="Your WEAKEST discipline *" error={mt("weakestDiscipline")}>
-              <SelectInput value={form.weakestDiscipline} onChange={v => upd("weakestDiscipline", v)} options={["Swim", "Bike", "Run"]} error={mt("weakestDiscipline")} />
-            </F>
-            <F label="Your STRONGEST discipline *" error={mt("strongestDiscipline")}>
-              <SelectInput value={form.strongestDiscipline} onChange={v => upd("strongestDiscipline", v)} options={["Swim", "Bike", "Run"]} error={mt("strongestDiscipline")} />
-            </F>
-          </div>
+          <F label="Your WEAKEST discipline *" error={mt("weakestDiscipline")}>
+            <SelectInput value={form.weakestDiscipline} onChange={v => upd("weakestDiscipline", v)} options={["Swim", "Bike", "Run"]} error={mt("weakestDiscipline")} />
+          </F>
         </div>
       );
 
@@ -638,12 +631,9 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const showCombos = ["Yes", "Sometimes"].includes(form.doubleDays);
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <F label="Training days per week *" error={mt("trainingDaysPerWeek")}>
                 <SelectInput value={form.trainingDaysPerWeek} onChange={v => upd("trainingDaysPerWeek", v)} options={["3", "4", "5", "6", "7"]} error={mt("trainingDaysPerWeek")} />
-              </F>
-              <F label="Rest days per week *" error={mt("restDaysPerWeek")}>
-                <SelectInput value={form.restDaysPerWeek} onChange={v => upd("restDaysPerWeek", v)} options={["1", "2", "3"]} error={mt("restDaysPerWeek")} />
               </F>
               <F label="Double days? *" note="Two sessions in one day" error={mt("doubleDays")}>
                 <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} error={mt("doubleDays")} />
@@ -686,8 +676,38 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               <SelectInput value={form.workShifts} onChange={v => upd("workShifts", v)}
                 options={["No — standard hours", "Yes — rotating shifts", "Yes — night shifts", "Yes — FIFO or travel-based"]} error={mt("workShifts")} />
             </F>
-            <F label="Weeks you cannot train (holidays, travel)" note='Optional — e.g. "2 weeks in Bali in July" or "None"'>
-              <TextareaInput value={form.unavailableWeeks} onChange={v => upd("unavailableWeeks", v)} placeholder='e.g. "2 weeks off in July" or "None"' rows={2} />
+            <F label="Weeks you cannot train (holidays, travel)" note="Optional — add up to 3 date ranges">
+              <div className="space-y-3">
+                {form.unavailableDates.map((range, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input type="date" value={range.start} onChange={e => {
+                      const updated = [...form.unavailableDates];
+                      updated[i] = { ...updated[i], start: e.target.value };
+                      upd("unavailableDates", updated);
+                    }} className={inp + " flex-1"} style={inpStyle} />
+                    <span className="font-label text-xs" style={{ color: DIM }}>to</span>
+                    <input type="date" value={range.end} onChange={e => {
+                      const updated = [...form.unavailableDates];
+                      updated[i] = { ...updated[i], end: e.target.value };
+                      upd("unavailableDates", updated);
+                    }} className={inp + " flex-1"} style={inpStyle} />
+                    <button type="button" onClick={() => {
+                      upd("unavailableDates", form.unavailableDates.filter((_, j) => j !== i));
+                    }} className="text-xs font-label px-2 py-1 rounded-sm transition-colors"
+                      style={{ color: DIM, border: `1px solid ${CARD_BORDER}` }}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                {form.unavailableDates.length < 3 && (
+                  <button type="button" onClick={() => {
+                    upd("unavailableDates", [...form.unavailableDates, { start: "", end: "" }]);
+                  }} className="text-xs font-label px-4 py-2 rounded-sm transition-colors"
+                    style={{ color: ACCENT, border: `1px solid ${ACCENT}` }}>
+                    + Add dates
+                  </button>
+                )}
+              </div>
             </F>
           </div>
         );
@@ -701,9 +721,6 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           </F>
           <F label="Gym / strength training access *" error={mt("gymAccess")}>
             <SelectInput value={form.gymAccess} onChange={v => upd("gymAccess", v)} options={["Full gym", "Home weights", "Bodyweight only", "None"]} error={mt("gymAccess")} />
-          </F>
-          <F label="Equipment budget for upgrades *" error={mt("equipmentBudget")}>
-            <SelectInput value={form.equipmentBudget} onChange={v => upd("equipmentBudget", v)} options={["None", "Under $200", "$200–500", "$500+"]} error={mt("equipmentBudget")} />
           </F>
         </div>
       );
@@ -744,6 +761,12 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               <SelectInput value={form.strengthTraining} onChange={v => upd("strengthTraining", v)}
                 options={["Yes — regularly (2+ times/week)", "Yes — occasionally", "No"]} error={mt("strengthTraining")} />
             </F>
+            {form.strengthTraining === "Yes — regularly (2+ times/week)" && (
+              <F label="Which days do you typically do strength training? *" error={mt("strengthDays")}>
+                <MultiSelect selected={form.strengthDays} onChange={v => upd("strengthDays", v)}
+                  options={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]} error={mt("strengthDays")} />
+              </F>
+            )}
             <F label="Dietary restrictions or allergies" note="Optional — e.g. Vegan, Gluten-free, or None">
               <TextInput value={form.dietaryRestrictions} onChange={v => upd("dietaryRestrictions", v)} placeholder='e.g. "Vegan" or "None"' />
             </F>
@@ -754,16 +777,10 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       /* ── Section 11: Motivation ── */
       case 11: return (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <F label="How do you prefer to train? *" error={mt("trainingPreference")}>
-              <SelectInput value={form.trainingPreference} onChange={v => upd("trainingPreference", v)}
-                options={["Alone", "With a partner", "In a group", "Mix of all"]} error={mt("trainingPreference")} />
-            </F>
-            <F label="How do you feel about hard sessions? *" error={mt("intensityFeeling")}>
-              <SelectInput value={form.intensityFeeling} onChange={v => upd("intensityFeeling", v)}
-                options={["Love them — bring it on", "Tolerate them — necessary evil", "Dread them — prefer easy volume"]} error={mt("intensityFeeling")} />
-            </F>
-          </div>
+          <F label="How do you prefer to train? *" error={mt("trainingPreference")}>
+            <SelectInput value={form.trainingPreference} onChange={v => upd("trainingPreference", v)}
+              options={["Alone", "With a partner", "In a group", "Mix of all"]} error={mt("trainingPreference")} />
+          </F>
           <F label="What has held your training back in the past? *" note='e.g. "Motivation", "Injuries", "Work schedule"' error={mt("trainingBlockers")}>
             <TextareaInput value={form.trainingBlockers} onChange={v => upd("trainingBlockers", v)} placeholder="Be honest — this helps us plan around your real blockers" rows={3} error={mt("trainingBlockers")} />
           </F>

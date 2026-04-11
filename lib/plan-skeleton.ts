@@ -38,6 +38,7 @@ export interface WeekSkeleton {
   weekNumber: number;
   phase: Phase;
   isRecovery: boolean;
+  isUnavailable?: boolean;    // athlete flagged this week as unavailable
   volumePercent: number;      // percent of peak volume (0-100)
   totalMinutes: number;       // target total training minutes
   dateRange: string;          // "7–13 Apr 2026"
@@ -85,6 +86,18 @@ export interface AthleteInputs {
   longestRun?: number;         // km
   longestSwim?: number;        // metres
   currentVolumeMinutes?: number; // calculated: athlete's current weekly training volume in minutes
+  // Unavailable dates
+  unavailableDates?: { start: string; end: string }[];
+  // Load day constraints
+  strengthDays?: string[];       // e.g. ["Monday", "Wednesday"]
+  otherSports?: {
+    name: string;
+    days: string[];              // e.g. ["Tue", "Thu"]
+    duration: string;
+    intensity: string;           // "Light" | "Moderate" | "High"
+  }[];
+  // Double day combos
+  doubleDayCombos?: string[];    // e.g. ["Swim + Run", "Bike + Run"]
 }
 
 /* ─── Constants ──────────────────────────────────────────────── */
@@ -97,6 +110,12 @@ const FULL_TO_SHORT: Record<string, string> = {
 };
 
 const WEEKEND = new Set(["Sat", "Sun"]);
+
+const TRIATHLON_EVENTS = new Set([
+  "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Sprint Triathlon",
+]);
+
+const LONG_COURSE = new Set(["70.3 Ironman", "Full Ironman"]);
 
 /** Phase proportions by event type [BASE, BUILD, PEAK, TAPER] */
 const PHASE_PROPORTIONS: Record<string, [number, number, number, number]> = {
@@ -126,17 +145,42 @@ export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
   const { trainingDays, restDays, longDay } = assignTrainingDays(inputs);
   const recoveryWeeks = assignRecoveryWeeks(totalWeeks, phases, inputs.age);
   const peakVolumeMinutes = estimatePeakVolume(inputs);
+  const unavailableWeeks = inputs.unavailableDates
+    ? getUnavailableWeeks(inputs.unavailableDates, inputs.raceDate, totalWeeks)
+    : new Set<number>();
+  const loadMap = buildLoadMap(inputs);
 
   const weeks: WeekSkeleton[] = [];
 
   for (let w = 1; w <= totalWeeks; w++) {
     const phase = getPhaseForWeek(w, phases);
     const isRecovery = recoveryWeeks.has(w);
-    const volumePercent = calculateWeekVolume(w, totalWeeks, phase, isRecovery, phases, inputs.currentVolumeMinutes, peakVolumeMinutes);
-    const totalMinutes = Math.round(peakVolumeMinutes * volumePercent / 100);
+    const isUnavailable = unavailableWeeks.has(w);
     const dateRange = calculateDateRange(w, inputs.raceDate, totalWeeks);
 
-    const sessions = assignSessionsForWeek({
+    // Unavailable weeks get minimal maintenance sessions
+    if (isUnavailable) {
+      const maintenanceMinutes = Math.round(peakVolumeMinutes * 0.3);
+      weeks.push({
+        weekNumber: w,
+        phase,
+        isRecovery: false,
+        isUnavailable: true,
+        volumePercent: 30,
+        totalMinutes: maintenanceMinutes,
+        dateRange,
+        sessions: [
+          { day: trainingDays[0] || "Mon", sessionType: "easy-run", discipline: "run", durationMinutes: 30, zone: "Z1-Z2", isKeySession: false },
+          { day: trainingDays[Math.min(2, trainingDays.length - 1)] || "Wed", sessionType: "easy-run", discipline: "run", durationMinutes: 30, zone: "Z1-Z2", isKeySession: false },
+        ],
+      });
+      continue;
+    }
+
+    const volumePercent = calculateWeekVolume(w, totalWeeks, phase, isRecovery, phases, inputs.currentVolumeMinutes, peakVolumeMinutes);
+    const totalMinutes = Math.round(peakVolumeMinutes * volumePercent / 100);
+
+    let sessions = assignSessionsForWeek({
       weekNumber: w,
       phase,
       isRecovery,
@@ -150,6 +194,16 @@ export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
       isLastWeek: w === totalWeeks,
       preferredTimes: inputs.preferredTimes,
     });
+
+    // Apply load-day constraints (strength days + other sports)
+    sessions = applyLoadDayConstraints(sessions, loadMap);
+
+    // Add double-day sessions for triathlon when combos are specified
+    if (inputs.doubleDayCombos && inputs.doubleDays !== "No"
+        && !isRecovery && w !== totalWeeks
+        && TRIATHLON_EVENTS.has(inputs.trainingFor)) {
+      sessions = applyDoubleDaySessions(sessions, inputs, phase);
+    }
 
     weeks.push({
       weekNumber: w,
@@ -203,6 +257,17 @@ export function parseAthleteInputs(d: Record<string, unknown>, sub: Record<strin
     longestRide: d.longestRide ? parseFloat(String(d.longestRide)) : undefined,
     longestRun: d.longestRun ? parseFloat(String(d.longestRun)) : undefined,
     longestSwim: d.longestSwim ? parseFloat(String(d.longestSwim)) : undefined,
+    // Unavailable dates
+    unavailableDates: Array.isArray(d.unavailableDates)
+      ? (d.unavailableDates as { start: string; end: string }[]).filter(r => r.start && r.end)
+      : undefined,
+    // Strength days
+    strengthDays: Array.isArray(d.strengthDays) ? (d.strengthDays as string[]) : undefined,
+    // Other sports
+    otherSports: d.otherSports === "Yes" && d.otherSport1Name ? parseOtherSports(d) : undefined,
+    // Double day combos
+    doubleDayCombos: Array.isArray(d.doubleDayCombos) && (d.doubleDayCombos as string[]).length > 0
+      ? (d.doubleDayCombos as string[]) : undefined,
   };
 
   // Calculate current weekly volume in minutes from available data
@@ -252,6 +317,238 @@ function parseSessionDuration(str: string): number {
   const minMatch = str.match(/^(\d+)\s*min$/i);
   if (minMatch) return parseInt(minMatch[1], 10);
   return 60; // default
+}
+
+/* ─── Other Sports Parser ───────────────────────────────────── */
+
+function parseOtherSports(d: Record<string, unknown>): AthleteInputs["otherSports"] {
+  const sports: NonNullable<AthleteInputs["otherSports"]> = [];
+  if (d.otherSport1Name) {
+    sports.push({
+      name: String(d.otherSport1Name),
+      days: Array.isArray(d.otherSport1Days) ? (d.otherSport1Days as string[]).map(normDay) : [],
+      duration: String(d.otherSport1Duration || ""),
+      intensity: String(d.otherSport1Intensity || "Moderate"),
+    });
+  }
+  if (d.otherSport2Name) {
+    sports.push({
+      name: String(d.otherSport2Name),
+      days: Array.isArray(d.otherSport2Days) ? (d.otherSport2Days as string[]).map(normDay) : [],
+      duration: String(d.otherSport2Duration || ""),
+      intensity: String(d.otherSport2Intensity || "Moderate"),
+    });
+  }
+  return sports.length > 0 ? sports : undefined;
+}
+
+/** Normalise "Monday" → "Mon" etc. */
+function normDay(d: string): string {
+  return FULL_TO_SHORT[d] || d;
+}
+
+/* ─── Unavailable Weeks from Date Ranges ───────────────────── */
+
+function getUnavailableWeeks(
+  dates: { start: string; end: string }[],
+  raceDate: Date | null,
+  totalWeeks: number,
+): Set<number> {
+  const unavailable = new Set<number>();
+  if (!dates.length) return unavailable;
+
+  // Calculate week 1 start (same logic as calculateDateRange)
+  let week1Start: Date;
+  if (raceDate) {
+    week1Start = new Date(raceDate);
+    week1Start.setDate(week1Start.getDate() - (totalWeeks * 7) + 1);
+    const dow = week1Start.getDay();
+    if (dow !== 1) {
+      week1Start.setDate(week1Start.getDate() - ((dow + 6) % 7));
+    }
+  } else {
+    week1Start = new Date();
+    const dayOfWeek = week1Start.getDay();
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
+    week1Start.setDate(week1Start.getDate() + daysUntilMonday);
+  }
+  week1Start.setHours(0, 0, 0, 0);
+
+  for (const range of dates) {
+    const rangeStart = new Date(range.start);
+    const rangeEnd = new Date(range.end);
+    if (isNaN(rangeStart.getTime()) || isNaN(rangeEnd.getTime())) continue;
+    rangeStart.setHours(0, 0, 0, 0);
+    rangeEnd.setHours(23, 59, 59, 999);
+
+    // Check each week for overlap
+    for (let w = 1; w <= totalWeeks; w++) {
+      const weekStart = new Date(week1Start);
+      weekStart.setDate(weekStart.getDate() + (w - 1) * 7);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      // Overlap if range and week intersect
+      if (rangeStart <= weekEnd && rangeEnd >= weekStart) {
+        unavailable.add(w);
+      }
+    }
+  }
+
+  return unavailable;
+}
+
+/* ─── Unified Load Day Map ─────────────────────────────────── */
+
+type LoadLevel = "high" | "moderate" | "low";
+
+function buildLoadMap(inputs: AthleteInputs): Map<string, LoadLevel> {
+  const map = new Map<string, LoadLevel>();
+
+  const setIfHigher = (day: string, level: LoadLevel) => {
+    const current = map.get(day);
+    const rank = { high: 3, moderate: 2, low: 1 };
+    if (!current || rank[level] > rank[current]) {
+      map.set(day, level);
+    }
+  };
+
+  // Strength days → moderate load
+  if (inputs.strengthDays) {
+    for (const day of inputs.strengthDays) {
+      setIfHigher(normDay(day), "moderate");
+    }
+  }
+
+  // Other sports → load level from intensity
+  if (inputs.otherSports) {
+    for (const sport of inputs.otherSports) {
+      const level: LoadLevel = sport.intensity === "High" ? "high"
+        : sport.intensity === "Moderate" ? "moderate" : "low";
+      for (const day of sport.days) {
+        setIfHigher(day, level);
+      }
+    }
+  }
+
+  return map;
+}
+
+/** Post-assignment: swap key sessions away from days before high/moderate load days */
+function applyLoadDayConstraints(sessions: SessionSlot[], loadMap: Map<string, LoadLevel>): SessionSlot[] {
+  if (loadMap.size === 0) return sessions;
+
+  const dayOrder = ALL_DAYS as readonly string[];
+
+  const nextDay = (day: string): string => {
+    const idx = dayOrder.indexOf(day);
+    return dayOrder[(idx + 1) % 7];
+  };
+
+  // Find key sessions that precede a load day
+  for (let i = 0; i < sessions.length; i++) {
+    const s = sessions[i];
+    if (!s.isKeySession) continue;
+
+    const next = nextDay(s.day);
+    const loadLevel = loadMap.get(next);
+    if (!loadLevel || loadLevel === "low") continue;
+
+    // Try to swap with nearest non-key session
+    let bestSwap = -1;
+    let bestDist = Infinity;
+    for (let j = 0; j < sessions.length; j++) {
+      if (j === i || sessions[j].isKeySession) continue;
+      const jNext = nextDay(sessions[j].day);
+      const jLoad = loadMap.get(jNext);
+      if (jLoad && jLoad !== "low") continue; // don't swap into another conflict
+
+      const dist = Math.abs(i - j);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestSwap = j;
+      }
+    }
+
+    if (bestSwap >= 0) {
+      // Swap the day assignments
+      const tmpDay = sessions[i].day;
+      const tmpTime = sessions[i].timeSlot;
+      sessions[i].day = sessions[bestSwap].day;
+      sessions[i].timeSlot = sessions[bestSwap].timeSlot;
+      sessions[bestSwap].day = tmpDay;
+      sessions[bestSwap].timeSlot = tmpTime;
+    }
+    // If no swap found (all key sessions), leave as-is — AI prompt handles it with softer guidance
+  }
+
+  return sessions;
+}
+
+/* ─── Double Day Sessions (triathlon) ──────────────────────── */
+
+/** Parse combo strings like "Swim + Run" into discipline pairs */
+function parseDoubleCombos(combos: string[]): Set<string> {
+  const pairs = new Set<string>();
+  for (const combo of combos) {
+    const parts = combo.toLowerCase().split(/\s*[+&]\s*/);
+    if (parts.length === 2) {
+      pairs.add(`${parts[0].trim()}|${parts[1].trim()}`);
+      pairs.add(`${parts[1].trim()}|${parts[0].trim()}`); // bidirectional
+    }
+  }
+  return pairs;
+}
+
+/** Add bonus sessions on days where the existing discipline is compatible with a double */
+function applyDoubleDaySessions(
+  sessions: SessionSlot[],
+  inputs: AthleteInputs,
+  phase: Phase,
+): SessionSlot[] {
+  if (!inputs.doubleDayCombos || inputs.doubleDayCombos.length === 0) return sessions;
+
+  const combos = parseDoubleCombos(inputs.doubleDayCombos);
+  if (combos.size === 0) return sessions;
+
+  // Determine weakest discipline — it gets the bonus session
+  const weak = inputs.weakestDiscipline?.toLowerCase() || "swim";
+  const weakDiscipline: Discipline = weak === "swim" ? "swim" : weak === "bike" ? "bike" : "run";
+
+  // Only add doubles in BUILD/PEAK for extra volume
+  if (phase !== "BUILD" && phase !== "PEAK") return sessions;
+
+  // Find a day where the existing session's discipline is compatible with the weak discipline
+  const usedDays = new Set(sessions.map(s => s.day));
+  let added = false;
+
+  for (const session of sessions) {
+    if (added) break;
+    if (session.isKeySession) continue; // don't stack on key session days
+    if (session.discipline === weakDiscipline) continue; // already training weak discipline
+
+    const pairKey = `${session.discipline}|${weakDiscipline}`;
+    if (!combos.has(pairKey)) continue;
+
+    // Add a 30-40 min easy session in the weak discipline
+    const bonusDuration = phase === "PEAK" ? 40 : 30;
+    const sessionType: SessionType = weakDiscipline === "swim" ? "swim-technique"
+      : weakDiscipline === "bike" ? "bike-endurance" : "easy-run";
+
+    sessions.push({
+      day: session.day,
+      sessionType,
+      discipline: weakDiscipline,
+      durationMinutes: bonusDuration,
+      zone: "Z1-Z2",
+      isKeySession: false,
+      timeSlot: session.timeSlot?.includes("am") ? "5:30–6:00pm" : "6:00–6:30am",
+    });
+    added = true;
+  }
+
+  return sessions;
 }
 
 /* ─── Total Weeks ────────────────────────────────────────────── */
@@ -505,12 +802,6 @@ interface SessionAssignmentContext {
   isLastWeek: boolean;
   preferredTimes: string[];
 }
-
-const TRIATHLON_EVENTS = new Set([
-  "Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Sprint Triathlon",
-]);
-
-const LONG_COURSE = new Set(["70.3 Ironman", "Full Ironman"]);
 
 function assignSessionsForWeek(ctx: SessionAssignmentContext): SessionSlot[] {
   const isTri = TRIATHLON_EVENTS.has(ctx.eventType);

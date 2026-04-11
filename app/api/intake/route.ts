@@ -105,7 +105,6 @@ function buildEmail(d: Record<string, unknown>): string {
       row("Threshold Pace",   d.swimPaceHard ? d.swimPaceHard + " /100m" : ""),
       row("Weekly Volume",    d.weeklySwimVolume as string),
       row("Longest Swim",     d.longestSwim ? d.longestSwim + " m" : ""),
-      row("Bilateral",        d.bilateralBreathing as string),
       row("Pool Access",      d.poolAccess as string),
       row("Open Water",       d.openWaterAccess as string),
       row("Wetsuit",          d.wetsuit as string),
@@ -131,12 +130,10 @@ function buildEmail(d: Record<string, unknown>): string {
 
     ${section("Discipline Ranking", [
       row("Weakest",   d.weakestDiscipline as string),
-      row("Strongest", d.strongestDiscipline as string),
     ].join(""))}
 
     ${section("Schedule & Availability", [
       row("Training Days/Week",   d.trainingDaysPerWeek as string),
-      row("Rest Days/Week",       d.restDaysPerWeek as string),
       row("Preferred Times",      d.preferredTimes as string[]),
       row("Available Days",       d.availableDays as string[]),
       row("Max Weekday Session",  d.maxWeekdaySession as string),
@@ -146,13 +143,14 @@ function buildEmail(d: Record<string, unknown>): string {
       row("Long Session Day",     d.preferredLongDay as string),
       row("Rest Day",             d.preferredRestDay as string),
       row("Work Schedule",        d.workShifts as string),
-      row("Unavailable Weeks",    d.unavailableWeeks as string),
+      row("Unavailable Dates",    Array.isArray(d.unavailableDates)
+        ? (d.unavailableDates as {start: string; end: string}[]).map(r => `${r.start} to ${r.end}`).join("; ")
+        : d.unavailableWeeks as string),
     ].join(""))}
 
     ${section("Equipment", [
       row("GPS / HRM",    d.gpsWatch as string),
       row("Gym Access",   d.gymAccess as string),
-      row("Budget",       d.equipmentBudget as string),
     ].join(""))}
 
     ${section("Health & Recovery", [
@@ -163,12 +161,12 @@ function buildEmail(d: Record<string, unknown>): string {
       row("Stress Level",       d.stressLevel as string),
       row("Race Nutrition",     d.raceNutrition as string),
       row("Strength Training",  d.strengthTraining as string),
+      row("Strength Days",      d.strengthDays as string[]),
       row("Dietary",            d.dietaryRestrictions as string),
     ].join(""))}
 
     ${section("Motivation & Preferences", [
       row("Training Preference", d.trainingPreference as string),
-      row("Intensity Feeling",   d.intensityFeeling as string),
       row("Blockers",            d.trainingBlockers as string),
       row("Motivation",          d.motivation as string),
       row("Success Definition",  d.successDefinition as string),

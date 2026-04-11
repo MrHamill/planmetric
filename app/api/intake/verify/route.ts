@@ -180,7 +180,7 @@ function buildEmail(d: Record<string, unknown>, plan: string): string {
       row("Threshold Pace", d.swimPaceHard ? d.swimPaceHard + " /100m" : ""),
       row("Weekly Volume", d.weeklySwimVolume),
       row("Longest Swim", d.longestSwim ? d.longestSwim + " m" : ""),
-      row("Bilateral", d.bilateralBreathing), row("Pool Access", d.poolAccess),
+      row("Pool Access", d.poolAccess),
       row("Open Water", d.openWaterAccess), row("Wetsuit", d.wetsuit),
     ].join(""))}
     ${section("Bike", [
@@ -197,10 +197,10 @@ function buildEmail(d: Record<string, unknown>, plan: string): string {
       row("Recent Race", d.recentRunRace), row("Treadmill", d.treadmillAccess),
     ].join(""))}
     ${section("Discipline Ranking", [
-      row("Weakest", d.weakestDiscipline), row("Strongest", d.strongestDiscipline),
+      row("Weakest", d.weakestDiscipline),
     ].join(""))}
     ${section("Schedule", [
-      row("Training Days/Week", d.trainingDaysPerWeek), row("Rest Days/Week", d.restDaysPerWeek),
+      row("Training Days/Week", d.trainingDaysPerWeek),
       row("Preferred Times", d.preferredTimes as string[]),
       row("Available Days", d.availableDays as string[]),
       row("Max Weekday Session", d.maxWeekdaySession),
@@ -208,22 +208,24 @@ function buildEmail(d: Record<string, unknown>, plan: string): string {
       row("Double Days", d.doubleDays),
       row("Double Day Combos", d.doubleDayCombos as string[]),
       row("Long Session Day", d.preferredLongDay), row("Rest Day", d.preferredRestDay),
-      row("Work Schedule", d.workShifts), row("Unavailable Weeks", d.unavailableWeeks),
+      row("Work Schedule", d.workShifts),
+      row("Unavailable Dates", Array.isArray(d.unavailableDates)
+        ? (d.unavailableDates as {start: string; end: string}[]).map(r => `${r.start} to ${r.end}`).join("; ")
+        : d.unavailableWeeks as string),
     ].join(""))}
     ${section("Equipment", [
       row("GPS / HRM", d.gpsWatch), row("Gym Access", d.gymAccess),
-      row("Budget", d.equipmentBudget),
     ].join(""))}
     ${section("Health & Recovery", [
       row("Current Injuries", d.currentInjuries),
       row("Injury Description", d.injuryDescription),
       row("Injury History", d.injuryHistory), row("Avg Sleep", d.avgSleep),
       row("Stress Level", d.stressLevel), row("Race Nutrition", d.raceNutrition),
-      row("Strength Training", d.strengthTraining), row("Dietary", d.dietaryRestrictions),
+      row("Strength Training", d.strengthTraining), row("Strength Days", d.strengthDays as string[]),
+      row("Dietary", d.dietaryRestrictions),
     ].join(""))}
     ${section("Motivation", [
       row("Training Preference", d.trainingPreference),
-      row("Intensity Feeling", d.intensityFeeling),
       row("Blockers", d.trainingBlockers), row("Motivation", d.motivation),
       row("Success Definition", d.successDefinition),
     ].join(""))}

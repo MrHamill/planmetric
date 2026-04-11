@@ -70,6 +70,7 @@ export function buildFullPlanHtml(
   sections.push("<body>");
   sections.push(renderHeader(planTier));
   sections.push(renderHero(name, raceName, raceDate, goal, targetTime, skeleton, d));
+  sections.push(renderPlanOverview(name, raceName, raceDate, targetTime, skeleton, d));
   sections.push('<div class="container">');
   sections.push(renderZonesSection(zones, skeleton.eventType));
   sections.push(renderHowToUse(skeleton.eventType, skeleton.trainingDays));
@@ -130,6 +131,7 @@ export function buildPartialHtml(
     sections.push("<body>");
     sections.push(renderHeader(planTier));
     sections.push(renderHero(name, raceName, raceDate, goal, targetTime, skeleton, d));
+    sections.push(renderPlanOverview(name, raceName, raceDate, targetTime, skeleton, d));
     sections.push('<div class="container">');
     sections.push(renderZonesSection(zones, skeleton.eventType));
     sections.push(renderHowToUse(skeleton.eventType, skeleton.trainingDays));
@@ -261,19 +263,37 @@ function renderZonesSection(zones: TrainingZones, eventType: EventType): string 
 }
 
 function renderZoneDiscipline(title: string, icon: string, entries: ZoneEntry[]): string {
-  const items = entries.map(z => {
-    const values: string[] = [];
-    if (z.hr) values.push(z.hr);
-    if (z.pace) values.push(z.pace);
-    if (z.power) values.push(z.power);
-    values.push(z.rpe);
+  // Detect which columns are present
+  const hasHr = entries.some(z => z.hr);
+  const hasPace = entries.some(z => z.pace);
+  const hasPower = entries.some(z => z.power);
 
-    return `<div class="zone-item"><span class="zone-name">${esc(z.name)}</span><div class="zone-values">${esc(values.join(" | "))}<br><small>${esc(z.description)}</small></div></div>`;
-  }).join("\n      ");
+  let headerCols = "<th>Zone</th>";
+  if (hasHr) headerCols += "<th>HR Range</th>";
+  if (hasPace) headerCols += "<th>Pace</th>";
+  if (hasPower) headerCols += "<th>Power</th>";
+  headerCols += "<th>RPE</th><th>Description</th>";
+
+  const rows = entries.map(z => {
+    let cols = `<td class="zone-name-cell">${esc(z.name)}</td>`;
+    if (hasHr) cols += `<td>${esc(z.hr || "—")}</td>`;
+    if (hasPace) cols += `<td>${esc(z.pace || "—")}</td>`;
+    if (hasPower) cols += `<td>${esc(z.power || "—")}</td>`;
+    cols += `<td>${esc(z.rpe)}</td>`;
+    cols += `<td class="zone-desc-cell">${esc(z.description)}</td>`;
+    return `<tr>${cols}</tr>`;
+  }).join("\n        ");
 
   return `<div class="zone-discipline">
       <h3 class="discipline-title"><span class="material-symbols-outlined">${icon}</span> ${esc(title)}</h3>
-      ${items}
+      <div class="zone-table-wrap">
+        <table class="zone-table">
+          <thead><tr>${headerCols}</tr></thead>
+          <tbody>
+        ${rows}
+          </tbody>
+        </table>
+      </div>
     </div>`;
 }
 
@@ -362,6 +382,24 @@ function phaseNumber(phase: Phase): number {
 /* ─── Week Accordion ─────────────────────────────────────────── */
 
 function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
+  // Unavailable weeks get a simplified self-managed card
+  if ((week as WeekSkeleton & { isUnavailable?: boolean }).isUnavailable) {
+    return `<div class="weekly-accordion">
+  <details>
+    <summary>
+      <span>Week ${week.weekNumber} — Unavailable</span>
+      <div class="week-meta">
+        <span class="badge badge-accent">Self-Managed</span>
+        <span>${esc(week.dateRange)}</span>
+      </div>
+    </summary>
+    <div class="week-content">
+      <div class="weekly-summary">You've flagged this week as unavailable — keep moving if you can but don't stress the structure. A few easy sessions will maintain your base. Pick back up where the plan resumes.</div>
+    </div>
+  </details>
+</div>`;
+  }
+
   const title = `Week ${week.weekNumber} — ${week.phase}${week.isRecovery ? " (Recovery)" : ""}`;
   const hours = (week.totalMinutes / 60).toFixed(1) + "h";
   const summary = content?.weeklySummary || "";
@@ -369,6 +407,12 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
   if (content) {
     content.sessions.forEach((s, i) => sessionMap.set(i, s));
   }
+
+  // Unique discipline badges for the collapsed header
+  const disciplines = [...new Set(week.sessions.map(s => s.discipline))].filter(d => d !== "rest" && d !== "strength");
+  const disciplineBadges = disciplines.map(d =>
+    `<span class="badge ${disciplineBadgeClass(d)}">${d.toUpperCase()}</span>`
+  ).join(" ");
 
   const dayCards = week.sessions.map((slot, i) => {
     const sc = sessionMap.get(i);
@@ -380,11 +424,13 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
     <summary>
       <span>${esc(title)}</span>
       <div class="week-meta">
+        <span class="week-disciplines">${disciplineBadges}</span>
         <span class="badge badge-accent">${hours}</span>
         <span>${esc(week.dateRange)}</span>
       </div>
     </summary>
     <div class="week-content">
+      ${renderMiniCalendar(week)}
       <div class="weekly-summary">${esc(summary)}</div>
       <div class="days-grid">
         ${dayCards}
@@ -392,6 +438,30 @@ function renderWeek(week: WeekSkeleton, content?: WeekContent): string {
     </div>
   </details>
 </div>`;
+}
+
+/* ─── Mini Calendar Strip ───────────────────────────────────── */
+
+const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+
+function renderMiniCalendar(week: WeekSkeleton): string {
+  const sessionsByDay = new Map<string, SessionSlot>();
+  for (const s of week.sessions) {
+    sessionsByDay.set(s.day, s);
+  }
+
+  const cells = ALL_DAYS.map(day => {
+    const session = sessionsByDay.get(day);
+    if (session) {
+      const cls = disciplineBadgeClass(session.discipline);
+      return `<div class="cal-day cal-active"><span class="cal-label">${day}</span><span class="badge ${cls} cal-badge">${session.discipline.toUpperCase()}</span></div>`;
+    }
+    return `<div class="cal-day cal-rest"><span class="cal-label">${day}</span><span class="cal-off">Rest</span></div>`;
+  }).join("\n      ");
+
+  return `<div class="mini-calendar">
+      ${cells}
+    </div>`;
 }
 
 /* ─── Day Card ───────────────────────────────────────────────── */
@@ -570,6 +640,159 @@ export function correctSwimDistances(html: string): string {
     }
     return match;
   });
+}
+
+/* ─── Plan Overview ─────────────────────────────────────────── */
+
+function parseTimeToSeconds(time: string): number | null {
+  const parts = time.trim().split(":").map(Number);
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return null;
+}
+
+function formatSecondsDiff(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  if (m === 0) return `${s}s`;
+  return s > 0 ? `${m}min ${s}s` : `${m}min`;
+}
+
+function renderPlanOverview(
+  name: string, raceName: string, raceDate: string,
+  targetTime: string, skeleton: PlanSkeleton, d: Record<string, unknown>,
+): string {
+  const totalWeeks = skeleton.totalWeeks;
+  const daysPerWeek = skeleton.trainingDays.length;
+  const dayList = skeleton.trainingDays.join(", ");
+  const firstName = name.split(" ")[0];
+
+  /* ── Paragraph 1: The goal ──────────────────────────────── */
+
+  const recentResult = d.recentRaceResult ? String(d.recentRaceResult).trim() : "";
+  const previousFinish = d.previousFinishTime ? String(d.previousFinishTime).trim() : "";
+  const comparisonTime = recentResult || previousFinish;
+  const comparisonSeconds = comparisonTime ? parseTimeToSeconds(comparisonTime) : null;
+  const targetSeconds = targetTime ? parseTimeToSeconds(targetTime) : null;
+
+  const successDef = d.successDefinition ? String(d.successDefinition).trim().replace(/\.+$/, "") : "";
+
+  let p1 = "";
+  if (successDef) {
+    p1 = `Your definition of success: "${esc(successDef)}." Everything in this plan points at that. `;
+  }
+  p1 += `${esc(firstName)}, this is your ${totalWeeks}-week plan for ${esc(raceName)}${raceDate ? ` on ${esc(raceDate)}` : ""} — ${daysPerWeek} days a week across ${esc(dayList)}.`;
+
+  if (targetTime && comparisonSeconds && targetSeconds && comparisonSeconds > targetSeconds) {
+    const gapSeconds = comparisonSeconds - targetSeconds;
+    const gapPercent = ((gapSeconds / comparisonSeconds) * 100).toFixed(1);
+    const gapFormatted = formatSecondsDiff(gapSeconds);
+    const isAmbitious = gapSeconds / comparisonSeconds > 0.15;
+
+    p1 += ` Your most recent result at this distance is ${esc(comparisonTime)} and you're chasing ${esc(targetTime)} — that's a ${gapPercent}% improvement, ${gapFormatted} faster.`;
+    if (isAmbitious) {
+      p1 += ` That's ambitious, and this plan is built to get you there, but it will ask for patience on the days where the numbers don't feel easy.`;
+    }
+  } else if (targetTime && comparisonTime) {
+    p1 += ` Your most recent result at this distance was ${esc(comparisonTime)} and you're targeting ${esc(targetTime)} — we'll build towards that systematically.`;
+  } else if (targetTime) {
+    p1 += ` You're targeting ${esc(targetTime)}, and every session in this plan works backwards from that number.`;
+  }
+
+  /* ── Paragraph 2: The reality ───────────────────────────── */
+
+  const hasInjury = d.currentInjuries && String(d.currentInjuries).toLowerCase() === "yes";
+  const avgSleep = d.avgSleep ? String(d.avgSleep) : "";
+  const sleepMatch = avgSleep.match(/(\d+)/);
+  const sleepHours = sleepMatch ? parseInt(sleepMatch[1], 10) : null;
+  const lowSleep = sleepHours !== null && sleepHours < 7;
+  const sleepDisplay = avgSleep.replace(/\s*h(ou)?rs?\s*$/i, "").trim();
+  const stressLevel = d.stressLevel ? String(d.stressLevel) : "";
+  const highStress = stressLevel.toLowerCase().startsWith("high");
+  const blockers = d.trainingBlockers ? String(d.trainingBlockers).trim() : "";
+  const hasBlockers = blockers !== "" && !/^(nil|none|no|n\/a)$/i.test(blockers);
+
+  const recoveryFactors = [hasInjury, lowSleep, highStress].filter(Boolean).length;
+  let p2 = "";
+
+  if (recoveryFactors > 0) {
+    // Lead with injury if present, otherwise lead with recovery context
+    if (hasInjury && lowSleep && highStress) {
+      p2 = `You're managing a significant injury history, averaging ${esc(sleepDisplay)} hours of sleep, and carrying high stress outside of training — that's a recovery picture that needs to be taken seriously.`;
+    } else if (hasInjury && lowSleep) {
+      p2 = `You're managing a significant injury history and averaging ${esc(sleepDisplay)} hours of sleep — both of those shape how your body recovers between sessions.`;
+    } else if (hasInjury && highStress) {
+      p2 = `You're managing a significant injury history alongside high stress outside of training — recovery matters as much as the sessions themselves.`;
+    } else if (lowSleep && highStress) {
+      p2 = `You're averaging ${esc(sleepDisplay)} hours of sleep and carrying high stress outside of training — that combination means your recovery window is narrower than most.`;
+    } else if (hasInjury) {
+      p2 = `You're managing a significant injury history, and that shapes how this plan should be followed.`;
+    } else if (lowSleep) {
+      p2 = `You're averaging ${esc(sleepDisplay)} hours of sleep, and that matters more than most athletes realise — adaptation happens during recovery, not during the session.`;
+    } else if (highStress) {
+      p2 = `You've flagged high stress outside of training, and that draws from the same recovery bank as your sessions.`;
+    }
+
+    p2 += ` None of that is a barrier, but it does mean warm-ups and cool-downs aren't optional, easy days need to stay easy, and on weeks where life is particularly demanding, dropping intensity is smarter than skipping sessions entirely.`;
+
+    if (hasBlockers) {
+      p2 += ` You've told us your biggest blocker is ${esc(blockers.toLowerCase())}. Every session in this plan has been structured with that in mind — rest days exist for exactly this reason. Use them without guilt.`;
+    }
+  } else if (hasBlockers) {
+    p2 = `You've told us your biggest blocker is ${esc(blockers.toLowerCase())}. Every session in this plan has been structured with that in mind — rest days exist for exactly this reason. Use them without guilt. Coming back at 80% beats not coming back at all.`;
+  }
+
+  // Shift work alert
+  const workShifts = d.workShifts ? String(d.workShifts) : "";
+  const hasShiftWork = workShifts.includes("rotating") || workShifts.includes("night") || workShifts.includes("FIFO");
+  if (hasShiftWork) {
+    const shiftType = workShifts.replace("Yes — ", "");
+    p2 += (p2 ? " " : "") + `Your schedule is a guide, not a contract. With ${esc(shiftType)}, treat the prescribed days as targets — if a shift disrupts your recovery, move the session forward or swap it for an easy day. The plan adapts to you, not the other way around.`;
+  }
+
+  /* ── Paragraph 3: The instruction ───────────────────────── */
+
+  // Equipment context
+  const gpsWatch = d.gpsWatch ? String(d.gpsWatch) : "";
+  let p3 = "";
+  if (gpsWatch === "Neither") {
+    p3 = `Your sessions are prescribed by effort rather than pace — this is intentional and equally effective. RPE (Rate of Perceived Exertion) is your primary guide throughout this plan. Trust the effort descriptions — they're just as valid as any number on a screen. `;
+  } else if (gpsWatch === "HRM only") {
+    p3 = `Your heart rate monitor is your primary training tool — pace will come as fitness builds. Trust the zones. `;
+  }
+
+  p3 += `On hard days, your effort level matters more than the numbers — chasing pace when your body isn't ready is how small niggles become big setbacks. If something flares up, substitute or rest. Consistency across ${totalWeeks} weeks will always beat one heroic workout.`;
+
+  if (raceDate) {
+    p3 += ` ${esc(raceName)} on ${esc(raceDate)} is the finish line. Trust the structure and get there.`;
+  } else {
+    p3 += ` ${esc(raceName)} is the finish line. Trust the structure and get there.`;
+  }
+
+  const paras = [p1, p2, p3].filter(p => p !== "");
+
+  // Stats row — key numbers at a glance
+  const stats: string[] = [];
+  stats.push(renderStatCard(String(totalWeeks), "Weeks"));
+  stats.push(renderStatCard(String(daysPerWeek), "Days/Week"));
+  if (targetTime) stats.push(renderStatCard(targetTime, "Target"));
+  if (comparisonSeconds && targetSeconds && comparisonSeconds > targetSeconds) {
+    const gapPct = ((comparisonSeconds - targetSeconds) / comparisonSeconds * 100).toFixed(1);
+    stats.push(renderStatCard(`${gapPct}%`, "Improvement"));
+  }
+  const peakHours = (skeleton.peakVolumeMinutes / 60).toFixed(1);
+  stats.push(renderStatCard(`${peakHours}h`, "Peak Volume"));
+
+  return `<section class="plan-overview">
+  <div class="overview-content">
+    <h2 class="overview-title"><span class="material-symbols-outlined">description</span> Your Plan Overview</h2>
+    ${paras.map(p => `<p>${p}</p>`).join("\n    ")}
+    <div class="overview-stats">
+      ${stats.join("\n      ")}
+    </div>
+  </div>
+</section>`;
 }
 
 /* ─── Helpers ────────────────────────────────────────────────── */

@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
         w => w.weekNumber >= currentStart && w.weekNumber <= currentEnd,
       );
       const sessionPrompt = buildSessionPrompt(
-        weeksToGenerate, athleteProfile, research, skeleton, isFinal,
+        weeksToGenerate, athleteProfile, research, skeleton, isFinal, d,
       );
 
       /* ── Call AI with retry ─────────────────────────────── */

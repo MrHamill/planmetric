@@ -15,6 +15,8 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 export const maxDuration = 300;
 
 const CHUNK_SIZE = 5;
+const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
+const CYCLING = ["Cycling Event"];
 
 /* ─── POST /api/generate-plan ─────────────────────────────────────
    Body: { submission_id: string }
@@ -72,7 +74,7 @@ export async function POST(req: NextRequest) {
     /* ── Call AI for session content (weeks 1-${endWeek}) ──── */
     const weeksToGenerate = skeleton.weeks.filter(w => w.weekNumber <= endWeek);
     const sessionPrompt = buildSessionPrompt(
-      weeksToGenerate, athleteProfile, research, skeleton, false,
+      weeksToGenerate, athleteProfile, research, skeleton, false, d,
     );
 
     let weekContents: WeekContent[];
@@ -113,6 +115,7 @@ function buildSessionPrompt(
   research: string,
   skeleton: PlanSkeleton,
   includeFinalSections: boolean,
+  athleteData?: Record<string, unknown>,
 ): string {
   const weekDescriptions = weeks.map(w => {
     const dayLines = w.sessions.map(s =>
@@ -154,7 +157,7 @@ RULES:
 - BRICK SESSIONS: The bike leg IS the warm-up for the run. Do NOT include a separate run warm-up — transition straight from bike to run. The warm-up field should cover the bike portion only.
 - ATHLETE LEVEL AWARENESS: Match warm-up/cool-down and recovery to the athlete's experience. Experienced athletes with a strong training base do NOT need walk breaks or walk/jog recovery during easy runs. Only prescribe walk breaks for true beginners or athletes returning from injury.
 - TRIATHLON WEAKEST DISCIPLINE: If the athlete has identified a weakest discipline, coaching notes for that discipline should emphasise technique improvement and progressive overload. Extra sessions in the weakest discipline are already scheduled — reinforce why this focus matters.
-
+${athleteData ? buildConditionalRules(athleteData) : ""}
 ${weekDescriptions}`;
 
   if (includeFinalSections) {
@@ -267,6 +270,104 @@ function parseAiResponse(text: string): AiResponse {
   }
 }
 
+/* ─── Conditional Rules (based on athlete equipment/schedule) ── */
+
+function buildConditionalRules(d: Record<string, unknown>): string {
+  const rules: string[] = [];
+  const trainingFor = String(d.trainingFor || "");
+  const isTri = TRIATHLON.includes(trainingFor);
+  const isCycling = CYCLING.includes(trainingFor);
+
+  // GPS / HRM awareness
+  const gps = String(d.gpsWatch || "");
+  if (gps === "GPS watch + HRM") {
+    rules.push("- METRICS: This athlete has a GPS watch AND heart rate monitor. Prescribe BOTH pace targets and HR zones for every run and bike session.");
+  } else if (gps === "GPS watch only") {
+    rules.push("- METRICS: This athlete has a GPS watch but no heart rate monitor. Use pace as the primary metric. Use RPE as secondary. Never prescribe HR-based targets.");
+  } else if (gps === "HRM only") {
+    rules.push("- METRICS: This athlete has a heart rate monitor but no GPS watch. Use HR zones as the primary metric. Use RPE as secondary. Never prescribe pace-based targets.");
+  } else if (gps === "Neither") {
+    rules.push("- METRICS: This athlete has NO GPS watch or heart rate monitor. Use RPE (Rate of Perceived Exertion) as the ONLY metric. Describe effort using feel and breathing — never prescribe specific pace or HR numbers in warm-up, main set, or cool-down.");
+  }
+
+  // Power meter (tri/cycling only)
+  if (isTri || isCycling) {
+    const pm = String(d.powerMeter || "");
+    if (pm === "Yes") {
+      rules.push("- POWER METER: This athlete has a power meter. For ALL bike sessions, prescribe power targets in watts (referencing FTP zones) as the primary metric. HR is secondary.");
+    } else {
+      rules.push("- POWER METER: This athlete does NOT have a power meter. For bike sessions, use HR zones and RPE only. Never prescribe watt-based targets.");
+    }
+  }
+
+  // Treadmill access
+  const treadmill = String(d.treadmillAccess || "");
+  if (treadmill === "Yes") {
+    rules.push("- TREADMILL: This athlete has treadmill access. For tempo and interval run sessions, include a brief treadmill alternative in the coaching note (adjust pace: 5-10s/km slower, set 1% incline for road simulation).");
+  } else if (treadmill === "No") {
+    rules.push("- TREADMILL: This athlete has NO treadmill access. Never reference treadmill running as an option.");
+  }
+
+  // Pool / open water / wetsuit (tri only)
+  if (isTri) {
+    const pool = String(d.poolAccess || "");
+    if (pool === "Seasonal" || pool === "No access") {
+      rules.push(`- POOL ACCESS: This athlete has ${pool.toLowerCase()} pool access. When pool is unavailable, suggest dryland swim-specific alternatives (resistance bands, bench pull) in the coaching note.`);
+    }
+    const ow = String(d.openWaterAccess || "");
+    if (ow.startsWith("Yes — easy")) {
+      rules.push("- OPEN WATER: This athlete has easy open-water access. Include 1 open-water swim session per month during BUILD and PEAK phases. Coaching notes should cover sighting, drafting, and navigation.");
+    } else if (ow === "No") {
+      rules.push("- OPEN WATER: This athlete has NO open-water access. Never prescribe open-water sessions.");
+    }
+    const ws = String(d.wetsuit || "");
+    if (ws === "Yes") {
+      rules.push("- WETSUIT: This athlete has a wetsuit. In race-day protocol, note wetsuit pacing: expect 5-8% faster swim splits. Include wetsuit removal practice in BUILD phase coaching notes.");
+    } else if (ws === "No") {
+      rules.push("- WETSUIT: This athlete does NOT have a wetsuit. In race-day protocol, note non-wetsuit pacing and the importance of strong swim fitness for open water.");
+    }
+  }
+
+  // Work shifts
+  const shifts = String(d.workShifts || "");
+  if (shifts.includes("rotating") || shifts.includes("night") || shifts.includes("FIFO")) {
+    rules.push(`- SHIFT WORK: This athlete works ${shifts.replace("Yes — ", "")}. On EVERY hard session (tempo, interval, VO2max) coaching note, include: "If you're coming off a night shift or disrupted sleep, drop this to Zone 2 and halve the interval volume. A depleted session done smart beats a quality session done exhausted." Never assume a fixed daily schedule.`);
+  }
+
+  // Strength training
+  const strength = String(d.strengthTraining || "");
+  if (strength.includes("regularly")) {
+    const days = Array.isArray(d.strengthDays) ? (d.strengthDays as string[]).join(", ") : "";
+    rules.push(`- STRENGTH TRAINING: This athlete does regular strength training${days ? ` on ${days}` : ""}. On strength training days, keep run sessions in Zone 1-2 only — the body is already under load. Add a coaching note: "You're doing strength work alongside this plan — on strength days, keep your run easy. Your body is already adapting."`);
+  }
+
+  // Training blockers
+  const blockers = String(d.trainingBlockers || "").trim();
+  if (blockers && !blockers.match(/^(none|nil|no|n\/a)$/i)) {
+    const isInjuryBlocker = blockers.match(/injur|pain|physio|rehab/i);
+    const isMotivationBlocker = blockers.match(/motiv|discipline|consistency|lazy|skip/i);
+    rules.push(`- TRAINING BLOCKERS: The athlete's biggest blocker is: "${blockers}". Reference this in recovery and taper week coaching notes.${isInjuryBlocker ? " Since it's injury-related, reinforce warm-up and cool-down compliance in every hard session note." : ""}${isMotivationBlocker ? " Since it's motivation-related, coaching notes during taper should normalise the feeling of losing fitness and reinforce trust in the process." : ""}`);
+  }
+
+  // Success definition
+  const success = String(d.successDefinition || "").trim();
+  if (success && !success.match(/^(none|nil|no|n\/a)$/i)) {
+    rules.push(`- SUCCESS DEFINITION: The athlete defines race-day success as: "${success}". Reference this verbatim in the first week's coaching note and in taper-week coaching notes. Every session subtly points toward this goal.`);
+  }
+
+  // Other sports
+  if (d.otherSports === "Yes" && d.otherSport1Name) {
+    const sport1 = `${d.otherSport1Name} on ${Array.isArray(d.otherSport1Days) ? (d.otherSport1Days as string[]).join(", ") : "multiple days"} (${d.otherSport1Intensity} intensity)`;
+    let sportText = sport1;
+    if (d.otherSport2Name) {
+      sportText += ` and ${d.otherSport2Name} on ${Array.isArray(d.otherSport2Days) ? (d.otherSport2Days as string[]).join(", ") : "multiple days"} (${d.otherSport2Intensity} intensity)`;
+    }
+    rules.push(`- OTHER SPORTS: This athlete also does ${sportText}. Treat these as partial load days. Coaching notes for sessions the day before or after should acknowledge this load. If a hard session falls adjacent to a high-intensity other sport day, the coaching note must tell the athlete to scale intensity down if fatigued.`);
+  }
+
+  return rules.length > 0 ? "\n" + rules.join("\n") : "";
+}
+
 /* ─── Helpers (kept from original for AI prompt building) ─────── */
 
 function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unknown>): string {
@@ -341,12 +442,41 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Easy Pace", d.easyRunPace ? `${d.easyRunPace}/km` : "");
   add("Recent Race", d.recentRunRace);
 
+  lines.push("\n=== EQUIPMENT ===");
+  add("GPS / HR Monitor", d.gpsWatch);
+  add("Power Meter", d.powerMeter);
+  add("Treadmill Access", d.treadmillAccess);
+
+  const isTri = TRIATHLON.includes(String(d.trainingFor || ""));
+  if (isTri) {
+    lines.push("\n=== SWIM ACCESS ===");
+    add("Pool Access", d.poolAccess);
+    add("Open Water Access", d.openWaterAccess);
+    add("Wetsuit", d.wetsuit);
+  }
+
   lines.push("\n=== HEALTH & RECOVERY ===");
   add("Current Injuries", d.currentInjuries);
   add("Injury Description", d.injuryDescription);
   add("Injury History", d.injuryHistory);
   add("Avg Sleep", d.avgSleep);
   add("Stress Level", d.stressLevel);
+
+  lines.push("\n=== SCHEDULE & CONTEXT ===");
+  add("Work Schedule", d.workShifts);
+  add("Strength Training", d.strengthTraining);
+  add("Strength Days", d.strengthDays);
+  add("Training Blockers", d.trainingBlockers);
+  add("Success Definition", d.successDefinition);
+
+  // Other sports
+  if (d.otherSports === "Yes" && d.otherSport1Name) {
+    lines.push("\n=== OTHER SPORTS ===");
+    lines.push(`Sport 1: ${d.otherSport1Name} — ${Array.isArray(d.otherSport1Days) ? (d.otherSport1Days as string[]).join(", ") : ""} — ${d.otherSport1Duration} — ${d.otherSport1Intensity} intensity`);
+    if (d.otherSport2Name) {
+      lines.push(`Sport 2: ${d.otherSport2Name} — ${Array.isArray(d.otherSport2Days) ? (d.otherSport2Days as string[]).join(", ") : ""} — ${d.otherSport2Duration} — ${d.otherSport2Intensity} intensity`);
+    }
+  }
 
   lines.push("\n=== MOTIVATION ===");
   add("Training Preference", d.trainingPreference);
@@ -358,8 +488,6 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
 
 function loadResearchContent(trainingFor: string, athleteAge?: number): string {
   const researchDir = path.resolve(process.cwd(), "docs/research");
-  const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
-  const CYCLING = ["Cycling Event"];
 
   const files = [
     "nutrition.md", "recovery.md", "general-triathlon.md",
