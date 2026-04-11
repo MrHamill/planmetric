@@ -8,6 +8,7 @@ import type { PlanSkeleton, WeekSkeleton } from "@/lib/plan-skeleton";
 import { calculateZones } from "@/lib/plan-zones";
 import { buildPartialHtml } from "@/lib/plan-html";
 import type { WeekContent, SessionContent } from "@/lib/plan-html";
+import { calculateRaceSplits, formatSplitsForPrompt } from "@/lib/plan-splits";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -163,7 +164,7 @@ ALSO generate these one-time sections in your JSON response:
 
 "raceDayProtocol": {
   "preRaceTimeline": "HTML content with <div class='timeline'> containing <div class='time-block'><strong>Time</strong><p>Details</p></div> elements for race morning",
-  "raceStrategy": "HTML content with race pacing strategy, split targets, nutrition plan",
+  "raceStrategy": "HTML content with race pacing strategy, split targets, nutrition plan. CRITICAL: Use the pre-calculated TARGET RACE SPLITS from the athlete profile exactly as provided — do NOT invent your own split times or totals. These have been mathematically verified to add up correctly.",
   "mentalStrategy": "HTML content with mental cues, mantras, course segment strategies"
 },
 "glossary": [{"term": "RPE", "definition": "Rate of Perceived Exertion..."}, ...] (10-15 terms),
@@ -293,6 +294,28 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Main Goal", d.mainGoal); add("Target Time", d.targetTime);
   add("Completed Before", d.completedRaceBefore);
   add("Previous Finish Time", d.previousFinishTime);
+
+  // Previous race splits (if triathlon and provided)
+  if (d.splitSwim || d.splitBike || d.splitRun) {
+    lines.push("\n=== PREVIOUS RACE SPLITS ===");
+    add("Previous Swim Split", d.splitSwim);
+    add("Previous T1", d.splitT1);
+    add("Previous Bike Split", d.splitBike);
+    add("Previous T2", d.splitT2);
+    add("Previous Run Split", d.splitRun);
+  }
+
+  // Server-calculated target splits (mathematically verified)
+  if (d.targetTime && d.trainingFor) {
+    const splits = calculateRaceSplits(
+      String(d.targetTime),
+      String(d.trainingFor),
+      d as Record<string, unknown>,
+    );
+    if (splits) {
+      lines.push("\n" + formatSplitsForPrompt(splits, String(d.trainingFor)));
+    }
+  }
 
   lines.push("\n=== CURRENT FITNESS ===");
   add("Training Consistency", d.trainingConsistency);
