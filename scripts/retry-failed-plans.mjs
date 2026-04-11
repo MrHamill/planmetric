@@ -1,103 +1,47 @@
 /**
- * Retry failed plan generations by calling the continue endpoint.
+ * Regenerate plans from scratch by calling the pass 1 endpoint.
  * Usage: node scripts/retry-failed-plans.mjs
- *
- * Reads submission data from Supabase to calculate correct totalWeeks,
- * then calls /api/generate-plan/continue for each failed plan.
  */
 
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import path from "path";
+const SITE_URL = "https://planmetric.com.au";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
+const plans = [
+  {
+    name: "Nicholas Mathers (Cycling Event)",
+    submission_id: "40a0293b-512e-42dc-b9ca-735cf603a637",
+  },
+  {
+    name: "Luke O'Sullivan (Olympic Triathlon)",
+    submission_id: "277a683a-1a12-40ce-8fa5-03c79558fe72",
+  },
+];
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY,
-);
-
-// Submissions stuck at "paid" with generated_plan_part1 but no generated_plan
-const { data: stalled, error } = await supabase
-  .from("intake_submissions")
-  .select("id, full_name, training_for, race_date, data, created_at")
-  .eq("status", "paid")
-  .not("generated_plan_part1", "is", null)
-  .is("generated_plan", null);
-
-if (error) {
-  console.error("DB error:", error.message);
-  process.exit(1);
-}
-
-if (!stalled || stalled.length === 0) {
-  console.log("No stalled plans found.");
-  process.exit(0);
-}
-
-console.log(`Found ${stalled.length} stalled plan(s):\n`);
-
-for (const sub of stalled) {
-  console.log(`─── ${sub.full_name} (${sub.training_for}) ───`);
-
-  // Calculate totalWeeks from purchase date to race date
-  const purchaseDate = new Date(sub.created_at);
-  const raceDate = new Date(sub.race_date);
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const totalWeeks = Math.ceil((raceDate - purchaseDate) / msPerWeek);
-
-  // Find the highest week number already in part1 by calling the API
-  // The continue route recalculates the skeleton, so we just need totalWeeks and startWeek
-  // Query the DB to find what weeks exist
-  const { data: partData } = await supabase
-    .from("intake_submissions")
-    .select("generated_plan_part1")
-    .eq("id", sub.id)
-    .single();
-
-  const weekMatches = partData.generated_plan_part1.match(/Week\s+(\d+)/g) || [];
-  const weekNumbers = weekMatches.map(m => parseInt(m.replace(/\D/g, "")));
-  const maxWeek = Math.max(...weekNumbers);
-
-  const startWeek = maxWeek + 1;
-
-  console.log(`  Total weeks: ${totalWeeks}`);
-  console.log(`  Weeks completed: 1-${maxWeek}`);
-  console.log(`  Resuming from week: ${startWeek}`);
-  console.log(`  Calling ${SITE_URL}/api/generate-plan/continue ...`);
+for (const plan of plans) {
+  console.log(`─── ${plan.name} ───`);
+  console.log(`  Calling ${SITE_URL}/api/generate-plan (pass 1) ...`);
 
   try {
-    const res = await fetch(`${SITE_URL}/api/generate-plan/continue`, {
+    const res = await fetch(`${SITE_URL}/api/generate-plan`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        submission_id: sub.id,
-        totalWeeks,
-        startWeek,
-        lastPhase: null, // continue route recalculates from skeleton
-      }),
+      body: JSON.stringify({ submission_id: plan.submission_id }),
     });
 
     const body = await res.json();
 
     if (res.ok) {
-      console.log(`  ✓ ${body.status} — plan length: ${body.planLength?.toLocaleString()} chars`);
-      if (body.validation) {
-        console.log(`    QA: ${body.validation.criticals} critical, ${body.validation.warnings} warnings`);
-      }
+      console.log(`  Pass 1 done — ${body.status}, weeks generated: ${body.weeksGenerated}`);
+      console.log(`  Continue route will process remaining weeks automatically.`);
     } else {
-      console.error(`  ✗ ${res.status}: ${body.error}`);
-      if (body.weeksCompleted) {
-        console.error(`    Completed up to week ${body.weeksCompleted} before failing`);
-      }
+      console.error(`  Failed ${res.status}: ${body.error}`);
+      if (body.detail) console.error(`    Detail: ${body.detail}`);
     }
   } catch (e) {
-    console.error(`  ✗ Fetch error: ${e.message}`);
+    console.error(`  Fetch error: ${e.message}`);
   }
 
   console.log();
 }
+
+console.log("Pass 1 triggered for both plans. The continue route will complete them.");
+console.log("Check your email for admin review notifications.");

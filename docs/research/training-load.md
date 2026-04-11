@@ -1,5 +1,33 @@
 # Training Load & Monitoring Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**80/20 intensity distribution (Seiler — the fundamental rule):**
+- ~80% of sessions in Zone 1 (easy, fully conversational, <2 mmol/L lactate)
+- ~20% of sessions in Zone 3 (hard, >4 mmol/L, 90%+ max HR)
+- Minimise Zone 2 (moderate/tempo) — high fatigue relative to adaptation produced
+- In a 5-session week: 4 easy + 1 hard; in 7 sessions: 5–6 easy + 1–2 hard
+- **Easy days must be genuinely easy** — most athletes train easy days too hard and hard days too easy
+
+**HRV guidance:**
+- Track 7-day rolling average, not single-day readings (trends matter more than daily fluctuations)
+- Suppressed HRV trend below personal baseline → switch planned intensity session to easy/recovery
+- Most useful: during heavy build phases, post-illness or travel, and for all masters athletes (40+)
+
+**TSS benchmarks (single session load):**
+- <150 TSS: recovered by next day | 150–300: some residual fatigue | 300+: 2+ days recovery needed
+
+**Weekly load management:**
+- Max 10% weekly TSS increase from week to week
+- Recovery weeks: TSB should return above zero before the next loading block
+- Race-day TSB target: +10 to +25 (achieved through taper — ATL drops while CTL holds)
+
+**For athletes without devices (RPE-based):**
+- Session RPE (1–10) × duration in minutes = simple weekly load unit
+- Track totals; apply 10% weekly increase rule; subjective morning readiness (1–10) as HRV substitute
+
+---
+
 ## Sources
 - TrainingPeaks — TSS, CTL, ATL, TSB definitions and application
 - PubMed (protocol study) — HRV-guided training in professional endurance athletes

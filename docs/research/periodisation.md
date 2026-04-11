@@ -1,5 +1,31 @@
 # Periodisation Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Phase proportions (pre-calculated in code — this file provides coaching context):**
+- Marathon: 30% Base / 35% Build / 20% Peak / 15% Taper
+- Half Marathon: 30% / 30% / 25% / 15% | 5K/10K: 30% / 35% / 25% / 10%
+- Olympic Tri: 33% / 33% / 25% / 9% | 70.3: 40% / 30% / 20% / 10% | Full Ironman: 33% / 33% / 25% / 9%
+
+**Phase characteristics (use for coaching notes and phase description copy):**
+- **BASE:** Z1–Z2 only; technique drills; no racing; build aerobic engine broadly
+- **BUILD:** introduce threshold + race-specific sessions; 1–2 lower-priority races permitted; intensity distribution shifts to ~65% easy / 35% hard
+- **PEAK:** race simulations every 3–4 days; sessions get progressively shorter; highest stress load
+- **TAPER:** reduce volume 20–50%, maintain intensity; 8–14 days optimal taper duration
+
+**Recovery weeks:**
+- Every 4th week (under 45) or every 3rd week (45+) at ~50% of peak volume
+- Never skip in Build or Peak — physiological adaptation occurs during rest, not the loading block
+
+**Progression rules:**
+- Max 10–15% weekly volume increase total; swim/run max 5 min/week; bike max 10 min/week
+- Never back-to-back high-intensity OR high-duration sessions
+
+**Short plans (8–12 weeks):** compress — Base 3–4 wks, Build 3–4 wks, Peak+Taper 2–3 wks
+**Long plans (20–24 weeks):** follow full Friel model; all phases distinct and clearly labelled for the athlete
+
+---
+
 ## Sources
 - Joe Friel, The Triathlete's Training Bible — Annual Training Plan (ATP) model
 - 220triathlon.com / Phil Mosley — Triathlon periodisation overview

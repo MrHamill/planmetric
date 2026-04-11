@@ -1,5 +1,33 @@
 # Cycling Training Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Cadence — critical for triathletes:**
+- Optimal: 85–100 RPM (higher cadence = more cardiovascular, less muscular = better run legs at T2)
+- Most age-groupers default to 70–75 RPM — explicitly coach higher cadence in all bike sessions
+- Power = Force × Cadence; low cadence burns glycogen faster and trashes the run
+
+**FTP-based zone reference:**
+- Z1 Active Recovery: <55% FTP | Z2 Endurance: 56–75% | Z3 Tempo: 76–90%
+- Z4 Threshold: 91–105% | Z5 VO2max: 106–120% | Z6 Anaerobic: >121%
+
+**Key sessions to programme:**
+- Endurance ride (Z2, 2–5 hrs): most important and most underused
+- Sweet spot (88–93% FTP, 2–3 × 20 min): best adaptation-per-fatigue ratio
+- Threshold intervals (95–105% FTP, 2 × 20 min or 3 × 15 min)
+- VO2max (110–120% FTP, 5–8 × 3–5 min, equal recovery)
+- Brick: bike at race power → immediate run, no break
+
+**Ironman/70.3 pacing:** most athletes go too hard on the bike — cap effort conservatively; the bike sets up or destroys the run
+
+**Efficiency:** 60 min indoor ≈ 90 min outdoor for training adaptation; fan mandatory indoors; hydrate 750–1,000 mL/hr
+
+**Nutrition on bike (long-course):** begin fuelling within first 30 min; minimum 1.3 g carbs/kg/hr; sodium at least 8 mg per gram of carbohydrate consumed; avoid plain water during Ironman — use sports drinks with electrolytes
+
+**Brick session frequency:** 1×/week in build phase; endurance brick + short technical session for 70.3/Ironman; taper: retain short sessions at reduced volume
+
+---
+
 ## Sources
 - robertovukovic.com — 15 key cycling training sessions with targets
 - trainerroad.com — Cadence training and optimal RPM drills

@@ -1,5 +1,36 @@
 # Masters Athletes Research (40+)
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Apply these adjustments for all athletes 40+:**
+
+**Recovery cycle (critical change):**
+- Under 45: standard 3-on / 1-off recovery week cycle
+- 45+: 2-on / 1-off cycle (shorter loading blocks prevent cumulative fatigue)
+- 50+: separate all hard interval days by minimum 48 hours; hard ceiling of 2–3 hard sessions/week
+- 60+: 1–2 hard sessions/week maximum — quality over volume is the entire strategy
+
+**Rest days:**
+- Under 40: 1 rest day/week | 40+: minimum 2 rest days/week
+
+**Defend VO2max — non-negotiable:**
+- Include at least 1 VO2max interval session/week year-round (3–6 min efforts, RPE 9–10)
+- Athletes who drop to easy-only training lose VO2max at 1–1.5%/year vs 0.5%/year with maintained HIIT
+
+**Strength training — non-negotiable:**
+- Sarcopenia (muscle loss) accelerates after 40 — 3–8% per decade; lift heavy 2–3×/week
+- Directly combats power loss and injury risk; improves exercise economy
+
+**Volume:** scale total weekly hours ~10–15% below equivalent younger athlete plans
+
+**Technique:** highest ROI investment — efficiency preserved longer than raw speed; include regular drill sessions in all disciplines
+
+**Female athletes 45+:**
+- Further reduce intensity ceiling; add extra recovery days; prioritise bone-loading strength work
+- Oestrogen decline affects bone density, recovery rate, and thermoregulation — sleep disruption may require additional load reduction
+
+---
+
 ## Sources
 - MyProCoach — Training and recovery adaptations for masters triathletes
 - Scientific Triathlon — Female masters athlete considerations

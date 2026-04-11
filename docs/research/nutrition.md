@@ -1,5 +1,33 @@
 # Nutrition for Endurance Athletes
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Carb targets during exercise (by duration):**
+- <60 min: 0–30 g/hr (optional) | 60–90 min: 30–60 g/hr | 90 min–2.5 hrs: 60–80 g/hr | >2.5 hrs: 80–90 g/hr
+
+**Fuelling rules:**
+- Glucose saturates at ~60 g/hr (SGLT1 ceiling); fructose uses a separate transporter — combining at 2:1 ratio allows up to 90 g/hr total without GI distress
+- Start fuelling within the first 20–30 min of any session >60 min — do not wait until depleted
+- Gut training: build from 40 g/hr → 90 g/hr over 6–7 weeks; always train with race-day products
+- Sodium: 300–700 mg/hr for sessions >90 min; deficiency is the leading cause of cramping
+
+**Daily carb targets by training load:**
+- Rest/light: 3–5 g/kg | Moderate: 5–7 g/kg | Hard (1–3 hrs): 6–10 g/kg | Very hard (>4 hrs): 8–12 g/kg
+
+**Protein:** 1.4–2.0 g/kg/day; post-session: 20–30 g within 60 min alongside 0.3–0.5 g/kg carbs
+
+**Hydration:** 500–750 mL/hr mild; 750–1,000 mL/hr hot conditions
+
+**Pre-race:** high-carb meal 3–4 hrs before; optional 20–30 g fast carbs 30–60 min before for events >90 min
+
+**Race day by distance:**
+- Sprint: pre-race load only; gel 5 min before if desired
+- Olympic: 1–2 gels on bike; no fuelling needed on run
+- 70.3: 60–80 g/hr on bike + run
+- Ironman: 80–90 g/hr; 750–1,000 mL/hr fluid; 500–700 mg/hr sodium
+
+---
+
 ## Sources
 - stories.strava.com — No-nonsense nutrition for cyclists (applicable to all endurance disciplines)
 - Asker Jeukendrup / mysportscience.com — Carbohydrate transport science, glucose:fructose ratios, and oxidation rates

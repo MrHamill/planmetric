@@ -1,5 +1,30 @@
 # Strength & Conditioning Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+> These are suggestions only — Planmetric is not a strength coaching service. Athletes with injuries should consult a physiotherapist before starting any strength programme.
+
+**When to programme S&C:**
+- Base phase: 2 sessions/week — this is when strength gains are made
+- Build phase: 1–2 sessions/week | Peak phase: 1 session/week (maintenance) | Race week: none
+
+**Scheduling (interference effect):**
+- Separate strength and endurance by at least 3–6 hours, or on different days
+- If same day: always lift BEFORE running or cycling (not after)
+- Never heavy strength the day before a key quality endurance session
+- Stop sets 2–3 reps before failure — the goal is to get stronger, not create debilitating soreness
+
+**What to prescribe (meta-analysis backed):**
+- **Best combination:** heavy compound movements (≥80% 1RM) + plyometrics — produces largest running economy gains
+- Submaximal circuits alone (40–79% 1RM) produce no significant improvement — avoid as the sole S&C method
+- Plyometrics alone: 2–8% running economy improvement, most effective at lower speeds (≤12 km/h)
+
+**Key exercises:** single-leg squats, Romanian deadlifts, glute bridges/hip thrusts, rows, planks, dead bugs, clamshells with band (hip stability = highest injury prevention ROI)
+
+**Quick home option (no equipment, 15 min):** single-leg squats + push-ups + single-leg glute bridges + dead bugs — 2–3 sets × 6–10 reps; viable 1–2×/week as a supplement
+
+---
+
 > **Important:** Planmetric is not a strength coaching service. The exercises and routines below are **suggestions only** — general guidance drawn from sports science research. Athletes with injuries, pain, or specific physical limitations should consult a physiotherapist or qualified S&C coach before starting any strength programme. We include S&C in plans because the research strongly supports it, but we are not qualified to prescribe it.
 
 ## Sources

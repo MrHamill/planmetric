@@ -1,5 +1,32 @@
 # Recovery Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Race recovery timelines (minimum before next hard session):**
+- Sprint: 3–5 days | Olympic: 5–7 days | 70.3: 10–14 days | Ironman: 3–4 weeks
+- Easy volume can resume sooner — these are minimums for quality/intensity work
+
+**Post-session recovery (0–60 min):**
+- 0.3–0.5 g/kg carbs + 20–30 g protein within 30–60 min of hard sessions
+- Rehydrate to pre-exercise weight + 150% of fluid lost
+
+**Sleep:** 8–9 hrs/night is the single highest-ROI recovery tool; HRV suppressed with poor sleep — reduce intensity that day
+
+**Active recovery:** Z1 only (swim, cycle, walk) the day after hard sessions; avoid Z3+ until HRV/perceived recovery normalise — 48–72 hrs short-course, 7–14 days long-course
+
+**Recovery week protocol:**
+- Every 4th week at ~50–60% of normal volume (every 3rd week for athletes 45+)
+- Account for life stress (work, family) as training load — not just session volume
+
+**Speed endurance (NHE1 acid-clearance adaptation):**
+- 8–12 × 30-sec maximal sprints with 2–4.5 min full rest between; 2–3×/week for 6 weeks
+- Improves repeat-effort capacity and recovery between hard intervals — include in build/peak phases
+- Requires maximal effort — submaximal efforts produce a different (lesser) adaptation
+
+**Cold water immersion:** 10–15°C, 10–15 min reduces acute soreness; avoid immediately after strength sessions (blunts hypertrophy signalling)
+
+---
+
 ## Sources
 - PMC12203883 — Speed endurance training and NHE1 upregulation (skeletal muscle pH regulation)
 - ironman.com — 4 Ways to Recover Better After a Race

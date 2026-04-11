@@ -1,5 +1,35 @@
 # Race Psychology & Mental Skills Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Weave these tools into coaching notes, long session notes, and race-week content:**
+
+**Chunking (most practical race-day tool):**
+- Break race into segments: aid station to aid station, km markers, or discipline legs
+- Each chunk gets its own mini-goal — "just get to the next aid station"
+- Marathon = three 14 km sections; 70.3 = six distinct tasks (swim, T1, bike, T2, run first half, run second half)
+
+**Positive self-talk:**
+- Rehearse mantras in training — not invented on race day
+- Examples: "Strong and steady", "I've trained for this", "Smooth is fast", "I can do hard things"
+- Research confirms positive self-talk significantly improves performance vs passive thinking
+
+**Transition mental reset (3 Rs):**
+1. **Rest** — let go of the previous leg (good or bad, it's done)
+2. **Regroup** — prepare mentally for the next discipline
+3. **Refocus** — narrow attention to the immediate next task
+- "Yes, and..." technique: "Yes, the swim was rough, and I still have two legs to make up time"
+
+**Pre-race routine:** consistent checklist reduces anxiety; stop tinkering with equipment once set; reframe nerves as readiness ("I'm ready", not "I'm nervous")
+
+**Pacing psychology:**
+- Negative split requires discipline in the first third when everything feels easy — coach this explicitly
+- Mental fatigue increases perceived exertion — manage life stress and sleep in race week
+
+**In plan coaching notes:** frame hard interval sessions as mental toughness training; frame recovery weeks as adaptation, not weakness
+
+---
+
 ## Sources
 - Dr Paul McCarthy — Triathlon race day psychology and mental rehearsal
 - Carmichael Training Systems — Pre-race routines, transition mental reset, adversity training

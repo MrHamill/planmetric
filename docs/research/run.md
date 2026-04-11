@@ -1,5 +1,31 @@
 # Running Training Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**4 key session types (include all four in weekly structure):**
+1. **Intervals (VO2max):** 6–10 × 400m at 5K pace, equal jog recovery — raises aerobic ceiling
+2. **Tempo/hills (threshold):** 20–40 min at comfortably hard pace, OR 6–10 × 60–90 sec hill repeats
+3. **Race-effort run:** controlled 5K effort (parkrun) — pacing practice, competitive stimulus
+4. **Long run:** 70–90 min to 2.5–3 hrs, fully conversational Z1–Z2 — most important session of the week
+
+**Long run peak distance targets:**
+- Marathon: 30–35 km (cap at 3–3.5 hrs) | Half marathon: 18–21 km | 10K: 15–18 km | 5K: 12–15 km
+
+**Marathon weekly volume by goal time:**
+- Sub-3:00 → 88–97 km/wk peak | 3:00–3:30 → 72–88 km | 3:30–4:00 → 56–72 km | 4:00+ → 40–56 km
+
+**Cadence:** 170–180 spm; reduces injury risk through lower ground contact forces and vertical oscillation
+
+**Race pacing (build into coaching notes):**
+- 5K: start at goal pace, push hard in final 1 km
+- 10K: first 3 km at 5 sec/km slower; push from 7 km
+- Half marathon: three 7 km sections — even effort, negative-split finish
+- Marathon: run first half conservatively (5 sec/km slower than goal); fuel every 30–35 min; push from 36 km
+
+**Injury prevention:** never back-to-back hard sessions; rotate surfaces; deload every 3–4 weeks; strength 2×/week in base phase; cadence correction for injury-prone runners
+
+---
+
 ## Sources
 - stories.strava.com — 4 key run sessions every runner needs
 - lukehumphreyrunning.com — Marathon weekly volume guidelines by goal

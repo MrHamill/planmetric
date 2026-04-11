@@ -1,5 +1,32 @@
 # Swimming Training Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**CSS (Critical Swim Speed — the primary swim metric):**
+- Formula: (400m time − 200m time) / 2 = CSS per 100m (threshold pace)
+- Zones: Recovery = CSS +15 sec | Aerobic = CSS +8–14 sec | Threshold = CSS ±3 sec | VO2max = CSS −5–10 sec
+
+**Session frequency impact:**
+- 1/week: maintenance only (no improvement) | 2/week: no regression, no improvement | 3/week: improvement begins | 4+/week: significant improvement
+- Session length: beginners 20–30 min (stop when form breaks down); intermediate+ 45–60 min
+
+**Every swim session must include a drill component** — technique matters more than volume for triathletes
+
+**Open water coaching notes (include for all triathlon plans):**
+- Sight every 10–12 strokes (crocodile technique — eyes only, not full head lift)
+- Draft 30–50 cm behind feet → saves 20–30% energy expenditure
+- First 200m: slow stroke rate deliberately; focus on full exhale underwater; if panicking — roll to back, float, resume
+- Cold shock: splash face/neck before entry if no warm-up swim is permitted
+- Minimum 2–3 open water sessions before race day — pool fitness does not fully transfer (+15–20% energy cost outdoors)
+
+**Wetsuit rules:**
+- Compulsory <14°C | Permitted 14–22°C | Banned >22°C (always check specific event rules)
+- Advantage: 2–4 sec/100m from buoyancy; adjust stroke cadence and entry angle with wetsuit on
+
+**Session structure:** varied interval sets consistently outperform continuous swimming for pace and technique
+
+---
+
 ## Sources
 - sydneytrigroup.com.au — 10 tips for open water triathlon swimming
 - triq.ai — CSS calculation, wetsuit rules, open water strategies

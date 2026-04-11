@@ -119,6 +119,59 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0.25rem;
 }
 
+/* Plan Overview */
+.plan-overview {
+    padding: 2rem;
+}
+
+.overview-content {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(160, 82, 45, 0.08);
+    border-left: 4px solid #A0522D;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.overview-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #A0522D;
+}
+
+.overview-title .material-symbols-outlined {
+    color: #A0522D;
+}
+
+.plan-overview p {
+    color: #3A2E28;
+    font-size: 0.95rem;
+    line-height: 1.85;
+    margin-bottom: 1rem;
+}
+
+.plan-overview p:last-child {
+    margin-bottom: 0;
+}
+
+.overview-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(160, 82, 45, 0.15);
+}
+
+.overview-stats .stat-card {
+    background: rgba(160, 82, 45, 0.06);
+    border: 1px solid rgba(160, 82, 45, 0.12);
+}
+
 /* Main Content */
 .container {
     max-width: 1200px;
@@ -149,8 +202,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Training Zones */
 .zones-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
 }
 
@@ -170,27 +223,55 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.5rem;
 }
 
-.zone-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(28,22,20,0.05);
+.zone-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-.zone-item:last-child {
-    border-bottom: none;
+.zone-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
-.zone-name {
+.zone-table thead tr {
+    background: #E4DAC8;
+}
+
+.zone-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #A0522D;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.zone-table td {
+    padding: 0.65rem 1rem;
+    color: #3A2E28;
+    white-space: nowrap;
+}
+
+.zone-table tbody tr:nth-child(odd) {
+    background: #F0E6D4;
+}
+
+.zone-table tbody tr:nth-child(even) {
+    background: #E4DAC8;
+}
+
+.zone-name-cell {
     font-weight: 500;
     color: #1C1614;
 }
 
-.zone-values {
-    font-size: 0.875rem;
+.zone-desc-cell {
+    white-space: normal;
     color: #6B5E54;
-    text-align: right;
+    font-size: 0.8rem;
 }
 
 /* Badges */
@@ -387,6 +468,66 @@ h1, h2, h3, h4, h5, h6 {
 
 .week-content {
     padding: 0 1.5rem 1.5rem;
+}
+
+.week-disciplines {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.week-disciplines .badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+}
+
+/* Mini Calendar */
+.mini-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.cal-day {
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.cal-active {
+    background: rgba(160, 82, 45, 0.1);
+    border: 1px solid rgba(160, 82, 45, 0.2);
+}
+
+.cal-rest {
+    background: rgba(107, 94, 84, 0.06);
+    border: 1px solid rgba(28, 22, 20, 0.05);
+}
+
+.cal-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6B5E54;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.cal-active .cal-label {
+    color: #A0522D;
+}
+
+.cal-badge {
+    font-size: 0.6rem !important;
+    padding: 0.1rem 0.4rem !important;
+}
+
+.cal-off {
+    font-size: 0.65rem;
+    color: #6B5E54;
 }
 
 .weekly-summary {
@@ -859,20 +1000,121 @@ h1, h2, h3, h4, h5, h6 {
         padding: 1rem;
     }
 
+    /* Stats: 2x2 grid on tablet/mobile, not single column */
     .stats-row {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
+    .overview-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    /* Overview: tighter padding on mobile */
+    .plan-overview {
+        padding: 1rem;
+    }
+
+    .overview-content {
+        padding: 1.25rem;
+    }
+
+    /* Zone table: horizontal scroll */
+    .zone-table-wrap {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .zone-table {
+        min-width: 500px;
+    }
+
+    /* Session card header: wrap cleanly */
     .day-header {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .day-badges {
+        justify-content: flex-start;
+    }
+
+    .day-title {
+        font-size: 1rem;
+    }
+
+    /* Week accordion header */
+    .weekly-accordion summary {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .week-meta {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .week-disciplines {
+        order: -1;
+    }
+
+    /* Mini calendar: smaller on mobile */
+    .mini-calendar {
+        gap: 0.25rem;
+    }
+
+    .cal-day {
+        padding: 0.35rem 0.15rem;
+    }
+
+    .cal-label {
+        font-size: 0.6rem;
+    }
+
+    .cal-badge {
+        font-size: 0.55rem !important;
+        padding: 0.1rem 0.3rem !important;
     }
 
     .week-accordion > .week-header {
         flex-direction: column;
         gap: 0.5rem;
         align-items: flex-start;
+    }
+
+    /* Section padding */
+    .section {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .athlete-name {
+        font-size: 1.5rem;
+    }
+
+    .overview-content {
+        padding: 1rem;
+        border-left-width: 3px;
+    }
+
+    .plan-overview p {
+        font-size: 0.9rem;
+        line-height: 1.75;
+    }
+
+    .mini-calendar {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.15rem;
+    }
+
+    .cal-badge {
+        display: none;
+    }
+
+    .cal-active {
+        border-bottom: 2px solid #A0522D;
     }
 }
 

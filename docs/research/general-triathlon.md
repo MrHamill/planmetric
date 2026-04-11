@@ -1,5 +1,38 @@
 # General Triathlon Training Research
 
+## ⚡ PLAN GENERATION ESSENTIALS
+
+**Intensity distribution (80/20 — the core rule):**
+- 80–90% of training at low intensity (Z1–Z2, conversational, below VT1)
+- 5–10% at threshold (Z3–Z4); 5% at high intensity (Z5)
+- 2–3 quality sessions/week max; all other sessions must be genuinely easy
+
+**Discipline HR adjustments (same effort = different HR by sport):**
+- Running: baseline | Cycling: −5 to −10 BPM | Swimming: −10 to −15 BPM
+- Never use the same zone numbers across all three disciplines
+
+**Discipline priority for age-groupers:**
+- Most race time is lost on the run — protect run training and recovery above all
+- Swim: technique > volume; 30% stronger swim saves only ~2 min in an Olympic race
+- Bike: highest safe aerobic volume; FTP is the primary performance lever
+- Run: highest injury risk; never back-to-back hard run sessions
+
+**Brick sessions:**
+- Minimum 2–4 in the 6 weeks before race day
+- Protocol: 60–90 min bike at race power → immediate 15–30 min run at race pace, no break
+- Begin open water swimming minimum 4–6 weeks before race day
+
+**Zone calibration (field tests):**
+- Run FTHR: avg HR of final 20 min of a 30-min all-out time trial
+- Bike FTHR: avg HR of 20-min FTP test (95% of avg power = FTP)
+- Swim CSS: (400m time − 200m time) / 2 = CSS per 100m
+
+**Progression rules:**
+- Max 10% weekly volume increase; swim/run max 5 min/week; bike max 10 min/week
+- Active recovery week every 4th week at ~50% of normal load; at least 1 full rest day/week
+
+---
+
 ## Sources
 - PMC12031707 — Norwegian coaches best-practice endurance training
 - PMC2375555 — Physiology of endurance-trained athletes
