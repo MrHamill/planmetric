@@ -32,6 +32,7 @@ const catColor: Record<string, { text: string; bg: string }> = {
 };
 
 const ARTICLES = [
+  { title: "City2Surf 2026: the complete pacing and training guide", category: "Run", readTime: "8 min read", excerpt: "How to pace City2Surf, survive Heartbreak Hill, and build a 17-week training plan for the August 9 race. Pacing tables, course breakdown, and race day checklist.", href: "/blog/city2surf-2026-guide" },
   { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones" },
   { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition" },
   { title: "Why most training plans fail \u2014 and what to do instead", category: "Methodology", readTime: "7 min read", excerpt: "Standardised plans underperform individualised ones by half. The research behind adaptive training and the 10% rule.", href: "/blog/why-training-plans-fail" },
