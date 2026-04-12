@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { parseAthleteInputs, buildSkeleton } from "@/lib/plan-skeleton";
 
 export const maxDuration = 300;
 
@@ -63,7 +64,7 @@ export async function GET(req: NextRequest) {
   /* ── Case 2: Plans that stalled mid-generation ──────────── */
   const { data: stalled, error } = await supabase
     .from("intake_submissions")
-    .select("id, full_name, training_for, race_date, created_at, generated_plan_part1")
+    .select("id, full_name, training_for, race_date, plan, data, created_at, generated_plan_part1")
     .eq("status", "paid")
     .not("generated_plan_part1", "is", null)
     .is("generated_plan", null)
@@ -86,10 +87,9 @@ export async function GET(req: NextRequest) {
     ? Math.max(...weekMatches.map((m: string) => parseInt(m.replace(/\D/g, ""), 10)))
     : 0;
 
-  const purchaseDate = new Date(sub.created_at);
-  const raceDate = new Date(sub.race_date);
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const totalWeeks = Math.ceil((raceDate.getTime() - purchaseDate.getTime()) / msPerWeek);
+  const inputs = parseAthleteInputs(sub.data as Record<string, unknown>, sub);
+  const skeleton = buildSkeleton(inputs);
+  const totalWeeks = skeleton.totalWeeks;
   const startWeek = Math.min(maxWeek + 1, totalWeeks);
 
   console.log(`Cron: resuming ${sub.full_name} from week ${startWeek} of ${totalWeeks}`);
