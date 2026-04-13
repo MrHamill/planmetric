@@ -155,7 +155,7 @@ RULES:
 - Coaching notes should be encouraging, specific, and actionable
 - LONG RUN DISTANCES: Calculate the "total" distance from the session duration and the athlete's easy pace. Marathon peak long runs should reach 30-35km (cap at 3-3.5 hours). Half marathon peak long runs: 18-21km. The distance in the "total" field must be realistic for the given duration and pace — do not underestimate.
 - BRICK SESSIONS: The bike leg IS the warm-up for the run. Do NOT include a separate run warm-up — transition straight from bike to run. The warm-up field should cover the bike portion only.
-- ATHLETE LEVEL AWARENESS: Match warm-up/cool-down and recovery to the athlete's experience. Experienced athletes with a strong training base do NOT need walk breaks or walk/jog recovery during easy runs. Only prescribe walk breaks for true beginners or athletes returning from injury.
+- ATHLETE LEVEL AWARENESS: Match warm-up/cool-down and recovery to the athlete's experience. Experienced athletes (training consistency of 1+ years) must NEVER have walking prescribed anywhere — not in warm-ups, cool-downs, recovery, or main sets. Their warm-ups and cool-downs should be easy jogging, not walking. Only prescribe walking for true beginners (less than 6 months training) or athletes returning from injury.
 - TRIATHLON WEAKEST DISCIPLINE: If the athlete has identified a weakest discipline, coaching notes for that discipline should emphasise technique improvement and progressive overload. Extra sessions in the weakest discipline are already scheduled — reinforce why this focus matters.
 ${athleteData ? buildConditionalRules(athleteData) : ""}
 ${weekDescriptions}`;

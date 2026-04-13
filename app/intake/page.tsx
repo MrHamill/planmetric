@@ -322,11 +322,12 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         return s("weakestDiscipline");
 
       case 8: { // Schedule
-        const base = s("trainingDaysPerWeek") && s("doubleDays")
+        const triFields = isTri ? s("doubleDays") : true;
+        const base = s("trainingDaysPerWeek") && triFields
           && a("preferredTimes") && a("availableDays")
           && s("maxWeekdaySession") && s("maxWeekendSession")
           && s("preferredLongDay") && s("preferredRestDay") && s("workShifts");
-        const needsCombos = ["Yes", "Sometimes"].includes(form.doubleDays);
+        const needsCombos = isTri && ["Yes", "Sometimes"].includes(form.doubleDays);
         return base && (!needsCombos || a("doubleDayCombos"));
       }
 
@@ -631,13 +632,15 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const showCombos = ["Yes", "Sometimes"].includes(form.doubleDays);
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className={`grid grid-cols-1 ${isTri ? "sm:grid-cols-2" : ""} gap-6`}>
               <F label="Training days per week *" error={mt("trainingDaysPerWeek")}>
                 <SelectInput value={form.trainingDaysPerWeek} onChange={v => upd("trainingDaysPerWeek", v)} options={["3", "4", "5", "6", "7"]} error={mt("trainingDaysPerWeek")} />
               </F>
-              <F label="Double days? *" note="Two sessions in one day" error={mt("doubleDays")}>
-                <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} error={mt("doubleDays")} />
-              </F>
+              {isTri && (
+                <F label="Double days? *" note="Two sessions in one day" error={mt("doubleDays")}>
+                  <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} error={mt("doubleDays")} />
+                </F>
+              )}
             </div>
             <F label="Preferred training times *" error={mt("preferredTimes")}>
               <MultiSelect selected={form.preferredTimes} onChange={v => upd("preferredTimes", v)}
@@ -657,7 +660,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                   options={["1 hour", "90 min", "2 hours", "3 hours", "No limit"]} error={mt("maxWeekendSession")} />
               </F>
             </div>
-            {showCombos && (
+            {isTri && showCombos && (
               <F label="Double-day combos that work for you *" error={mt("doubleDayCombos")}>
                 <MultiSelect selected={form.doubleDayCombos} onChange={v => upd("doubleDayCombos", v)}
                   options={["AM swim + PM run", "AM ride + PM swim", "AM run + PM swim", "AM ride + PM run", "Any combo"]} error={mt("doubleDayCombos")} />

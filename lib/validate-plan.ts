@@ -73,8 +73,9 @@ function extractWeeks(html: string): WeekData[] {
 
 function extractDayCards(weekHtml: string): DayCard[] {
   const cards: DayCard[] = [];
-  const cardBlocks = weekHtml.split(/(?=class="day-card")/);
 
+  // Match traditional day-card elements
+  const cardBlocks = weekHtml.split(/(?=class="day-card")/);
   for (const block of cardBlocks) {
     if (!block.includes('class="day-card"')) continue;
 
@@ -92,6 +93,29 @@ function extractDayCards(weekHtml: string): DayCard[] {
     const coachingNoteText = noteMatch ? stripTags(noteMatch[0]) : "";
 
     cards.push({ title, badges, structureText, coachingNoteText });
+  }
+
+  // Also match calendar detail panels (cal-detail) used in calendar-based layouts
+  if (cards.length === 0) {
+    const calBlocks = weekHtml.split(/(?=class="cal-detail")/);
+    for (const block of calBlocks) {
+      if (!block.includes('class="cal-detail"')) continue;
+
+      const titleMatch = block.match(/class="cal-detail-title"[^>]*>([\s\S]*?)<\/h4>/i);
+      const title = titleMatch ? stripTags(titleMatch[1]) : "";
+
+      const badges: string[] = [];
+      const badgeMatches = block.matchAll(/badge-(swim|bike|run|brick|rest|strength|accent)/gi);
+      for (const m of badgeMatches) badges.push(m[1].toLowerCase());
+
+      const structMatch = block.match(/class="structure-item"[\s\S]*?(?=class="coaching-note"|class="cal-detail"|$)/i);
+      const structureText = structMatch ? stripTags(structMatch[0]) : "";
+
+      const noteMatch = block.match(/class="coaching-note"[\s\S]*?(?=class="cal-detail"|<\/div>\s*<\/div>|$)/i);
+      const coachingNoteText = noteMatch ? stripTags(noteMatch[0]) : "";
+
+      cards.push({ title, badges, structureText, coachingNoteText });
+    }
   }
 
   return cards;

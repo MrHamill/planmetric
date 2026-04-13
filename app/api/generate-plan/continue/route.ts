@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
           totalWeeks,
           eventType: d.trainingFor as string || sub.training_for || "",
           athleteAge: isNaN(age as number) ? undefined : age,
-          trainingDaysPerWeek: inputs.trainingDaysPerWeek,
+          trainingDaysPerWeek: skeleton.trainingDays.length,
         });
 
         const criticals = validationResults.filter(r => r.severity === "critical");

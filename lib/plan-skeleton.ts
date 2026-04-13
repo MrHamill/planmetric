@@ -193,6 +193,7 @@ export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
       weakestDiscipline: inputs.weakestDiscipline,
       isLastWeek: w === totalWeeks,
       preferredTimes: inputs.preferredTimes,
+      strengthDays: inputs.strengthDays?.map(d => FULL_TO_SHORT[d] || d),
     });
 
     // Apply load-day constraints (strength days + other sports)
@@ -721,7 +722,18 @@ function assignTrainingDays(inputs: AthleteInputs): {
   const available = inputs.availableDays.length > 0
     ? inputs.availableDays
     : ALL_DAYS.slice();
-  const targetCount = Math.min(inputs.trainingDaysPerWeek, available.length);
+
+  // Single-sport events: cap training days to ensure at least 1 rest day.
+  // Masters athletes (40+): cap at 5 days max for better recovery.
+  const isSingleSport = !TRIATHLON_EVENTS.has(inputs.trainingFor);
+  let maxDays = available.length;
+  if (isSingleSport) {
+    const isMasters = inputs.age !== null && inputs.age >= 40;
+    maxDays = isMasters ? Math.min(5, available.length) : Math.min(6, available.length);
+    // Always leave room for at least 1 rest day
+    maxDays = Math.min(maxDays, available.length - 1);
+  }
+  const targetCount = Math.min(inputs.trainingDaysPerWeek, maxDays);
 
   // Determine long day
   let longDay = available.includes("Sat") ? "Sat" : available[available.length - 1];
@@ -737,17 +749,28 @@ function assignTrainingDays(inputs: AthleteInputs): {
     if (available.includes(short)) preferredRest = short;
   }
 
-  // Select training days: start with long day, then spread evenly
+  // Select training days: start with long day + day after long (for recovery run),
+  // then spread evenly, preferring non-strength days for quality session flexibility.
   const training = new Set<string>();
   training.add(longDay);
 
-  // Add remaining days, avoiding preferred rest day, spreading evenly
-  const candidates = available.filter(d => d !== longDay && d !== preferredRest);
-  // Prioritize by spacing: spread training days across the week
+  // Also seed the day after the long run (for recovery run)
   const dayIndex = (d: string) => ALL_DAYS.indexOf(d as typeof ALL_DAYS[number]);
+  const dayAfterLongName = ALL_DAYS[(dayIndex(longDay) + 1) % 7];
+  if (available.includes(dayAfterLongName) && dayAfterLongName !== preferredRest) {
+    training.add(dayAfterLongName);
+  }
+
+  // Strength days as a set for tiebreaking (prefer non-strength days for more scheduling flexibility)
+  const strengthSet = new Set(
+    (inputs.strengthDays || []).map(d => FULL_TO_SHORT[d] || d),
+  );
+
+  // Add remaining days, avoiding preferred rest day, spreading evenly
+  const candidates = available.filter(d => !training.has(d) && d !== preferredRest);
   candidates.sort((a, b) => dayIndex(a) - dayIndex(b));
 
-  // Greedy: pick days that maximize spacing
+  // Greedy: pick days that maximize spacing, with tiebreaker for non-strength days
   while (training.size < targetCount && candidates.length > 0) {
     let bestDay = candidates[0];
     let bestScore = -1;
@@ -762,8 +785,10 @@ function assignTrainingDays(inputs: AthleteInputs): {
         const dist = Math.min(Math.abs(ci - ti), 7 - Math.abs(ci - ti));
         minDist = Math.min(minDist, dist);
       }
-      if (minDist > bestScore) {
-        bestScore = minDist;
+      // Tiebreaker: prefer non-strength days (they can host quality sessions)
+      const score = minDist * 10 + (strengthSet.has(c) ? 0 : 1);
+      if (score > bestScore) {
+        bestScore = score;
         bestDay = c;
       }
     }
@@ -775,6 +800,41 @@ function assignTrainingDays(inputs: AthleteInputs): {
   // If still need more, add preferred rest day
   if (training.size < targetCount && preferredRest && !training.has(preferredRest)) {
     training.add(preferredRest);
+  }
+
+  // Post-selection: if rest days are adjacent, try swapping to split them across the week.
+  // Protect long day and day-after-long from being swapped out.
+  const sortedRest = available.filter(d => !training.has(d))
+    .sort((a, b) => dayIndex(a) - dayIndex(b));
+  if (sortedRest.length >= 2) {
+    for (let ri = 0; ri < sortedRest.length - 1; ri++) {
+      const r1 = sortedRest[ri];
+      const r2 = sortedRest[ri + 1];
+      const r1i = dayIndex(r1);
+      const r2i = dayIndex(r2);
+      const adjacent = Math.abs(r1i - r2i) === 1 || (r1i === 0 && r2i === 6) || (r1i === 6 && r2i === 0);
+      if (!adjacent) continue;
+
+      // Swap the non-preferred rest day back to training, and rest a training day far away
+      const restToMove = r1 === preferredRest ? r2 : r2 === preferredRest ? r1 : r2;
+      const restToKeep = restToMove === r1 ? r2 : r1;
+      let bestSwap: string | null = null;
+      let bestDist = -1;
+      for (const t of training) {
+        if (t === longDay) continue;
+        if (t === dayAfterLongName) continue;
+        const dist = Math.min(
+          Math.abs(dayIndex(t) - dayIndex(restToKeep)),
+          7 - Math.abs(dayIndex(t) - dayIndex(restToKeep)),
+        );
+        if (dist >= bestDist) { bestDist = dist; bestSwap = t; }
+      }
+      if (bestSwap) {
+        training.delete(bestSwap);
+        training.add(restToMove);
+      }
+      break; // only fix one pair
+    }
   }
 
   // Sort training and rest days into Mon–Sun calendar order
@@ -801,6 +861,7 @@ interface SessionAssignmentContext {
   weakestDiscipline?: string;
   isLastWeek: boolean;
   preferredTimes: string[];
+  strengthDays?: string[];
 }
 
 function assignSessionsForWeek(ctx: SessionAssignmentContext): SessionSlot[] {
@@ -823,23 +884,26 @@ function assignRunningSessions(ctx: SessionAssignmentContext): SessionSlot[] {
   // Roles: L=long, Q1=quality1, Q2=quality2, E=easy, ES=easy+strength supplement
   // For running events, every training day is a run — strength is a 15-20 min
   // supplement after an easy run, never a standalone day that steals a run slot.
-  type Role = "L" | "Q1" | "Q2" | "E" | "ES";
+  type Role = "L" | "Q1" | "Q2" | "E" | "ES" | "R";
   let roles: Role[];
 
+  // Roles: L=long, Q1=tempo/threshold, Q2=intervals/speed, E=easy, ES=easy+strength, R=recovery
+  // Every session should have a distinct training purpose.
   if (n <= 3) {
     roles = ["E", "Q1", "L"];
   } else if (n === 4) {
-    roles = ["E", "Q1", "ES", "L"];
+    roles = ["R", "Q1", "ES", "L"];
   } else if (n === 5) {
-    roles = ["E", "Q1", "ES", "Q2", "L"];
+    // Optimal for most runners: recovery, tempo, easy+strength, intervals, long
+    roles = ["R", "Q1", "ES", "Q2", "L"];
   } else {
-    // 6-7 days
-    roles = ["E", "Q1", "ES", "Q2", "E", "ES", "L"];
-    while (roles.length > n) roles.splice(roles.indexOf("ES"), 1) || roles.pop();
+    // 6 days: recovery, tempo, easy+strength, intervals, easy, long
+    roles = ["R", "Q1", "ES", "Q2", "E", "L"];
     while (roles.length < n) roles.splice(roles.length - 1, 0, "E");
   }
 
-  // In BASE phase, quality sessions become easy (except one tempo)
+  // In BASE phase, Q2 (intervals) becomes easy — keep one quality (Q1 = tempo)
+  // Recovery runs stay as recovery (distinct from easy)
   if (phase === "BASE" || isRecovery) {
     roles = roles.map(r => {
       if (r === "Q2") return "E";
@@ -854,13 +918,93 @@ function assignRunningSessions(ctx: SessionAssignmentContext): SessionSlot[] {
     roles = roles.map(r => (r === "L" ? "E" : r === "Q1" || r === "Q2" ? "E" : r));
   }
 
-  // Assign roles to specific days — long day gets "L" role
+  // Intelligently assign roles to days based on hard/easy alternation
+  // Priority: 1) Long run on longDay, 2) Recovery after long run,
+  // 3) No back-to-back hard sessions, 4) Strength on athlete's strength days
+  const daySlots: (Role | null)[] = new Array(n).fill(null);
   const longIdx = trainingDays.indexOf(longDay);
+
+  // Step 1: Place long run on preferred long day
   if (longIdx >= 0 && roles.includes("L")) {
-    // Move L role to longDay position
-    const lIdx = roles.indexOf("L");
-    [roles[lIdx], roles[longIdx]] = [roles[longIdx], roles[lIdx]];
+    daySlots[longIdx] = "L";
   }
+
+  // Step 2: Place recovery run the day after the long run (if that day is a training day)
+  if (roles.includes("R") && longIdx >= 0) {
+    const dayAfterLong = ALL_DAYS[(ALL_DAYS.indexOf(trainingDays[longIdx] as typeof ALL_DAYS[number]) + 1) % 7];
+    const dayAfterIdx = trainingDays.indexOf(dayAfterLong);
+    if (dayAfterIdx >= 0 && daySlots[dayAfterIdx] === null) {
+      daySlots[dayAfterIdx] = "R";
+    } else {
+      // Day after long isn't a training day — place recovery on the day before long instead
+      const dayBeforeLong = ALL_DAYS[(ALL_DAYS.indexOf(trainingDays[longIdx] as typeof ALL_DAYS[number]) + 6) % 7];
+      const dayBeforeIdx = trainingDays.indexOf(dayBeforeLong);
+      if (dayBeforeIdx >= 0 && daySlots[dayBeforeIdx] === null) {
+        daySlots[dayBeforeIdx] = "R";
+      }
+    }
+  }
+
+  // Step 3: Mark strength days as easy-only (ES or E) — never place quality sessions here.
+  // Strength training already loads the body; hard running on top risks overtraining.
+  const strengthDayIndices = new Set<number>();
+  if (ctx.strengthDays && ctx.strengthDays.length > 0) {
+    let esPlaced = !roles.includes("ES"); // skip if no ES role in template
+    for (const sd of ctx.strengthDays) {
+      const sdShort = FULL_TO_SHORT[sd] || sd;
+      const sdIdx = trainingDays.indexOf(sdShort);
+      if (sdIdx >= 0 && daySlots[sdIdx] === null) {
+        strengthDayIndices.add(sdIdx);
+        if (!esPlaced) {
+          daySlots[sdIdx] = "ES";
+          esPlaced = true;
+        }
+        // Second strength day gets plain easy (not another ES — one supplement is enough)
+      }
+    }
+  }
+
+  // Step 4: Place remaining roles ensuring:
+  //   - No hard sessions on strength days
+  //   - No back-to-back hard sessions
+  const hardRoles = new Set<Role>(["Q1", "Q2", "L"]);
+  const unplacedRoles = roles.filter(r => {
+    // Check if this role is already placed
+    const placedCount = daySlots.filter(s => s === r).length;
+    const totalCount = roles.filter(rr => rr === r).length;
+    return placedCount < totalCount;
+  });
+
+  // Sort: place hard sessions first (they're more constrained)
+  const hardUnplaced = unplacedRoles.filter(r => hardRoles.has(r));
+  const softUnplaced = unplacedRoles.filter(r => !hardRoles.has(r));
+
+  for (const role of [...hardUnplaced, ...softUnplaced]) {
+    let bestIdx = -1;
+    let bestScore = -Infinity;
+    for (let i = 0; i < n; i++) {
+      if (daySlots[i] !== null) continue;
+      let score = 0;
+      // Prefer not placing hard sessions on strength days (but allow when no alternative)
+      if (hardRoles.has(role) && strengthDayIndices.has(i)) score -= 5;
+      // Penalise adjacent hard sessions
+      const prevSlot = i > 0 ? daySlots[i - 1] : null;
+      const nextSlot = i < n - 1 ? daySlots[i + 1] : null;
+      if (hardRoles.has(role)) {
+        if (prevSlot && hardRoles.has(prevSlot)) score -= 10;
+        if (nextSlot && hardRoles.has(nextSlot)) score -= 10;
+      }
+      if (score > bestScore) { bestScore = score; bestIdx = i; }
+    }
+    if (bestIdx >= 0) daySlots[bestIdx] = role;
+  }
+
+  // Fill any remaining nulls with "E"
+  for (let i = 0; i < n; i++) {
+    if (daySlots[i] === null) daySlots[i] = "E";
+  }
+
+  roles = daySlots as Role[];
 
   // Allocate time budgets
   const timeBudgets = allocateTime(roles.map(r => roleWeight(r)), totalMinutes, ctx);
@@ -896,6 +1040,8 @@ function roleToRunSession(role: string, phase: Phase, dur: number, day: string, 
         day, discipline: "run", durationMinutes: dur, isKeySession: true, timeSlot: time,
         sessionType: "interval-run", zone: "Z4-Z5",
       };
+    case "R":
+      return { day, sessionType: "recovery-run", discipline: "run", durationMinutes: Math.min(dur, 30), zone: "Z1", isKeySession: false, timeSlot: time };
     case "ES":
       // Easy run + strength supplement (AI writes both in one session card)
       return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time, includeStrength: true };
@@ -1109,7 +1255,8 @@ function roleWeight(role: string): number {
     case "L": return 2.5;
     case "Q1": case "Q2": return 1.2;
     case "ES": return 1.1; // easy run + strength supplement (slightly longer)
-    default: return 1.0; // easy
+    case "R": return 0.6;  // recovery run — short and very easy
+    default: return 1.0;   // easy
   }
 }
 
