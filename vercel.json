@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/resume-plans",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/check-stuck-orders",
+      "schedule": "0 * * * *"
     }
   ]
 }
