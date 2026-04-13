@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import type { Metadata } from "next";
 
@@ -77,6 +78,7 @@ export default function City2SurfGuide() {
         slug="city2surf-2026-guide"
         datePublished="2026-04-12"
       />
+      <FaqJsonLd items={faq} />
       <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
         {/* Grain */}
         <div
@@ -357,6 +359,18 @@ export default function City2SurfGuide() {
                 <p>
                   City2Surf rewards preparation. Not extreme preparation &mdash; consistent, structured, specific preparation. The athletes who cross the Bondi finish line feeling strong are almost always the ones who started in April, followed a proper plan, and had the discipline to start slower than their instincts told them to on race day.
                 </p>
+              </FadeIn>
+
+              {/* Related articles */}
+              <FadeIn delay={0.45}>
+                <div className="mt-12 pt-8" style={{ borderTop: `1px solid ${RULE}` }}>
+                  <p className="font-label text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: DIM }}>Keep reading</p>
+                  <div className="space-y-3">
+                    <Link href="/blog/how-to-taper" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Taper Without Losing Fitness &rarr;</Link>
+                    <Link href="/blog/race-week-nutrition" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>Race Week Nutrition: What to Eat Before Race Day &rarr;</Link>
+                    <Link href="/blog/heart-rate-zones" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Read Your Heart Rate Zones &rarr;</Link>
+                  </div>
+                </div>
               </FadeIn>
 
               {/* CTA */}

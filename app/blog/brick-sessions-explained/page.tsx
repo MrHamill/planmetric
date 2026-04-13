@@ -96,6 +96,16 @@ export default function BrickSessionsArticle() {
               <p>Brick sessions are uncomfortable by design. That discomfort is the point &mdash; every brick you complete in training is one less surprise on race day. The athletes who execute the run off the bike cleanly are the ones who have practised the transition until it feels normal. Not easy, but normal.</p>
             </FadeIn>
 
+            <FadeIn delay={0.29}>
+              <div className="mt-12 pt-8" style={{ borderTop: `1px solid ${RULE}` }}>
+                <p className="font-label text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: DIM }}>Keep reading</p>
+                <div className="space-y-3">
+                  <Link href="/blog/heart-rate-zones" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Read Your Heart Rate Zones &rarr;</Link>
+                  <Link href="/blog/why-training-plans-fail" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>Why Training Plans Fail &rarr;</Link>
+                </div>
+              </div>
+            </FadeIn>
+
             <FadeIn delay={0.3} className="mt-16 pt-12">
               <div style={{ borderTop: `1px solid ${RULE}` }} className="pt-12">
                 <p className="font-headline text-xl font-bold mb-4">Ready to train smarter?</p>

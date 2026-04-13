@@ -136,6 +136,17 @@ export default function HeartRateZonesArticle() {
               <p>The takeaway is simple. Establish your zones properly. Train in the right ones. Retest regularly. And spend the vast majority of your time in Zones 1 and 2, even when it feels counterintuitively slow. The aerobic base is the foundation &mdash; everything else is built on top of it.</p>
             </FadeIn>
 
+            {/* Related articles */}
+            <FadeIn delay={0.33}>
+              <div className="mt-12 pt-8" style={{ borderTop: `1px solid ${RULE}` }}>
+                <p className="font-label text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: DIM }}>Keep reading</p>
+                <div className="space-y-3">
+                  <Link href="/blog/how-to-taper" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Taper Without Losing Fitness &rarr;</Link>
+                  <Link href="/blog/race-week-nutrition" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>Race Week Nutrition: What to Eat Before Race Day &rarr;</Link>
+                </div>
+              </div>
+            </FadeIn>
+
             {/* CTA */}
             <FadeIn delay={0.34} className="mt-16 pt-12" >
               <div style={{ borderTop: `1px solid ${RULE}` }} className="pt-12">

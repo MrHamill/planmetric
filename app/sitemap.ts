@@ -25,6 +25,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "why-training-plans-fail",
     "brick-sessions-explained",
     "how-to-taper",
+    "city2surf-2026-guide",
+    "zone-training-complete-guide",
+    "triathlon-training-beginners",
+    "gold-coast-marathon-2026-guide",
   ].map((slug) => ({
     url: `${BASE}/blog/${slug}`,
     lastModified: now,

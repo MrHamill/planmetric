@@ -108,6 +108,16 @@ export default function HowToTaperArticle() {
               <p>The taper is not where fitness is built. It is where fitness is revealed. Trust the process, maintain intensity, reduce volume, sleep well, and arrive at the start line knowing that every session you completed in the preceding months is ready to express itself when it matters most.</p>
             </FadeIn>
 
+            <FadeIn delay={0.25}>
+              <div className="mt-12 pt-8" style={{ borderTop: `1px solid ${RULE}` }}>
+                <p className="font-label text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: DIM }}>Keep reading</p>
+                <div className="space-y-3">
+                  <Link href="/blog/race-week-nutrition" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>Race Week Nutrition: What to Eat Before Race Day &rarr;</Link>
+                  <Link href="/blog/heart-rate-zones" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Read Your Heart Rate Zones &rarr;</Link>
+                </div>
+              </div>
+            </FadeIn>
+
             <FadeIn delay={0.26} className="mt-16 pt-12">
               <div style={{ borderTop: `1px solid ${RULE}` }} className="pt-12">
                 <p className="font-headline text-xl font-bold mb-4">Ready to train smarter?</p>

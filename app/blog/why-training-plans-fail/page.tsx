@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,10 +22,30 @@ const ACCENT = "#B85C2C";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
+const faq = [
+  {
+    q: "Why do most training plans fail?",
+    a: "Most training plans are written for an idealised athlete who never gets sick, never travels for work, and recovers on a fixed schedule. When real life interferes the plan breaks, the athlete falls behind, and tries to catch up by cramming missed sessions — leading to burnout or injury. A 15-week randomised controlled trial showed individualised plans that adapted to each athlete's recovery status produced 6.2% improvement in 10K time, compared to 2.9% for standardised plans.",
+  },
+  {
+    q: "What is the 10% rule in training?",
+    a: "The 10% rule means you should increase total weekly training volume by no more than 10% from one week to the next. Bodies absorb load changes of roughly 10% per week — beyond that, the risk of injury rises sharply. Specifically, swim and run duration should increase by a maximum of 5 minutes per week, and bike duration by a maximum of 10 minutes per week.",
+  },
+  {
+    q: "How much of my training should be easy?",
+    a: "Research across elite endurance athletes consistently shows that 80–90% of training should be at low intensity — below ventilatory threshold one, fully conversational. Only 10–20% should be at threshold or high intensity. Most amateur plans prescribe too much moderate intensity, leaving athletes in a grey zone where they are too fatigued to go hard and never truly recover.",
+  },
+  {
+    q: "How often should I take a recovery week?",
+    a: "Every fourth week should be an active recovery week at 50–60% of normal volume. Recovery weeks are not lost fitness — they are where physiological adaptation actually occurs. During recovery weeks, maintain easy sessions but drop all hard or long sessions. Never skip recovery weeks during build or peak training phases.",
+  },
+];
+
 export default function WhyTrainingPlansFailArticle() {
   return (
     <>
     <ArticleJsonLd title="Why Most Training Plans Fail" description="Learn why standardised plans underperform and what individualised training actually looks like." slug="why-training-plans-fail" datePublished="2026-03-25" />
+    <FaqJsonLd items={faq} />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       <div className="pointer-events-none fixed inset-0 z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 
@@ -89,6 +110,16 @@ export default function WhyTrainingPlansFailArticle() {
 
             <FadeIn delay={0.28}>
               <p>The plan should include recovery weeks every four weeks, progressive volume increases within the 10% rule, and a taper protocol that reduces volume by 20&ndash;50% in the final 2&ndash;3 weeks while maintaining intensity. And every plan should be reviewed by a human coach who can spot the things algorithms miss &mdash; life stress, motivation, the difference between a schedule that looks good on paper and one an athlete can actually follow.</p>
+            </FadeIn>
+
+            <FadeIn delay={0.29}>
+              <div className="mt-12 pt-8" style={{ borderTop: `1px solid ${RULE}` }}>
+                <p className="font-label text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: DIM }}>Keep reading</p>
+                <div className="space-y-3">
+                  <Link href="/blog/heart-rate-zones" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>How to Read Your Heart Rate Zones &rarr;</Link>
+                  <Link href="/blog/brick-sessions-explained" className="block font-body text-sm transition-colors hover:text-white" style={{ color: ACCENT }}>Brick Sessions Explained: The Key to Triathlon Transitions &rarr;</Link>
+                </div>
+              </div>
             </FadeIn>
 
             <FadeIn delay={0.3} className="mt-16 pt-12">
