@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,10 +22,30 @@ const ACCENT = "#B85C2C";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
+const faq = [
+  {
+    q: "What are the 5 heart rate zones?",
+    a: "The five heart rate zones are: T1 Recovery (below 65% max HR), T2 Aerobic Base (65-75%), T3 Tempo (75-85%), T4 VO2max (85-92%), and T5 Anaerobic (above 92%). Each zone targets a different physiological adaptation, from fat oxidation at T2 to anaerobic power at T5.",
+  },
+  {
+    q: "How much training should be in Zone 2?",
+    a: "Research from Norwegian coaching best-practice shows that elite endurance athletes spend 80-90% of their training at low intensity, primarily in Zones 1 and 2. Zone 2 is where the majority of aerobic adaptation occurs — improved fat oxidation, mitochondrial density, and capillary growth. Most amateur athletes train too hard on easy days and too easy on hard days.",
+  },
+  {
+    q: "Are heart rate zones the same for running and cycling?",
+    a: "No. Running produces the highest heart rate due to total-body muscle recruitment and gravitational loading. Cycling heart rate sits 5-10 BPM lower at the same effort, and swimming runs 10-15 BPM below running. Each discipline needs its own zones established through a field test.",
+  },
+  {
+    q: "How often should I retest my heart rate zones?",
+    a: "Retest every 6-8 weeks during your build phase, and after any significant illness or training break. As fitness improves, your thresholds shift upward. Training with stale zone data leads to sessions that no longer produce adaptation.",
+  },
+];
+
 export default function HeartRateZonesArticle() {
   return (
     <>
     <ArticleJsonLd title="How to Read Your Heart Rate Zones" description="Learn the five-zone system, how to calibrate per discipline, and why the 80/20 rule matters." slug="heart-rate-zones" datePublished="2026-03-25" />
+    <FaqJsonLd items={faq} />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       {/* Grain */}
       <div

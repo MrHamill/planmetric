@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,10 +22,30 @@ const ACCENT = "#B85C2C";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
+const faq = [
+  {
+    q: "How long should I taper before a race?",
+    a: "The optimal taper duration is 8-14 days for triathlons and 2-3 weeks for marathons. During the taper, reduce training volume by 20-50% while maintaining intensity. Your last truly long run or ride should be 3-4 weeks before race day.",
+  },
+  {
+    q: "Will I lose fitness during a taper?",
+    a: "No. A well-executed taper does not reduce fitness — it allows accumulated fatigue to dissipate so the fitness you have built can express itself on race day. Phantom fatigue during taper is normal. Your body is consolidating adaptations, repairing micro-damage and replenishing glycogen stores.",
+  },
+  {
+    q: "Should I reduce intensity during a taper?",
+    a: "No — this is the most common tapering mistake. Reduce volume by 20-50%, but maintain the same intensity in your sessions. Cutting intensity removes the neuromuscular stimulus that keeps your fast-twitch fibres sharp, leaving you feeling sluggish on race day. Short, fast strides in race week keep your legs responsive.",
+  },
+  {
+    q: "What should I eat during taper week?",
+    a: "Keep eating normally for the first four to five days with a slight increase in carbohydrate proportion. In the final 48 hours, target 8-10 g of carbohydrate per kilogram of bodyweight per day using simple, low-fibre sources like white rice, white pasta, and fruit juice to maximise glycogen storage.",
+  },
+];
+
 export default function HowToTaperArticle() {
   return (
     <>
     <ArticleJsonLd title="How to Taper Before Race Day Without Losing Fitness" description="Learn optimal taper duration, the volume vs intensity rule, and how to manage taper anxiety." slug="how-to-taper" datePublished="2026-03-25" />
+    <FaqJsonLd items={faq} />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       <div className="pointer-events-none fixed inset-0 z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 

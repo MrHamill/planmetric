@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,10 +22,30 @@ const ACCENT = "#B85C2C";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
+const faq = [
+  {
+    q: "What is a brick session in triathlon?",
+    a: "A brick session is a bike ride followed immediately by a run with no rest in between, mimicking race-day transition conditions. The standard protocol is 60-90 minutes of cycling at race power, followed by 15-30 minutes of running at race pace. The purpose is neuromuscular adaptation — teaching your body to recruit running muscles immediately after sustained cycling effort.",
+  },
+  {
+    q: "How many brick sessions do I need before a triathlon?",
+    a: "Complete at least 2-4 brick sessions in the six weeks before race day. For Olympic distance and above, weekly bricks during the build phase are ideal. For sprint distance, two to three bricks in the final four weeks is sufficient. Do not stack bricks in the final week before the race — they carry significant training load and need recovery time.",
+  },
+  {
+    q: "Why do my legs feel heavy when I run off the bike?",
+    a: "This is called 'brick legs' — the neuromuscular shock of transitioning from cycling to running. Your quadriceps have been working in a shortened range during the pedal stroke and suddenly need to operate through the full extension and ground-contact pattern of running. This sensation diminishes with repeated brick session practice.",
+  },
+  {
+    q: "Does cycling cadence affect the run in triathlon?",
+    a: "Yes. Higher cycling cadence of 90-100 RPM reduces muscular fatigue and preserves your run legs for T2. Higher cadence shifts effort from muscular force production to cardiovascular output, meaning you arrive at transition with less muscular fatigue and more glycogen. Many age-group triathletes default to 70-75 RPM, which costs them significantly on the run.",
+  },
+];
+
 export default function BrickSessionsArticle() {
   return (
     <>
     <ArticleJsonLd title="Brick Sessions Explained" description="How to train your legs for the run off the bike: protocols, frequency, and cadence strategy." slug="brick-sessions-explained" datePublished="2026-03-25" />
+    <FaqJsonLd items={faq} />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       <div className="pointer-events-none fixed inset-0 z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 

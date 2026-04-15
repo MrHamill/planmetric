@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { FadeIn, FadeInHero, HoverCard } from "@/components/FadeIn";
+import { FadeIn, FadeInHero } from "@/components/FadeIn";
+import { ArticleGrid } from "@/components/ArticleGrid";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -20,27 +21,27 @@ const CARD_BG = "rgba(245,245,240,0.03)";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
-const catColor: Record<string, { text: string; bg: string }> = {
-  Training:    { text: ACCENT, bg: "rgba(184,92,44,0.10)" },
-  Swim:        { text: "#0ea5e9", bg: "rgba(14,165,233,0.10)" },
-  Bike:        { text: "#22c55e", bg: "rgba(34,197,94,0.10)" },
-  Run:         { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
-  Nutrition:   { text: "#f97316", bg: "rgba(249,115,22,0.10)" },
-  Methodology: { text: "#8b5cf6", bg: "rgba(139,92,246,0.10)" },
-  Triathlon:   { text: "#a855f7", bg: "rgba(168,85,247,0.10)" },
-  Racing:      { text: "#ef4444", bg: "rgba(239,68,68,0.10)" },
-};
 
-const ARTICLES = [
-  { title: "Heart rate zone training: the complete guide for endurance athletes", category: "Training", readTime: "12 min read", excerpt: "Everything you need to know about zone training — the five-zone system, the 80/20 rule, how to calibrate zones per discipline, and how to structure your week around intensity.", href: "/blog/zone-training-complete-guide" },
-  { title: "Gold Coast Marathon 2026: the complete training and pacing guide", category: "Run", readTime: "10 min read", excerpt: "How to train for the Gold Coast Marathon — pacing strategy by goal time, 16-week training structure, fuelling plan, and race day checklist for the July 5 race.", href: "/blog/gold-coast-marathon-2026-guide" },
-  { title: "Triathlon training for beginners: where to start", category: "Triathlon", readTime: "10 min read", excerpt: "Everything a first-time triathlete needs to know — how much training is enough, which discipline to prioritise, how to structure your week, and the gear that actually matters.", href: "/blog/triathlon-training-beginners" },
-  { title: "City2Surf 2026: the complete pacing and training guide", category: "Run", readTime: "8 min read", excerpt: "How to pace City2Surf, survive Heartbreak Hill, and build a 17-week training plan for the August 9 race. Pacing tables, course breakdown, and race day checklist.", href: "/blog/city2surf-2026-guide" },
-  { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones" },
-  { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition" },
-  { title: "Why most training plans fail \u2014 and what to do instead", category: "Methodology", readTime: "7 min read", excerpt: "Standardised plans underperform individualised ones by half. The research behind adaptive training and the 10% rule.", href: "/blog/why-training-plans-fail" },
-  { title: "Brick sessions explained \u2014 how to train your legs for the run off the bike", category: "Triathlon", readTime: "6 min read", excerpt: "What brick legs are, how many bricks you need before race day, and why your cycling cadence determines your run.", href: "/blog/brick-sessions-explained" },
-  { title: "How to taper before race day without losing fitness", category: "Racing", readTime: "5 min read", excerpt: "Reduce volume, maintain intensity, and arrive at the start line sharp. The science of the pre-race taper.", href: "/blog/how-to-taper" },
+const ALL_ARTICLES = [
+  { title: "How do I start running as a beginner?", category: "Run", readTime: "9 min read", excerpt: "A complete guide to your first weeks of running — the Couch to 5K program, essential gear, conversational pace, common mistakes, and how to build a running habit that sticks.", href: "/blog/start-running-beginner", publishDate: "2026-04-18" },
+  { title: "How often should I run per week?", category: "Run", readTime: "8 min read", excerpt: "A research-backed guide to weekly running frequency — how many days to run at each level, the 80/20 intensity rule, sample weekly schedules, and the recovery principles that keep you injury-free.", href: "/blog/how-often-run-per-week", publishDate: "2026-04-21" },
+  { title: "How long does it take to run a 5K?", category: "Run", readTime: "9 min read", excerpt: "Average 5K finish times by age and gender, how long to train for your first 5K, walk/run strategies, parkrun data, and how quickly beginners improve.", href: "/blog/how-long-to-run-5k", publishDate: "2026-04-24" },
+  { title: "What is a good 5K time for a beginner?", category: "Run", readTime: "9 min read", excerpt: "5K benchmark times by age group and gender, parkrun percentile data, realistic targets after 8 weeks of training, and how to use age grading to compare your performance.", href: "/blog/good-5k-time-beginner", publishDate: "2026-04-27" },
+  { title: "How do I improve my running pace?", category: "Run", readTime: "9 min read", excerpt: "A complete guide to improving your running pace through interval training, tempo runs, hill repeats, cadence work, and strength training. Evidence-based methods for intermediate runners.", href: "/blog/improve-running-pace", publishDate: "2026-04-30" },
+  { title: "How do I breathe properly when running?", category: "Run", readTime: "9 min read", excerpt: "Nose vs mouth breathing, rhythmic breathing patterns by intensity, diaphragmatic breathing training, side stitch prevention, and cold weather breathing techniques.", href: "/blog/breathing-while-running", publishDate: "2026-05-03" },
+  { title: "What should I eat before a run?", category: "Nutrition", readTime: "8 min read", excerpt: "Pre-run meal timing, best foods by run type, fasted running guidelines, foods to avoid, hydration protocol, and specific advice for morning runners.", href: "/blog/what-to-eat-before-running", publishDate: "2026-05-06" },
+  { title: "How do I avoid injury when running?", category: "Run", readTime: "9 min read", excerpt: "Evidence-based strategies to prevent running injuries: load management, strength training, footwear rotation, recovery priorities, and when to push through pain safely.", href: "/blog/avoid-running-injury", publishDate: "2026-05-09" },
+  { title: "How do I train for a half marathon from scratch?", category: "Run", readTime: "10 min read", excerpt: "A complete 12-week half marathon training plan for beginners — weekly schedules, pacing strategy, key sessions, strength work, and the taper.", href: "/blog/half-marathon-training-plan", publishDate: "2026-05-12" },
+  { title: "How many weeks does it take to train for a marathon?", category: "Run", readTime: "10 min read", excerpt: "A research-backed guide to marathon training timelines — periodisation phases, weekly volume by goal time, key sessions, pacing strategy, and how to structure your build from base to race day.", href: "/blog/marathon-training-weeks", publishDate: "2026-05-15" },
+  { title: "Heart rate zone training: the complete guide for endurance athletes", category: "Training", readTime: "12 min read", excerpt: "Everything you need to know about zone training — the five-zone system, the 80/20 rule, how to calibrate zones per discipline, and how to structure your week around intensity.", href: "/blog/zone-training-complete-guide", publishDate: "2025-03-25" },
+  { title: "Gold Coast Marathon 2026: the complete training and pacing guide", category: "Run", readTime: "10 min read", excerpt: "How to train for the Gold Coast Marathon — pacing strategy by goal time, 16-week training structure, fuelling plan, and race day checklist for the July 5 race.", href: "/blog/gold-coast-marathon-2026-guide", publishDate: "2025-03-25" },
+  { title: "Triathlon training for beginners: where to start", category: "Triathlon", readTime: "10 min read", excerpt: "Everything a first-time triathlete needs to know — how much training is enough, which discipline to prioritise, how to structure your week, and the gear that actually matters.", href: "/blog/triathlon-training-beginners", publishDate: "2025-03-25" },
+  { title: "City2Surf 2026: the complete pacing and training guide", category: "Run", readTime: "8 min read", excerpt: "How to pace City2Surf, survive Heartbreak Hill, and build a 17-week training plan for the August 9 race. Pacing tables, course breakdown, and race day checklist.", href: "/blog/city2surf-2026-guide", publishDate: "2025-03-25" },
+  { title: "How to read your heart rate zones \u2014 and why most athletes ignore them", category: "Training", readTime: "6 min read", excerpt: "The five-zone system explained, why Zone 2 is chronically underused, and how to calibrate zones properly across swim, bike and run.", href: "/blog/heart-rate-zones", publishDate: "2025-03-25" },
+  { title: "What to eat the week before a triathlon", category: "Nutrition", readTime: "5 min read", excerpt: "From carbohydrate loading to race-morning fuelling. A day-by-day breakdown of what to eat and what to avoid.", href: "/blog/race-week-nutrition", publishDate: "2025-03-25" },
+  { title: "Why most training plans fail \u2014 and what to do instead", category: "Methodology", readTime: "7 min read", excerpt: "Standardised plans underperform individualised ones by half. The research behind adaptive training and the 10% rule.", href: "/blog/why-training-plans-fail", publishDate: "2025-03-25" },
+  { title: "Brick sessions explained \u2014 how to train your legs for the run off the bike", category: "Triathlon", readTime: "6 min read", excerpt: "What brick legs are, how many bricks you need before race day, and why your cycling cadence determines your run.", href: "/blog/brick-sessions-explained", publishDate: "2025-03-25" },
+  { title: "How to taper before race day without losing fitness", category: "Racing", readTime: "5 min read", excerpt: "Reduce volume, maintain intensity, and arrive at the start line sharp. The science of the pre-race taper.", href: "/blog/how-to-taper", publishDate: "2025-03-25" },
 ];
 
 export default function BlogPage() {
@@ -116,45 +117,7 @@ export default function BlogPage() {
             </span>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {ARTICLES.map((article, i) => {
-              const cat = catColor[article.category] || catColor.Training;
-              return (
-                <FadeIn key={article.title} delay={i * 0.1}>
-                  <HoverCard
-                    className="rounded-sm overflow-hidden group cursor-pointer flex flex-col h-full"
-                    style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
-                  >
-                    <Link href={article.href} className="p-8 flex-1 flex flex-col" style={{ color: "inherit", textDecoration: "none" }}>
-                      <div className="flex items-center gap-3 mb-6">
-                        <span
-                          className="font-label text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
-                          style={{ color: cat.text, background: cat.bg }}
-                        >
-                          {article.category}
-                        </span>
-                        <span className="font-label text-[10px] uppercase tracking-widest" style={{ color: DIM }}>
-                          {article.readTime}
-                        </span>
-                      </div>
-                      <h2 className="font-headline text-xl font-bold mb-4 leading-snug">
-                        {article.title}
-                      </h2>
-                      <p className="font-body text-sm leading-relaxed flex-1" style={{ color: DIM }}>
-                        {article.excerpt}
-                      </p>
-                      <span
-                        className="font-label text-xs tracking-wider mt-6 inline-block"
-                        style={{ color: ACCENT }}
-                      >
-                        Read article &rarr;
-                      </span>
-                    </Link>
-                  </HoverCard>
-                </FadeIn>
-              );
-            })}
-          </div>
+          <ArticleGrid articles={ALL_ARTICLES} />
         </div>
       </section>
 

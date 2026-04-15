@@ -35,6 +35,11 @@
 - idealnutrition.com.au — Carbohydrate periodisation strategies (train low / train high)
 - Johns Hopkins Medicine — Daily nutrition guidelines for endurance athletes
 - Mayo Clinic Health System — Pre/post-run nutrition and fuelling timing
+- Healthline / NASM — Pre-run meal timing by window (30 min, 1 hr, 2–3 hrs)
+- Reddit / highfive.co.uk — Pre-run foods by run type (easy, hard, long)
+- Healthline / Reddit — Fasted running benefits, risks, and suitability by run type
+- Polar / Women's Running / Healthylife — Foods to avoid before running (GI triggers)
+- Running Warehouse Australia / Runna — Pre-run hydration and morning runner fuelling
 
 ---
 
@@ -270,4 +275,153 @@ A summary framework for how much carbohydrate to consume during competition, bas
 - Keep a fuelling journal to develop a personalised race-day strategy
 - Build a detailed race-day plan pairing specific products with specific time points
 - Never try a new product or strategy on race day
+- Applies to: All
+
+---
+
+## Pre-Run Meal Timing
+
+### By Time Window
+
+| Window | Goal | What to Eat | Examples |
+|--------|------|-------------|---------|
+| 2–3 hrs before | Sustained energy without feeling heavy | High carbs, moderate protein, low fat, low fibre | Oatmeal with banana, toast with eggs, bagel with cream cheese and fruit |
+| 1 hr before | Top up glycogen, maintain blood sugar | Simple, quickly digestible carbs | Toast with honey or jam, banana, applesauce |
+| 30 min before | Fast energy boost | Light, easily digestible, liquid or simple carbs | Banana, handful of pretzels, sports drink, gel |
+
+### Key Considerations
+- **Run intensity matters:** longer, higher-intensity runs require more fuel (higher carbs) than easy runs
+- **Gut training:** experiment with timing and food types during training — never test on race day
+- **Hydration:** drink 400–800 mL/hr, using sports drinks for longer efforts
+- **Avoid:** high-fibre, high-fat, and very spicy foods in the pre-run window
+- Applies to: All
+
+---
+
+## Pre-Run Foods by Run Type
+
+### Easy Runs (< 60 min)
+- Minimal fuel needed — a small snack or fasted running is fine
+- **Best options:** banana, toast with jam, granola bar, few crackers
+- **Timing:** 15–30 min before (or skip entirely)
+- Applies to: All
+
+### Hard Sessions / Speed Work (Intervals, Tempo)
+- High-carbohydrate, fast-acting, easily digestible foods for immediate energy
+- **Best options:** white toast with jam, energy gel, oatmeal, banana
+- **Timing:** 60–90 min before for optimal digestion
+- Applies to: All
+
+### Long Runs (> 90 min)
+- Sustained-release energy — moderate carbs with some protein
+- **Best options:** oatmeal with fruit, bagel with peanut butter, oatmeal with nut butter
+- **Timing:** 90–120 min before
+- Applies to: All
+
+---
+
+## Fasted Running
+
+### What It Is
+Running on an empty stomach, typically in the morning after 6–12 hours of not eating. A safe and effective tool for specific run types when used strategically.
+
+### Benefits
+- **Fat adaptation:** depleted glycogen forces greater fat oxidation — beneficial for endurance athletes aiming to "push back the wall" in long races
+- **Reduced GI distress:** ideal for runners prone to cramping, side stitches, nausea, or runner's trots
+- **Convenience:** enables early morning training without waiting to digest
+- **Metabolic markers:** some studies suggest improved insulin sensitivity
+- Applies to: Intermediate / Elite
+
+### Risks
+- **Reduced performance at high intensity:** maintaining fast pace or high intensity is difficult without carbs
+- **Muscle breakdown (catabolism):** body may break down muscle protein for fuel
+- **Elevated cortisol:** excessive fasted running can impair immune function
+- **Low energy availability (LEA):** chronic under-fuelling can cause hormonal imbalances, bone density loss, and increased injury risk — particularly in women
+- **Fatigue/dizziness:** low blood sugar can cause lightheadedness
+- Applies to: All
+
+### Suitability by Run Type
+
+| Run Type | Fasted? | Reasoning |
+|----------|---------|-----------|
+| Easy/recovery (< 60 min) | Yes | Ideal — encourages fat metabolism without risking fatigue |
+| Long run | Sometimes | Strategic use by experienced runners only — risk of bonking |
+| Intervals/speed | No | Requires readily available carbs — fasted = poor performance |
+| Tempo/threshold | No | Requires sustained energy — fasted efforts feel excessively hard |
+
+### Guidelines
+- Start with short, easy runs (30–45 min) to test tolerance
+- Limit to 1–2 times per week — it is a tool, not a daily requirement
+- Prioritise post-run nutrition: protein + carbs immediately after
+- Hydrate before fasted runs — water is still essential
+- **Do not fast if:** prone to low blood sugar, pregnant, or recovering from injury
+- Applies to: All
+
+---
+
+## Foods to Avoid Before Running
+
+### High-Fibre Foods
+Slow to digest, produce gas, cause bloating and urgent bathroom stops:
+- Legumes: beans, lentils, chickpeas, peas
+- Cruciferous vegetables: broccoli, cauliflower, Brussels sprouts, kale, cabbage
+- Whole grains: high-fibre bran cereals, bran muffins, whole-wheat pasta
+- Raw fruits/vegetables: apples with skin, pears, berries, raw vegetables
+- Dried fruit: prunes and apricots (laxative effect)
+- Applies to: All
+
+### High-Fat Foods
+Delay digestion, cause sluggishness or nausea:
+- Fried foods: chips, fried chicken, greasy takeaway
+- Fatty meats/dairy: bacon, sausage, heavy cream, full-fat cheese
+- Excessive healthy fats: large amounts of nuts, seeds, or avocado
+- Applies to: All
+
+### Common GI Triggers
+Irritate the gut lining or produce excess gas:
+- **Dairy:** milk, yoghurt, soft cheese (especially if lactose-sensitive)
+- **Spicy foods:** hot sauce, chilli, curry, peppers
+- **Sugar alcohols/artificial sweeteners:** sorbitol, xylitol, erythritol (found in "sugar-free" products, gum, some protein bars)
+- **Carbonated drinks:** soft drinks, seltzer, fizzy energy drinks
+- **Excessive caffeine:** strong coffee or heavily caffeinated energy drinks — can cause cramping and accelerate bowel movements
+- **Alcohol:** causes dehydration, especially the night before a long run
+- Applies to: All
+
+---
+
+## Pre-Run Hydration
+
+### Timing Protocol
+
+| Window | Amount | Notes |
+|--------|--------|-------|
+| 2–4 hrs before | 500–600 mL water or electrolyte drink | Allows time for absorption and urination |
+| 30–60 min before | 250–300 mL | Final top-up |
+| Long/intense runs | Electrolyte preload ~500 mL with strong electrolyte mix, 90 min before | Finish at least 45 min prior for absorption |
+
+### Hydration Cues
+- **Urine colour:** aim for pale yellow — dark urine means increase intake gradually
+- **Avoid overhydration:** do not force excessive water — can cause hyponatraemia (diluted sodium)
+- **Hot weather:** be more aggressive with early hydration and electrolyte consumption
+- Applies to: All
+
+---
+
+## Morning Runner Fuelling
+
+### Quick-Reference (30–60 min before)
+- **Target:** 30–50 g of carbohydrate from quick-digesting sources
+- **Best for quick energy:** banana (high in carbs and potassium)
+- **Best for sensitive stomachs:** toast, bagel, or rice cake with honey or jam
+- **Convenience:** energy gel, chews, or fig bar
+- **Slightly more substantial (60–90 min before):** small bowl of oatmeal, porridge, or overnight oats
+- **Before hard sessions:** raisins, dates, or small pretzel serving for fast-acting glucose
+- Applies to: All
+
+### Morning-Specific Tips
+- **Easy runs (< 60 min):** fasted is fine for many runners, but a small carb snack often improves performance
+- **Long or intense runs:** eat 90 min before — do not attempt fasted
+- **Avoid:** high fat, high fibre, or high protein immediately before — these slow digestion
+- **Hydration:** 500–600 mL water 2–3 hrs before, or 200–300 mL just before if waking close to run time
+- **Coffee:** many runners pair coffee with their pre-run meal — caffeine boosts energy and can aid digestion
 - Applies to: All

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, FadeInHero } from "@/components/FadeIn";
 import { ArticleJsonLd } from "@/components/ArticleJsonLd";
+import { FaqJsonLd } from "@/components/FaqJsonLd";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,10 +22,30 @@ const ACCENT = "#B85C2C";
 const CARD_BORDER = "rgba(245,245,240,0.10)";
 const RULE = "rgba(245,245,240,0.15)";
 
+const faq = [
+  {
+    q: "How many carbs should I eat before a triathlon?",
+    a: "In the final 48 hours before race day, target 8-10 g of carbohydrate per kilogram of bodyweight per day. For a 70 kg athlete, that is 560-700 g of carbohydrate. Use simple, low-fibre sources like white rice, white pasta, and fruit juice. On race morning, eat 1-2 g/kg bodyweight of carbohydrate 3-4 hours before your start time.",
+  },
+  {
+    q: "How many grams of carbs per hour during a triathlon?",
+    a: "It depends on race distance. Sprint distance requires little to no on-course fuelling. Olympic distance needs 30-60 g/hr on the bike. For 70.3, target 60-80 g/hr. For Ironman, aim for 80-90 g/hr. Gut-trained athletes can reach up to 120 g/hr. Always start fuelling within the first 20 minutes of the bike.",
+  },
+  {
+    q: "How much sodium do I need during a long race?",
+    a: "Target 300-700 mg of sodium per hour for races and sessions beyond 90 minutes. Average sweat sodium concentration ranges from 500-1,500 mg/L and varies enormously between athletes. Low sodium intake during long races is a leading cause of cramping, nausea and heat illness. Sources include electrolyte tabs, sports drinks and salt capsules.",
+  },
+  {
+    q: "Should I try new nutrition on race day?",
+    a: "Never. Every gel, drink and bar should have been tested under training load before race day. A structured gut training protocol over 7+ weeks progressively increases carbohydrate intake from 40 g/hr up to 80-90 g/hr using the specific products you plan to race with. Novel products in a race frequently cause GI distress.",
+  },
+];
+
 export default function RaceWeekNutritionArticle() {
   return (
     <>
     <ArticleJsonLd title="What to Eat the Week Before a Triathlon" description="Race week nutrition strategy for triathletes: carb loading, race morning fuelling, and on-course nutrition by distance." slug="race-week-nutrition" datePublished="2026-03-25" />
+    <FaqJsonLd items={faq} />
     <main style={{ background: BG, color: TEXT }} className="-mt-[72px] relative">
       <div className="pointer-events-none fixed inset-0 z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: "repeat", backgroundSize: "256px 256px" }} />
 
