@@ -55,3 +55,32 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+/* ─── DELETE /api/admin/review ───────────────────────────────
+   Body: { id: string }
+   Dismisses an order — sets status to "dismissed" so the stuck
+   order cron stops alerting about it.
+   ────────────────────────────────────────────────────────────── */
+export async function DELETE(req: NextRequest) {
+  const { id } = await req.json();
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!,
+  );
+
+  const { error } = await supabase
+    .from("intake_submissions")
+    .update({ status: "dismissed" })
+    .eq("id", id);
+
+  if (error) {
+    return NextResponse.json({ error: "Failed to dismiss", detail: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}

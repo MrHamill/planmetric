@@ -41,19 +41,22 @@ export async function GET(req: NextRequest) {
 
   const alerts: string[] = [];
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
   if (stuckPaid && stuckPaid.length > 0) {
     for (const s of stuckPaid) {
       alerts.push(
-        `🔴 <strong>${s.full_name}</strong> (${s.plan}) — paid but plan not generated. Order: ${s.created_at}`
+        `🔴 <strong>${s.full_name || "(no name)"}</strong> (${s.plan}) — paid but plan not generated. Order: ${s.created_at}<br/>` +
+        `<a href="${siteUrl}/admin/review/${s.id}" style="color:#2196F3;">Review</a>`
       );
     }
   }
 
   if (stuckGenerated && stuckGenerated.length > 0) {
     for (const s of stuckGenerated) {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
       alerts.push(
-        `🟡 <strong>${s.full_name}</strong> (${s.plan}) — plan ready but not sent for 24h+. <a href="${siteUrl}/api/admin/review?id=${s.id}">Review now</a>`
+        `🟡 <strong>${s.full_name || "(no name)"}</strong> (${s.plan}) — plan ready but not sent for 24h+.<br/>` +
+        `<a href="${siteUrl}/admin/review/${s.id}" style="color:#2196F3;">Review</a>`
       );
     }
   }

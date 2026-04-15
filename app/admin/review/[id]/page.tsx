@@ -25,7 +25,7 @@ interface Submission {
 }
 
 type View = "preview" | "edit";
-type Status = "loading" | "ready" | "sending" | "sent" | "saving" | "error";
+type Status = "loading" | "ready" | "sending" | "sent" | "saving" | "dismissing" | "dismissed" | "error";
 
 export default function AdminReviewPage() {
   const { id } = useParams<{ id: string }>();
@@ -101,6 +101,25 @@ export default function AdminReviewPage() {
     }
   }
 
+  async function handleDismiss() {
+    if (!sub) return;
+    setStatus("dismissing");
+    try {
+      const res = await fetch("/api/admin/review", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: sub.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to dismiss");
+      setSub(prev => prev ? { ...prev, status: "dismissed" } : prev);
+      setStatus("dismissed");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to dismiss");
+      setStatus("error");
+    }
+  }
+
   async function handleSave() {
     if (!sub) return;
     setStatus("saving");
@@ -153,6 +172,7 @@ export default function AdminReviewPage() {
   if (!sub) return null;
 
   const alreadySent = sub.status === "plan_sent";
+  const alreadyDismissed = sub.status === "dismissed";
   const noPlan = !sub.generated_plan;
 
   /* ── Sent confirmation ──────────────────────────────────── */
@@ -168,6 +188,24 @@ export default function AdminReviewPage() {
           <p className="font-label text-sm mb-8" style={{ color: ACCENT }}>{sub.email}</p>
           <p className="font-body text-sm" style={{ color: DIM }}>
             A confirmation copy was sent to admin@planmetric.com.au
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  /* ── Dismissed confirmation ──────────────────────────────── */
+  if (status === "dismissed") {
+    return (
+      <main className="pt-32 pb-20 min-h-screen flex items-center justify-center px-8" style={{ background: BG, color: TEXT }}>
+        <div className="max-w-lg text-center">
+          <span className="mb-8 block" style={{ color: DIM, fontSize: "56px" }}>&#10005;</span>
+          <h1 className="font-headline text-3xl font-bold tracking-tight mb-4">Order Dismissed</h1>
+          <p className="font-body text-lg mb-2" style={{ color: DIM }}>
+            {sub.full_name}&apos;s order has been dismissed.
+          </p>
+          <p className="font-body text-sm" style={{ color: DIM }}>
+            It will no longer trigger stuck order alerts.
           </p>
         </div>
       </main>
@@ -237,11 +275,19 @@ export default function AdminReviewPage() {
                   </button>
                   <button
                     onClick={() => setView("edit")}
-                    disabled={alreadySent}
+                    disabled={alreadySent || alreadyDismissed}
                     className="px-6 py-3 font-label text-xs uppercase tracking-widest font-bold rounded-sm transition-opacity disabled:opacity-40"
                     style={{ background: "transparent", color: TEXT, border: `1px solid ${BORDER}` }}
                   >
                     Edit Plan
+                  </button>
+                  <button
+                    onClick={handleDismiss}
+                    disabled={alreadySent || alreadyDismissed || status === "dismissing"}
+                    className="px-6 py-3 font-label text-xs uppercase tracking-widest font-bold rounded-sm transition-opacity disabled:opacity-40 ml-auto"
+                    style={{ background: "transparent", color: RED, border: `1px solid ${RED}` }}
+                  >
+                    {status === "dismissing" ? "Dismissing..." : alreadyDismissed ? "Dismissed" : "Dismiss (Test/Ignore)"}
                   </button>
                 </>
               ) : (
