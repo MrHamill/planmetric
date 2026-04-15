@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<!-- saved from url=(0090)file:///C:/Users/peter/OneDrive/Desktop/planmetric/city2surf_planmetric_carousel_1_v2.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City2Surf 2026 — Plan Metric</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    /* Planmetric brand tokens */
+    --bg:         #0f0f0f;
+    --surface:    #1e1e1e;
+    --surface-hi: #2a2a2a;
+    --primary:    #A0522D;
+    --primary-2:  #c4734f;
+    --text:       #f5f5f0;
+    --text-dim:   rgba(245,245,240,0.5);
+    --text-faint: rgba(245,245,240,0.2);
+    --border:     rgba(245,245,240,0.1);
+    --border-hi:  rgba(245,245,240,0.18);
+    --font-headline: 'Epilogue', sans-serif;
+    --font-body:     'Manrope', sans-serif;
+    --font-label:    'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #080808;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    gap: 18px;
+    font-family: var(--font-body);
+    color: var(--text);
+  }
+
+  /* ── UI CHROME ── */
+  .chrome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    font-weight: 500;
+    font-family: var(--font-label);
+  }
+  .ratio-tag {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    background: var(--surface);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-family: var(--font-label);
+  }
+  .controls {
+    display: flex;
+    gap: 6px;
+  }
+  .btn {
+    background: transparent;
+    border: 1px solid var(--border-hi);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    font-family: var(--font-label);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    border-radius: 2px;
+  }
+  .btn:hover, .btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--text);
+  }
+
+  /* ── STAGE — 4:5 ratio (432 × 540) ── */
+  .stage {
+    width: 432px;
+    height: 540px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(14px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+    background: var(--bg);
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  /* stagger reveal */
+  .slide.active .r { animation: up 0.44s ease forwards; opacity: 0; transform: translateY(11px); }
+  .slide.active .r1 { animation-delay: 0.06s; }
+  .slide.active .r2 { animation-delay: 0.14s; }
+  .slide.active .r3 { animation-delay: 0.22s; }
+  .slide.active .r4 { animation-delay: 0.30s; }
+  .slide.active .r5 { animation-delay: 0.38s; }
+  @keyframes up { to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    font-family: var(--font-label);
+  }
+
+  /* ══ SLIDE 1 — COVER ══ */
+  #s1 { display: flex; flex-direction: column; }
+  #s1 .top-bar {
+    background: var(--primary);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  #s1 .top-bar span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: var(--font-label);
+  }
+  #s1 .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 28px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  #s1 .wm {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 180px;
+    font-weight: 900;
+    color: rgba(160,82,45,0.07);
+    line-height: 1;
+    letter-spacing: -8px;
+    pointer-events: none;
+    font-family: var(--font-headline);
+  }
+  #s1 .date-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  #s1 .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  #s1 .date-txt {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-family: var(--font-label);
+  }
+  #s1 h1 {
+    font-size: 84px;
+    font-weight: 900;
+    line-height: 0.87;
+    letter-spacing: -3px;
+    color: var(--text);
+    margin-bottom: 20px;
+    font-family: var(--font-headline);
+  }
+  #s1 h1 .a { color: var(--primary); }
+  #s1 .desc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-dim);
+    max-width: 285px;
+    font-family: var(--font-body);
+  }
+  #s1 .swipe {
+    position: absolute;
+    bottom: 30px;
+    right: 18px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  #s1 .save-nudge {
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    opacity: 0.75;
+    font-family: var(--font-label);
+  }
+
+  /* ══ SLIDE 2 — MISTAKE ══ */
+  #s2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 28px;
+    gap: 20px;
+    background: var(--surface);
+  }
+  #s2 h2 {
+    font-size: 60px;
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s2 h2 .a { color: var(--primary); }
+  #s2 .bc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-dim);
+    border-left: 2px solid var(--primary);
+    padding-left: 16px;
+    font-family: var(--font-body);
+  }
+  #s2 .stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    border: 1px solid var(--border-hi);
+  }
+  #s2 .stat {
+    padding: 14px 10px;
+    border-right: 1px solid var(--border);
+  }
+  #s2 .stat:last-child { border-right: none; }
+  #s2 .stat .n {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 5px;
+    font-family: var(--font-headline);
+  }
+  #s2 .stat .l {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.4;
+    font-family: var(--font-label);
+  }
+
+  /* ══ SLIDE 3 — HILL ══ */
+  #s3 {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 28px 24px;
+    gap: 14px;
+  }
+  #s3 h2 {
+    font-size: 66px;
+    font-weight: 900;
+    line-height: 0.87;
+    letter-spacing: -2.5px;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s3 h2 .a { color: var(--primary); }
+  #s3 .meta {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--surface-hi);
+    padding: 6px 12px;
+    width: fit-content;
+    border-radius: 2px;
+    font-family: var(--font-label);
+  }
+  #s3 .track {
+    height: 3px;
+    background: var(--surface-hi);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  #s3 .fill {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    border-radius: 2px;
+  }
+  .slide.active #s3 .fill { animation: grow 1.2s 0.5s ease forwards; }
+  @keyframes grow { to { width: 100%; } }
+  #s3 .tips { display: flex; flex-direction: column; }
+  #s3 .tip {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  #s3 .tip:last-child { border-bottom: none; }
+  #s3 .tip .ni {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--primary-2);
+    width: 18px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    letter-spacing: 0.5px;
+    font-family: var(--font-label);
+  }
+  #s3 .tip .ti {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.45;
+    font-family: var(--font-body);
+  }
+
+  /* ══ SLIDE 4 — PACING ══ */
+  #s4 {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 28px 24px;
+    gap: 16px;
+    background: var(--surface);
+  }
+  #s4 h2 {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 0.9;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s4 h2 .a { color: var(--primary); }
+  #s4 table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border-hi);
+  }
+  #s4 thead tr { background: var(--surface-hi); border-bottom: 1px solid var(--border-hi); }
+  #s4 th {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 9px 12px;
+    font-family: var(--font-label);
+  }
+  #s4 td {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.3;
+    vertical-align: middle;
+    font-family: var(--font-body);
+  }
+  #s4 td:first-child {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-2);
+    white-space: nowrap;
+    width: 60px;
+    font-family: var(--font-headline);
+  }
+  #s4 tbody tr:last-child td { border-bottom: none; }
+  #s4 .note {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    font-weight: 400;
+    font-family: var(--font-body);
+  }
+
+  /* ══ SLIDE 5 — RACE DAY ══ */
+  #s5 {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 28px 24px;
+    gap: 16px;
+  }
+  #s5 h2 {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 0.9;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s5 h2 .a { color: var(--primary); }
+  #s5 .list { display: flex; flex-direction: column; border: 1px solid var(--border-hi); }
+  #s5 .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.18s;
+  }
+  #s5 .item:last-child { border-bottom: none; }
+  #s5 .item:hover { background: rgba(160,82,45,0.07); }
+  /* KEY TIP highlight */
+  #s5 .item.key-tip {
+    background: rgba(160,82,45,0.1);
+    border-left: 2px solid var(--primary);
+    padding-left: 12px;
+  }
+  #s5 .item.key-tip:hover { background: rgba(160,82,45,0.16); }
+  #s5 .idx {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--primary);
+    width: 18px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    letter-spacing: 0.5px;
+    font-family: var(--font-label);
+  }
+  #s5 .item.key-tip .idx {
+    color: var(--primary-2);
+    font-size: 11px;
+  }
+  #s5 .copy {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.45;
+    flex: 1;
+    font-family: var(--font-body);
+  }
+  #s5 .item.key-tip .copy {
+    font-weight: 500;
+  }
+  #s5 .tag {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    flex-shrink: 0;
+    padding-top: 2px;
+    font-family: var(--font-label);
+  }
+  #s5 .item.key-tip .tag {
+    color: var(--primary-2);
+    opacity: 0.8;
+  }
+
+  /* ══ SLIDE 6 — CTA ══ */
+  #s6 { display: flex; flex-direction: column; background: var(--surface); }
+  #s6 .acc-bar {
+    height: 5px;
+    background: var(--primary);
+    width: 0%;
+    flex-shrink: 0;
+  }
+  .slide.active #s6 .acc-bar { animation: grow 0.9s 0.2s ease forwards; }
+  #s6 .inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 28px 20px;
+    gap: 16px;
+  }
+  #s6 h2 {
+    font-size: 68px;
+    font-weight: 900;
+    line-height: 0.87;
+    letter-spacing: -2.5px;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s6 h2 .a { color: var(--primary); }
+  #s6 .bd {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-dim);
+    max-width: 290px;
+    font-family: var(--font-body);
+  }
+  #s6 .plan-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--surface-hi);
+    padding: 5px 10px;
+    width: fit-content;
+    border-radius: 2px;
+    font-family: var(--font-label);
+  }
+  #s6 .cta-box {
+    border: 1px solid var(--border-hi);
+    background: rgba(160,82,45,0.06);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  #s6 .url {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    font-family: var(--font-label);
+  }
+  #s6 .price {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    font-family: var(--font-headline);
+  }
+  #s6 .price .fr {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 0;
+    font-family: var(--font-body);
+  }
+  #s6 .price-starter {
+    font-size: 10px;
+    color: var(--text-faint);
+    font-family: var(--font-body);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+  #s6 .tl {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 4px;
+    font-family: var(--font-body);
+  }
+  #s6 .foot {
+    height: 44px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    flex-shrink: 0;
+  }
+  #s6 .foot span {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+  }
+
+  /* ── NAV ── */
+  .nav { display: flex; gap: 7px; align-items: center; }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.22s;
+  }
+  .dot.active { background: var(--primary); width: 18px; border-radius: 3px; }
+  .hint {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="brand-tag">Plan Metric · City2Surf 2026</div>
+  <div class="ratio-tag">Instagram 4:5 · 432 × 540px</div>
+  <div class="controls">
+    <button class="btn active" onclick="goTo(0)">01</button>
+    <button class="btn" onclick="goTo(1)">02</button>
+    <button class="btn" onclick="goTo(2)">03</button>
+    <button class="btn" onclick="goTo(3)">04</button>
+    <button class="btn" onclick="goTo(4)">05</button>
+    <button class="btn" onclick="goTo(5)">06</button>
+  </div>
+</div>
+
+<div class="stage" onclick="next()">
+
+  <!-- S1 COVER -->
+  <div class="slide active" id="s1">
+    <div class="top-bar">
+      <span>Plan Metric</span>
+      <span>Precision Endurance</span>
+    </div>
+    <div class="body">
+      <div class="wm">14</div>
+      <div class="date-row r r1">
+        <div class="live-dot"></div>
+        <div class="date-txt">August 9, 2026 · Sydney</div>
+      </div>
+      <h1 class="r r2">CITY<span class="a">2</span><br>SURF<br>2026</h1>
+      <p class="desc r r3">The complete pacing and training guide. How to race it — not just survive it.</p>
+      <div class="swipe r r4">
+        <span class="save-nudge">🔖 Save this guide</span>
+        <span>Slide to advance →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 MISTAKE -->
+  <div class="slide" id="s2">
+    <div class="eyebrow r r1">The #1 mistake</div>
+    <h2 class="r r2">You start<br>way<br><span class="a">too fast.</span></h2>
+    <p class="bc r r3">The descent from Hyde Park tricks you into running 15–20 sec/km over goal pace. By km 8 you're in oxygen debt — and Heartbreak Hill tips you over the edge.</p>
+    <div class="stats r r4">
+      <div class="stat">
+        <div class="n">km 0–3</div>
+        <div class="l">Where most races are lost</div>
+      </div>
+      <div class="stat">
+        <div class="n">8 km</div>
+        <div class="l">Distance you'll regret it</div>
+      </div>
+      <div class="stat">
+        <div class="n">4 km</div>
+        <div class="l">Survival mode if you blow up</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 HILL -->
+  <div class="slide" id="s3">
+    <div class="eyebrow r r1">Km 8–10 · Rose Bay → Vaucluse</div>
+    <h2 class="r r2">Heart<span class="a">break</span><br>Hill.</h2>
+    <div class="meta r r2">60m climb · 2km · manageable</div>
+    <div class="track r r3"><div class="fill"></div></div>
+    <div class="tips r r4">
+      <div class="tip">
+        <div class="ni">01</div>
+        <div class="ti">Shorten stride before the gradient increases</div>
+      </div>
+      <div class="tip">
+        <div class="ni">02</div>
+        <div class="ti">Drive arms actively — upper body carries you up</div>
+      </div>
+      <div class="tip">
+        <div class="ni">03</div>
+        <div class="ti">Maintain effort, not pace. Numbers will alarm you.</div>
+      </div>
+      <div class="tip">
+        <div class="ni">04</div>
+        <div class="ti">Don't surge at the crest — wait 200m first</div>
+      </div>
+      <div class="tip">
+        <div class="ni">05</div>
+        <div class="ti">Relax your jaw and shoulders — tension kills efficiency on a climb</div>
+      </div>
+      <div class="tip">
+        <div class="ni">06</div>
+        <div class="ti">Eyes 10m ahead, not the top. You'll get there.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 PACING -->
+  <div class="slide" id="s4">
+    <div class="eyebrow r r1">Pacing strategy</div>
+    <h2 class="r r2">Race it<br><span class="a">smart.</span></h2>
+    <table class="r r3">
+      <thead>
+        <tr>
+          <th>Goal</th>
+          <th>Start (km 0–3)</th>
+          <th>Finish</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Sub 60</td><td>4:27–4:32 /km</td><td>4:00–4:10</td></tr>
+        <tr><td>60–75</td><td>5:30–5:45 /km</td><td>4:50–5:10</td></tr>
+        <tr><td>75–90</td><td>6:35–6:50 /km</td><td>5:40–6:00</td></tr>
+        <tr><td>90–2hr</td><td>Walk the steep bit</td><td>7:00–8:00</td></tr>
+      </tbody>
+    </table>
+    <div class="note r r4">Start 10–15 sec/km slower than goal pace for the first 3km. Trust the data, not the feeling.</div>
+  </div>
+
+  <!-- S5 RACE DAY -->
+  <div class="slide" id="s5">
+    <div class="eyebrow r r1">Race day protocol</div>
+    <h2 class="r r2">Don't leave<br>it to<br><span class="a">chance.</span></h2>
+    <div class="list r r3">
+      <div class="item key-tip">
+        <div class="idx">⚡</div>
+        <div class="copy">Gel at km 7 — before Heartbreak Hill. Non-negotiable for 90+ min runners.</div>
+        <div class="tag">Key tip</div>
+      </div>
+      <div class="item">
+        <div class="idx">01</div>
+        <div class="copy">Carb-heavy dinner. Nothing new or experimental.</div>
+        <div class="tag">Night before</div>
+      </div>
+      <div class="item">
+        <div class="idx">02</div>
+        <div class="copy">Arrive at Hyde Park 45–60 min before gun</div>
+        <div class="tag">Morning</div>
+      </div>
+      <div class="item">
+        <div class="idx">03</div>
+        <div class="copy">Drink at every water station (~every 3km)</div>
+        <div class="tag">On course</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6 CTA -->
+  <div class="slide" id="s6">
+    <div class="acc-bar"></div>
+    <div class="inner">
+      <div class="eyebrow r r1">17 weeks · August 9</div>
+      <h2 class="r r2">Start in<br><span class="a">April.</span><br>Win<br>Bondi.</h2>
+      <div class="plan-tag r r2">17-week City2Surf plan · 3–5 sessions/week</div>
+      <p class="bd r r3">Built to your pace, your schedule, your goal time. Not a template — not a shortcut.</p>
+      <div class="cta-box r r4">
+        <div class="url">planmetric.com.au</div>
+        <div class="price"><span class="fr">Personalised plan </span>$99.99</div>
+        <div class="price-starter">Starter plans from $29.99</div>
+        <div class="tl">Personalised to your pace, schedule, and race date.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>Plan Metric</span>
+      <span>Precision Endurance</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot" onclick="goTo(5)"></div>
+</div>
+<div class="hint">Click slide · ← → keys to navigate</div>
+
+<div style="margin-top:16px;">
+  <button id="export-btn" onclick="exportAll()" style="background:var(--primary);border:none;color:#f5f5f0;padding:10px 24px;font-family:var(--font-label);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+    ⬇ Download All 6 Slides
+  </button>
+  <div id="export-status" style="font-family:var(--font-label);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:8px;text-align:center;"></div>
+</div>
+
+<script>
+  let cur = 0;
+  const total = 6;
+  const slides = document.querySelectorAll('.slide');
+  const dots   = document.querySelectorAll('.dot');
+  const btns   = document.querySelectorAll('.btn');
+
+  function goTo(i) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    btns[cur].classList.remove('active');
+    cur = ((i % total) + total) % total;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+    btns[cur].classList.add('active');
+    slides[cur].querySelectorAll('.r, .fill, .acc-bar').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+  const next = () => goTo(cur + 1);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+    if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  });
+
+  async function exportAll() {
+    const btn = document.getElementById('export-btn');
+    const status = document.getElementById('export-status');
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+
+    // Load html2canvas
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+
+    // Pre-render all 6 slides to data URLs BEFORE downloading anything
+    const renders = [];
+    for (let i = 0; i < total; i++) {
+      status.textContent = `Rendering slide ${i + 1} of ${total}…`;
+      goTo(i);
+      await new Promise(r => setTimeout(r, 400)); // let slide animate in
+      const canvas = await html2canvas(slides[i], {
+        width: 432, height: 540, scale: 2,
+        backgroundColor: null, useCORS: true, logging: false
+      });
+      renders.push(canvas.toDataURL('image/png'));
+    }
+
+    // Trigger all 6 downloads synchronously from this single user gesture
+    status.textContent = 'Saving all slides…';
+    renders.forEach((dataUrl, i) => {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `city2surf_${i + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    goTo(0);
+    btn.textContent = '✓ All 6 Downloaded';
+    status.textContent = 'Check your Downloads folder';
+    btn.style.background = '#2a6a2a';
+  }
+</script>
+
+
+</body></html>

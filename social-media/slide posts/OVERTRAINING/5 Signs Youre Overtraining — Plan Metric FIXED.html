@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Signs You're Overtraining — Plan Metric</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Epilogue:wght@300;900&family=Playfair+Display:ital,wght@1,900&display=swap');
+
+  :root {
+    --bg:         #0f0f0f;
+    --surface:    #181818;
+    --surface-hi: #2a2a2a;
+    --primary:    #C45E2A;
+    --primary-2:  #E8845A;
+    --text:       #f5f5f0;
+    --text-dim:   rgba(245,245,240,0.5);
+    --text-faint: rgba(245,245,240,0.2);
+    --border:     rgba(245,245,240,0.1);
+    --border-hi:  rgba(245,245,240,0.18);
+    --font-headline: 'Barlow Condensed', sans-serif;
+    --font-body:     'Epilogue', sans-serif;
+    --font-label:    'Barlow Condensed', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #080808;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 48px;
+    gap: 18px;
+    font-family: var(--font-body);
+    color: var(--text);
+  }
+
+  .chrome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    font-weight: 500;
+    font-family: var(--font-label);
+  }
+  .ratio-tag {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    background: var(--surface);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-family: var(--font-label);
+  }
+  .controls {
+    display: flex;
+    gap: 6px;
+  }
+  .btn {
+    background: transparent;
+    border: 1px solid var(--border-hi);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    font-family: var(--font-label);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    border-radius: 2px;
+  }
+  .btn:hover, .btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--text);
+  }
+
+  .stage {
+    width: 432px;
+    height: 540px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(14px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+    background: var(--bg);
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.active .r { animation: up 0.44s ease forwards; opacity: 0; transform: translateY(11px); }
+  .slide.active .r1 { animation-delay: 0.06s; }
+  .slide.active .r2 { animation-delay: 0.14s; }
+  .slide.active .r3 { animation-delay: 0.22s; }
+  .slide.active .r4 { animation-delay: 0.30s; }
+  .slide.active .r5 { animation-delay: 0.38s; }
+  .slide.active .r6 { animation-delay: 0.46s; }
+  @keyframes up { to { opacity: 1; transform: translateY(0); } }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    font-family: var(--font-label);
+  }
+
+  /* ══ SLIDE 1 — COVER ══ */
+  #s1 { display: flex; flex-direction: column; }
+  #s1 .top-bar {
+    background: var(--primary);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  #s1 .top-bar span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: var(--font-label);
+  }
+  #s1 .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 28px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* FIX 1: letter-spacing 0 (was -3px) and line-height 0.95 (was 0.87) */
+  #s1 h1 {
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: 0px;
+    color: var(--text);
+    margin-bottom: 20px;
+    font-family: var(--font-headline);
+  }
+  #s1 h1 .a { color: var(--primary); }
+  #s1 .desc {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-dim);
+    max-width: 300px;
+    font-family: var(--font-body);
+  }
+  #s1 .swipe {
+    position: absolute;
+    bottom: 30px;
+    right: 18px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  #s1 .save-nudge {
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    opacity: 0.75;
+    font-family: var(--font-label);
+  }
+  .aside-note {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--primary-2);
+    transform: rotate(-2deg);
+    display: inline-block;
+    margin-top: 10px;
+    letter-spacing: normal;
+  }
+
+  /* ══ SIGN SLIDES (2-6) ══ */
+  .sign-slide {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 28px;
+    gap: 18px;
+  }
+  .sign-slide.alt { background: var(--surface); }
+  /* FIX 2: letter-spacing 0 (was -1px) and line-height 1.05 (was 0.9) */
+  .sign-slide h2 {
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    color: var(--text);
+    font-family: var(--font-headline);
+    position: relative;
+    z-index: 1;
+  }
+  /* FIX 3: removed font-size: 1.15em — font clash is enough, no size bump needed */
+  .sign-slide h2 .a {
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    text-transform: none;
+  }
+  .sign-slide .explain {
+    font-size: 13.5px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245,245,240,0.75);
+    font-family: var(--font-body);
+    position: relative;
+    z-index: 1;
+  }
+  .sign-slide .warning-box {
+    background: var(--primary);
+    border-radius: 0;
+    padding: 18px 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .sign-slide .warning-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.65);
+    margin-bottom: 6px;
+    font-family: var(--font-label);
+  }
+  .sign-slide .warning-text {
+    font-size: 12px;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.55;
+    font-family: var(--font-body);
+  }
+
+  /* ══ SLIDE 4 — BREAKOUT ══ */
+  #s4 h2 { font-size: 64px; }
+  #s4 .explain { font-size: 12.5px; }
+
+  /* FIX 5: slide 6 "backwards." is a long word in Playfair italic — reduce size to prevent overflow */
+  #s6 h2 { font-size: 40px; }
+
+  /* ══ SLIDE 7 — CTA ══ */
+  #s7 { display: flex; flex-direction: column; background: var(--surface); }
+  #s7 .acc-bar {
+    height: 8px;
+    background: var(--primary);
+    width: 0%;
+    flex-shrink: 0;
+  }
+  .slide.active #s7 .acc-bar { animation: grow 0.9s 0.2s ease forwards; }
+  @keyframes grow { to { width: 100%; } }
+  #s7 .inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 28px 20px;
+    gap: 16px;
+  }
+  /* FIX 4: letter-spacing 0 (was -2.5px) and line-height 0.95 (was 0.82) */
+  #s7 h2 {
+    font-size: 68px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: 0px;
+    color: var(--text);
+    font-family: var(--font-headline);
+  }
+  #s7 h2 .a {
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    text-transform: none;
+  }
+  #s7 .bd {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--text-dim);
+    max-width: 290px;
+    font-family: var(--font-body);
+  }
+  /* FIX 6: CTA box now solid primary to match warning boxes — not the old ghost treatment */
+  #s7 .cta-box {
+    background: var(--primary);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #s7 .url {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.65);
+    font-family: var(--font-label);
+  }
+  #s7 .tagline {
+    font-size: 12px;
+    color: #fff;
+    line-height: 1.5;
+    font-family: var(--font-body);
+  }
+  #s7 .foot {
+    height: 44px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    flex-shrink: 0;
+  }
+  #s7 .foot span {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+  }
+
+  /* ── NAV ── */
+  .nav { display: flex; gap: 7px; align-items: center; }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.22s;
+  }
+  .dot.active { background: var(--primary); width: 18px; border-radius: 3px; }
+  .hint {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: var(--font-label);
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="brand-tag">Plan Metric · Training Education</div>
+  <div class="ratio-tag">Instagram 4:5 · 432 × 540px</div>
+  <div class="controls">
+    <button class="btn active" onclick="goTo(0)">01</button>
+    <button class="btn" onclick="goTo(1)">02</button>
+    <button class="btn" onclick="goTo(2)">03</button>
+    <button class="btn" onclick="goTo(3)">04</button>
+    <button class="btn" onclick="goTo(4)">05</button>
+    <button class="btn" onclick="goTo(5)">06</button>
+    <button class="btn" onclick="goTo(6)">07</button>
+  </div>
+</div>
+
+<div class="stage" onclick="next()">
+
+  <!-- S1 COVER -->
+  <div class="slide active" id="s1">
+    <div class="top-bar">
+      <span>Plan Metric</span>
+      <span>Precision Endurance</span>
+    </div>
+    <div class="body">
+      <div class="eyebrow r r1">Training check</div>
+      <h1 class="r r2">5 SIGNS<br>YOU'RE<br>OVER<span class="a">TRAINING</span></h1>
+      <p class="desc r r3">More isn't always more. Here's how to tell when your body is asking you to back off.</p>
+      <div class="aside-note r r4">(your body's been trying to tell you)</div>
+      <div class="swipe r r5">
+        <span class="save-nudge">Save this guide</span>
+        <span>Slide to advance →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 SIGN 1 -->
+  <div class="slide sign-slide" id="s2">
+    <div class="eyebrow r r1">— Sign 1 of 5</div>
+    <h2 class="r r2">Your easy pace<br>feels <span class="a">hard.</span></h2>
+    <p class="explain r r3">If your normal Zone 2 pace suddenly feels like tempo effort — and your heart rate is 10-15 bpm higher than usual for the same speed — your body hasn't recovered from the last block of training.</p>
+    <div class="warning-box r r4">
+      <div class="warning-label">What to do</div>
+      <div class="warning-text">Take 2-3 easy days. If it persists after a week, take a full rest week. Don't push through — you're digging a deeper hole.</div>
+    </div>
+  </div>
+
+  <!-- S3 SIGN 2 -->
+  <div class="slide sign-slide alt" id="s3">
+    <div class="eyebrow r r1">— Sign 2 of 5</div>
+    <h2 class="r r2">You're tired<br>but can't <span class="a">sleep.</span></h2>
+    <p class="explain r r3">Overtraining jacks up your cortisol levels. You feel exhausted all day, then lie in bed wired at midnight. Your resting heart rate creeps up. You wake up feeling like you didn't sleep at all.</p>
+    <div class="warning-box r r4">
+      <div class="warning-label">What to do</div>
+      <div class="warning-text">Cut training volume by 40-50% for a week. No intervals. Prioritise sleep hygiene — screens off by 9pm, cool dark room, consistent wake time.</div>
+    </div>
+  </div>
+
+  <!-- S4 SIGN 3 -->
+  <div class="slide sign-slide" id="s4">
+    <div class="eyebrow r r1">— Sign 3 of 5</div>
+    <h2 class="r r2">Every niggle<br>becomes an <span class="a">injury.</span></h2>
+    <p class="explain r r3">A tight calf that used to loosen up after 2km now sticks around for days. That knee twinge is getting worse, not better. Your body can't repair itself because you won't give it the chance.</p>
+    <div class="warning-box r r4">
+      <div class="warning-label">What to do</div>
+      <div class="warning-text">If something has been niggling for more than 10 days, it's not going away on its own. Rest it. See a physio. Missing 5 days now beats missing 5 weeks later.</div>
+    </div>
+  </div>
+
+  <!-- S5 SIGN 4 -->
+  <div class="slide sign-slide alt" id="s5">
+    <div class="eyebrow r r1">— Sign 4 of 5</div>
+    <h2 class="r r2">You dread<br>the <span class="a">session.</span></h2>
+    <p class="explain r r3">Not the normal "I don't feel like it" on a cold morning. This is deeper — a total loss of motivation for something you usually love. Training feels like a chore. You resent the plan.</p>
+    <div class="warning-box r r4">
+      <div class="warning-label">What to do</div>
+      <div class="warning-text">Swap a structured session for something unplanned — a trail run, a social ride, a swim with no watch. If the joy doesn't come back after a deload week, you need a proper break.</div>
+    </div>
+  </div>
+
+  <!-- S6 SIGN 5 -->
+  <div class="slide sign-slide" id="s6">
+    <div class="eyebrow r r1">— Sign 5 of 5</div>
+    <h2 class="r r2">Your performance<br>is going <span class="a">backwards.</span></h2>
+    <p class="explain r r3">You're training more than ever but your times are getting slower. Intervals feel impossible. Race results are worse than 3 months ago. More volume without recovery = regression, not progression.</p>
+    <div class="warning-box r r4">
+      <div class="warning-label">What to do</div>
+      <div class="warning-text">Stop chasing volume. A well-structured plan builds in recovery weeks every 3-4 weeks. If yours doesn't, that's the problem — not your fitness.</div>
+    </div>
+  </div>
+
+  <!-- S7 CTA -->
+  <div class="slide" id="s7">
+    <div class="acc-bar"></div>
+    <div class="inner">
+      <div class="eyebrow r r1">Train smarter</div>
+      <h2 class="r r2">A good plan<br>knows when<br>to <span class="a">back off.</span></h2>
+      <p class="bd r r3">Every Plan Metric plan builds in recovery weeks, progressive overload, and deload phases — personalised to your body, not a spreadsheet.</p>
+      <div class="cta-box r r4">
+        <div class="url">planmetric.com.au</div>
+        <div class="tagline">Personalised plans from $29.99. Built around your recovery, not just your goals.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <span>Plan Metric</span>
+      <span>Precision Endurance</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot" onclick="goTo(5)"></div>
+  <div class="dot" onclick="goTo(6)"></div>
+</div>
+<div class="hint">Click slide · ← → keys to navigate</div>
+
+<div style="margin-top:16px;">
+  <button id="export-btn" onclick="exportAll()" style="background:var(--primary);border:none;color:#f5f5f0;padding:10px 24px;font-family:var(--font-label);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+    ⬇ Download All 7 Slides
+  </button>
+  <div id="export-status" style="font-family:var(--font-label);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-faint);margin-top:8px;text-align:center;"></div>
+</div>
+
+<script>
+  let cur = 0;
+  const total = 7;
+  const slides = document.querySelectorAll('.slide');
+  const dots   = document.querySelectorAll('.dot');
+  const btns   = document.querySelectorAll('.btn');
+
+  function goTo(i) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    btns[cur].classList.remove('active');
+    cur = ((i % total) + total) % total;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+    btns[cur].classList.add('active');
+    slides[cur].querySelectorAll('.r, .fill, .acc-bar').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+  const next = () => goTo(cur + 1);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+    if (e.key === 'ArrowLeft')  goTo(cur - 1);
+  });
+
+  async function exportAll() {
+    const btn = document.getElementById('export-btn');
+    const status = document.getElementById('export-status');
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+
+    const renders = [];
+    for (let i = 0; i < total; i++) {
+      status.textContent = `Rendering slide ${i + 1} of ${total}…`;
+      goTo(i);
+      await new Promise(r => setTimeout(r, 400));
+      const canvas = await html2canvas(slides[i], {
+        width: 432, height: 540, scale: 2,
+        backgroundColor: null, useCORS: true, logging: false
+      });
+      renders.push(canvas.toDataURL('image/png'));
+    }
+
+    status.textContent = 'Saving all slides…';
+    renders.forEach((dataUrl, i) => {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `overtraining_${i + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    goTo(0);
+    btn.textContent = '✓ All 7 Downloaded';
+    status.textContent = 'Check your Downloads folder';
+    btn.style.background = '#2a6a2a';
+  }
+</script>
+
+</body></html>

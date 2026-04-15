@@ -206,7 +206,8 @@ function renderHead(athleteName: string, raceName: string): string {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>.pm-icon-fallback{font-style:italic;font-size:0.85em;opacity:0.7;}</style>
+  <!-- Icons are inline SVGs — no external font needed -->
   <script>
   function dismissCheckin(){
     document.getElementById('pm-checkin-overlay').style.display='none';
@@ -259,7 +260,7 @@ function renderZonesSection(zones: TrainingZones, eventType: EventType): string 
 
   return `<section class="section collapsible-section">
   <details>
-    <summary class="section-summary"><span class="material-symbols-outlined">speed</span> Your Training Zones</summary>
+    <summary class="section-summary">${icon("speed")} Your Training Zones</summary>
     <div class="zones-grid">
     ${disciplines.join("\n    ")}
     </div>
@@ -267,7 +268,7 @@ function renderZonesSection(zones: TrainingZones, eventType: EventType): string 
 </section>`;
 }
 
-function renderZoneDiscipline(title: string, icon: string, entries: ZoneEntry[]): string {
+function renderZoneDiscipline(title: string, iconName: string, entries: ZoneEntry[]): string {
   // Detect which columns are present
   const hasHr = entries.some(z => z.hr);
   const hasPace = entries.some(z => z.pace);
@@ -291,7 +292,7 @@ function renderZoneDiscipline(title: string, icon: string, entries: ZoneEntry[])
 
   return `<div class="zone-discipline">
       <details>
-        <summary class="discipline-title"><span class="material-symbols-outlined">${icon}</span> ${esc(title)}</summary>
+        <summary class="discipline-title">${icon(iconName)} ${esc(title)}</summary>
         <div class="zone-table-wrap">
           <table class="zone-table">
             <thead><tr>${headerCols}</tr></thead>
@@ -305,9 +306,9 @@ function renderZoneDiscipline(title: string, icon: string, entries: ZoneEntry[])
 }
 
 function renderHowToUse(eventType: EventType, trainingDays: string[]): string {
-  const dayList = trainingDays.join(", ");
+  const dayBadges = trainingDays.map(d => `<span class="day-badge">${d}</span>`).join(" ");
   const items = [
-    { icon: "calendar_month", text: `Your training days are <strong>${dayList}</strong>. Each week follows the same day structure so you can build a consistent routine.` },
+    { icon: "calendar_month", text: `Your training days are ${dayBadges}<br>Each week follows the same day structure so you can build a consistent routine.` },
     { icon: "speed", text: "All sessions include target zones (HR, pace, or power) plus RPE so you can train by feel if needed. Stay in the prescribed zones — more is not better." },
     { icon: "trending_up", text: "Volume builds progressively with recovery weeks every 3-4 weeks. Trust the process — the easy weeks are when adaptation happens." },
     { icon: "expand_all", text: "Click any week to expand it and see your daily sessions. Each session includes warm-up, main set, cool-down, and a coaching note." },
@@ -319,12 +320,12 @@ function renderHowToUse(eventType: EventType, trainingDays: string[]): string {
   }
 
   const lis = items.map(i =>
-    `<li><span class="material-symbols-outlined">${i.icon}</span> ${i.text}</li>`
+    `<li>${icon(i.icon)} ${i.text}</li>`
   ).join("\n      ");
 
   return `<section class="section collapsible-section">
   <details>
-    <summary class="section-summary"><span class="material-symbols-outlined">menu_book</span> How To Use This Plan</summary>
+    <summary class="section-summary">${icon("menu_book")} How To Use This Plan</summary>
     <ul class="instructions-list">
       ${lis}
     </ul>
@@ -334,7 +335,7 @@ function renderHowToUse(eventType: EventType, trainingDays: string[]): string {
 
 function renderDisclaimer(): string {
   return `<div class="disclaimer">
-  <span class="material-symbols-outlined">info</span>
+  ${icon("info")}
   <p>This training plan is provided as a general guide only and does not constitute medical advice, professional coaching, or a substitute for consultation with qualified healthcare or fitness professionals. Plan Metric and its creators are not qualified coaches, medical practitioners, or dietitians. You should consult your doctor before starting any new exercise program. By using this plan, you acknowledge that you do so entirely at your own risk. Plan Metric accepts no liability for injury, illness, or loss arising from the use of this plan.</p>
 </div>`;
 }
@@ -351,7 +352,7 @@ function renderPhaseBreakdown(phases: PhaseRange[], descriptions: Record<string,
     const desc = descriptions[p.phase] || `Weeks ${p.startWeek}-${p.endWeek} of your training journey.`;
     return `<div class="phase-card">
       <div class="phase-card-header">
-        <span class="material-symbols-outlined">${PHASE_ICONS[p.phase]}</span>
+        ${icon(PHASE_ICONS[p.phase])}
         <h3>${esc(PHASE_NAMES[p.phase])} <span class="phase-weeks">Weeks ${p.startWeek}–${p.endWeek}</span></h3>
       </div>
       <p>${esc(desc)}</p>
@@ -360,7 +361,7 @@ function renderPhaseBreakdown(phases: PhaseRange[], descriptions: Record<string,
 
   return `<section class="section collapsible-section">
   <details>
-    <summary class="section-summary"><span class="material-symbols-outlined">timeline</span> Your Training Phases</summary>
+    <summary class="section-summary">${icon("timeline")} Your Training Phases</summary>
     <div class="phase-breakdown">
     ${cards}
     </div>
@@ -564,7 +565,7 @@ function renderRaceDayProtocol(raceDayContent: RaceDayContent): string {
   }
 
   return `<section class="race-protocol">
-  <h2><span class="material-symbols-outlined">flag</span> Race Day Protocol</h2>
+  <h2>${icon("flag")} Race Day Protocol</h2>
   <details class="protocol-section">
     <summary>Pre-Race Timeline</summary>
     <div>${raceDayContent.preRaceTimeline}</div>
@@ -591,7 +592,7 @@ function renderGlossary(terms: GlossaryTerm[]): string {
 
   return `<section class="section collapsible-section">
   <details>
-    <summary class="section-summary"><span class="material-symbols-outlined">school</span> Glossary</summary>
+    <summary class="section-summary">${icon("school")} Glossary</summary>
     <div class="glossary-grid">
     ${items}
     </div>
@@ -606,13 +607,13 @@ function renderCoachTips(tips: CoachTip[]): string {
 
   const items = tips.map(t =>
     `<div class="tip">
-      <div class="tip-icon"><span class="material-symbols-outlined">${esc(t.icon)}</span></div>
+      <div class="tip-icon">${icon(t.icon)}</div>
       <div class="tip-content"><h4>${esc(t.title)}</h4><p>${esc(t.description)}</p></div>
     </div>`
   ).join("\n    ");
 
   return `<section class="coach-tips">
-  <h2><span class="material-symbols-outlined">psychology</span> Coach's Tips</h2>
+  <h2>${icon("psychology")} Coach's Tips</h2>
   <div class="tips-grid">
     ${items}
   </div>
@@ -712,7 +713,7 @@ function renderFooter(): string {
     </div>
     <div class="footer-contact">
       <p>Questions about your plan?</p>
-      <a href="mailto:pete@planmetric.com.au"><span class="material-symbols-outlined">email</span> pete@planmetric.com.au</a>
+      <a href="mailto:pete@planmetric.com.au">${icon("email")} pete@planmetric.com.au</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -916,13 +917,51 @@ function renderPlanOverview(
 
   return `<section class="plan-overview">
   <div class="overview-content">
-    <h2 class="overview-title"><span class="material-symbols-outlined">description</span> Your Plan Overview</h2>
+    <h2 class="overview-title">${icon("description")} Your Plan Overview</h2>
     ${paras.map(p => `<p>${p}</p>`).join("\n    ")}
     <div class="overview-stats">
       ${stats.join("\n      ")}
     </div>
   </div>
 </section>`;
+}
+
+/* ─── Inline SVG Icons ──────────────────────────────────────── */
+
+const ICONS: Record<string, string> = {
+  speed: '<path d="M20.39 8.56l-1.24 1.86a8 8 0 01-.22 7.58H5.07A8 8 0 0115.19 6.6l1.86-1.24A9.96 9.96 0 002 18a10 10 0 0020 0c0-3.64-1.94-6.82-4.81-8.57zM10.59 15.41a2 2 0 002.83 0l5.66-8.49-8.49 5.66a2 2 0 000 2.83z"/>',
+  menu_book: '<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>',
+  info: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>',
+  timeline: '<path d="M23 8c0 1.1-.9 2-2 2-.18 0-.35-.02-.51-.07l-3.56 3.55c.05.16.07.34.07.52 0 1.1-.9 2-2 2s-2-.9-2-2c0-.18.02-.36.07-.52l-2.55-2.55c-.16.05-.34.07-.52.07s-.36-.02-.52-.07l-4.55 4.56c.05.16.07.33.07.51 0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2c.18 0 .35.02.51.07l4.56-4.55C8.02 9.36 8 9.18 8 9c0-1.1.9-2 2-2s2 .9 2 2c0 .18-.02.36-.07.52l2.55 2.55c.16-.05.34-.07.52-.07s.36.02.52.07l3.55-3.56C19.02 8.35 19 8.18 19 8c0-1.1.9-2 2-2s2 .9 2 2z"/>',
+  flag: '<path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>',
+  school: '<path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>',
+  psychology: '<path d="M15.82 7.22l-1 .4c-.21-.16-.43-.29-.67-.39L14 6.17C13.98 6.07 13.9 6 13.8 6h-1.6c-.1 0-.18.07-.19.17l-.15 1.06c-.24.1-.46.23-.67.39l-1-.4c-.09-.04-.2 0-.24.09l-.8 1.38c-.05.09-.03.2.05.26l.85.66c-.03.12-.05.26-.05.39s.01.26.03.39l-.84.66c-.08.06-.1.17-.05.25l.8 1.39c.05.09.15.13.24.09l1-.4c.21.16.43.29.67.39l.15 1.06c.01.1.09.17.19.17h1.6c.1 0 .18-.07.19-.17l.15-1.06c.24-.1.46-.23.67-.39l1 .4c.09.04.2 0 .24-.09l.8-1.39c.05-.09.03-.2-.05-.25l-.85-.66c.03-.12.05-.26.05-.39s-.02-.27-.04-.39l.85-.66c.08-.06.1-.17.05-.26l-.8-1.38c-.04-.09-.15-.13-.24-.09zM13 11c-.83 0-1.5-.67-1.5-1.5S12.17 8 13 8s1.5.67 1.5 1.5S13.83 11 13 11zM1 18v2h6c0-1.66-1.34-3-3-3H3c-1.1 0-2 .9-2 2zm16.64-1.42c-.28-.13-.59-.2-.91-.23-.02 0-.04-.01-.06-.01C15.21 16.12 14 14.73 14 13.07V12c0-.11-.09-.2-.2-.2h-.6c-.11 0-.2.09-.2.2v1.07c0 1.66-1.21 3.05-2.67 3.27-.02 0-.04.01-.06.01-.33.03-.63.1-.91.23A2.992 2.992 0 007.4 19.4c-.16.52-.07 1.08.25 1.53l.5.67c.15.2.39.32.64.35.06.01.1.05.1.11v.53c0 .05.05.09.1.09h.58c.05 0 .09-.04.1-.09l.04-.52c.01-.06.06-.1.11-.11.25-.03.49-.15.64-.35l.5-.67c.32-.45.41-1.01.25-1.53-.08-.26-.2-.49-.37-.69h3.32c-.16.2-.29.43-.37.69-.16.52-.07 1.08.25 1.53l.5.67c.15.2.39.32.64.35.06.01.1.05.11.11l.04.52c0 .05.05.09.1.09h.58c.05 0 .1-.04.1-.09v-.53c0-.06.04-.1.1-.11.25-.03.49-.15.64-.35l.5-.67c.32-.45.41-1.01.25-1.53-.23-.72-.75-1.3-1.42-1.59zM23 18c-1.1 0-2 .9-2 2v2h6v-2c0-1.66-1.34-3-3-3h-1z"/>',
+  email: '<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>',
+  description: '<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>',
+  calendar_month: '<path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>',
+  expand_all: '<path d="M12 7.59L7.05 2.64 5.64 4.05 12 10.41l6.36-6.36-1.41-1.41L12 7.59zM12 16.41l4.95 4.95 1.41-1.41L12 13.59l-6.36 6.36 1.41 1.41L12 16.41z"/>',
+  health_and_safety: '<path d="M10.5 13H8v-3h2.5V7.5h3V10H16v3h-2.5v2.5h-3V13zM12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>',
+  trending_up: '<path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>',
+  foundation: '<path d="M19 12h3L12 3 2 12h3v3H3v2h2v3h2v-3h4v3h2v-3h4v3h2v-3h2v-2h-2v-3zm-8 1h-4v-3l5-4.5 5 4.5v3h-4v-2h-2v2z"/>',
+  bolt: '<path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"/>',
+  self_improvement: '<path d="M12 2a2 2 0 100 4 2 2 0 000-4zm7.5 12.59c.15-1.06.28-1.4-.59-1.07-1.67.63-3.27.75-4.6.32l-.56-.22c-1.08-.43-2.42-.43-3.5 0L9.69 13.84c-1.33.43-2.93.31-4.6-.32-.87-.33-.74.01-.59 1.07.37 2.6 2.54 4.12 5.02 4.24L9 22h6l-.52-3.17c2.48-.12 4.65-1.64 5.02-4.24z"/>',
+  swap_horiz: '<path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>',
+  directions_run: '<path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>',
+  directions_bike: '<path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6.9-.6 1.4 0 .6.2 1.1.6 1.4L11 14v5h2v-6.2l-2.2-2.3zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/>',
+  pool: '<path d="M22 21c-1.11 0-1.73-.37-2.18-.64-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.07.64-2.18.64s-1.73-.37-2.18-.64c-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.08.64-2.19.64-1.11 0-1.73-.37-2.18-.64-.37-.23-.6-.36-1.15-.36s-.78.13-1.15.36c-.46.27-1.08.64-2.19.64v-2c.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64s1.73.37 2.18.64c.37.23.59.36 1.15.36.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64 1.11 0 1.73.37 2.18.64.37.22.6.36 1.15.36s.78-.13 1.15-.36c.45-.27 1.07-.64 2.18-.64s1.73.37 2.18.64c.37.23.59.36 1.15.36v2zm0-4.5c-1.11 0-1.73-.37-2.18-.64-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.45.27-1.07.64-2.18.64s-1.73-.37-2.18-.64c-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.45.27-1.07.64-2.18.64s-1.73-.37-2.18-.64c-.37-.22-.6-.36-1.15-.36s-.78.13-1.15.36c-.47.27-1.09.64-2.2.64v-2c.56 0 .78-.13 1.15-.36.45-.27 1.07-.64 2.18-.64s1.73.37 2.18.64c.37.22.6.36 1.15.36.56 0 .78-.13 1.15-.36.45-.27 1.07-.64 2.18-.64s1.73.37 2.18.64c.37.22.6.36 1.15.36s.78-.13 1.15-.36c.45-.27 1.07-.64 2.18-.64s1.73.37 2.18.64c.37.22.6.36 1.15.36v2zM8.67 12c.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64 1.11 0 1.73.37 2.18.64.37.22.6.36 1.15.36l.52-.01.4-.45c-.29-.3-.47-.58-.47-.87 0-.67.82-1.17 1.56-1.67.29-.19.56-.37.75-.56L13 5.5V4h2v1.5l1.58 1.41-.8.89L13.5 6.2V8l1.78 1.59c-.42.14-.82.35-1.14.56-.37.23-.59.36-1.15.36-.56 0-.78-.13-1.15-.36-.45-.27-1.07-.64-2.18-.64s-1.73.37-2.18.64c-.37.22-.6.36-1.15.36l-1.5.01c.72.39 1.35.92 1.84 1.47zM16 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>',
+  track_changes: '<path d="M19.07 4.93l-1.41 1.41A8.014 8.014 0 0120 12c0 4.42-3.58 8-8 8s-8-3.58-8-8c0-4.08 3.05-7.44 7-7.93v2.02C8.16 6.57 6 9.03 6 12c0 3.31 2.69 6 6 6s6-2.69 6-6c0-1.66-.67-3.16-1.76-4.24l-1.41 1.41A3.99 3.99 0 0116 12c0 2.21-1.79 4-4 4s-4-1.79-4-4c0-1.86 1.28-3.41 3-3.86v2.14c-.6.35-1 .98-1 1.72 0 1.1.9 2 2 2s2-.9 2-2c0-.74-.4-1.38-1-1.72V2h-1C5.92 2 1 6.92 1 13s4.92 11 11 11 11-4.92 11-11c0-3.04-1.23-5.79-3.23-7.78l.3-.29z"/>',
+  local_cafe: '<path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM2 21h18v-2H2v2z"/>',
+  celebration: '<path d="M2 22l14-5-9-9zm14.53-12.47l5.59-5.59c.49-.49 1.28-.49 1.77 0l.59.59c.48.49.48 1.28 0 1.77l-5.59 5.59-2.36-2.36zm-3.53.88l1.06 1.06-7.97 7.97-1.06-1.06 7.97-7.97zM7.05 7.76l2.12 2.12-1.06 1.06-2.12-2.12 1.06-1.06zM3.51 11.3l2.12 2.12-1.06 1.06L2.45 12.36l1.06-1.06z"/>',
+  nutrition: '<path d="M20 3H4v3.5C4 8.43 5.57 10 7.5 10L10 10v1l-4 7.89V21h2.35l3-5.5h1.3l3 5.5H18v-2.11L14 11v-1l2.5 0C18.43 10 20 8.43 20 6.5V3zm-2 3.5c0 .83-.67 1.5-1.5 1.5H14V5h4v1.5zm-8 0C10 7.33 9.33 8 8.5 8H6V5h4v1.5z"/>',
+  bedtime: '<path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65c1.47.85 3.18 1.35 5 1.35 5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/>',
+  fitness_center: '<path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>',
+};
+
+/** Return an inline SVG for the given icon name, with class "pm-icon" for styling. */
+function icon(name: string): string {
+  const path = ICONS[name];
+  if (!path) return `<span class="pm-icon-fallback">${name.replace(/_/g, " ")}</span>`;
+  return `<svg class="pm-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">${path}</svg>`;
 }
 
 /* ─── Helpers ────────────────────────────────────────────────── */

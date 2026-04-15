@@ -5,14 +5,23 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #F0E6D4;
     color: #1C1614;
     line-height: 1.6;
 }
 
+/* Inline SVG icons */
+.pm-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    vertical-align: middle;
+    display: inline-block;
+}
+
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
 }
 
@@ -35,7 +44,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .logo {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
     color: #A0522D;
@@ -149,7 +158,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #A0522D;
 }
 
-.overview-title .material-symbols-outlined {
+.overview-title .pm-icon {
     color: #A0522D;
 }
 
@@ -202,7 +211,7 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.5rem;
 }
 
-.section-title .material-symbols-outlined {
+.section-title .pm-icon {
     color: #A0522D;
 }
 
@@ -217,7 +226,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-summary {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
     color: #1C1614;
@@ -241,7 +250,7 @@ details[open] > .section-summary::after {
     content: '\2212';
 }
 
-.section-summary .material-symbols-outlined {
+.section-summary .pm-icon {
     color: #A0522D;
 }
 
@@ -384,9 +393,20 @@ details[open] > .section-summary::after {
     gap: 0.75rem;
 }
 
-.instructions-list .material-symbols-outlined {
+.instructions-list .pm-icon {
     color: #A0522D;
     margin-top: 0.125rem;
+}
+
+.day-badge {
+    display: inline-block;
+    background: #A0522D;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 0.15rem 0.15rem;
 }
 
 /* Disclaimer */
@@ -405,9 +425,10 @@ details[open] > .section-summary::after {
     line-height: 1.6;
 }
 
-.disclaimer .material-symbols-outlined {
+.disclaimer .pm-icon {
     color: #A0522D;
-    font-size: 20px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
     margin-top: 2px;
 }
@@ -437,9 +458,10 @@ details[open] > .section-summary::after {
     margin-bottom: 0.75rem;
 }
 
-.phase-card-header .material-symbols-outlined {
+.phase-card-header .pm-icon {
     color: #A0522D;
-    font-size: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 .phase-card-header h3 {
@@ -770,7 +792,7 @@ details[open] > .section-summary::after {
 }
 
 .week-title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
     color: #1C1614;
 }
@@ -855,7 +877,7 @@ details[open] > .section-summary::after {
 }
 
 .race-protocol h2 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.75rem;
     color: #1C1614;
     margin-bottom: 1.5rem;
@@ -892,7 +914,7 @@ details[open] > .section-summary::after {
 }
 
 .race-protocol summary {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.1rem;
     font-weight: 600;
     color: #A0522D;
@@ -970,7 +992,7 @@ details[open] > .section-summary::after {
 }
 
 .glossary h2 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.75rem;
     color: #1C1614;
     margin-bottom: 1.5rem;
@@ -1013,7 +1035,7 @@ details[open] > .section-summary::after {
 }
 
 .coach-tips h2 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.75rem;
     color: #1C1614;
     margin-bottom: 1.5rem;
@@ -1049,9 +1071,10 @@ details[open] > .section-summary::after {
     flex-shrink: 0;
 }
 
-.tip-icon .material-symbols-outlined {
+.tip-icon .pm-icon {
     color: white;
-    font-size: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 .tip-content h4 {
@@ -1192,7 +1215,7 @@ details[open] > .section-summary::after {
 }
 
 .footer-brand h3 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1.25rem;
     color: #A0522D;
     margin-bottom: 0.25rem;
@@ -1338,6 +1361,17 @@ details[open] > .section-summary::after {
     /* Section padding */
     .section {
         padding: 1.25rem;
+    }
+
+    .instructions-list li {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .day-badge {
+        padding: 0.15rem 0.5rem;
+        font-size: 0.8rem;
     }
 }
 
