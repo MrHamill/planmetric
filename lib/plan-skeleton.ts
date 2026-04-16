@@ -9,7 +9,7 @@
 export type EventType =
   | "Marathon" | "Half Marathon" | "10K" | "5K"
   | "Olympic Triathlon" | "70.3 Ironman" | "Full Ironman"
-  | "Sprint Triathlon" | "Cycling Event";
+  | "Sprint Triathlon" | "Cycling Event" | "Triathlon Relay";
 
 export type Phase = "BASE" | "BUILD" | "PEAK" | "TAPER";
 
@@ -76,6 +76,7 @@ export interface AthleteInputs {
   weakestDiscipline?: string;
   preferredTimes: string[];
   doubleDays?: string;         // "Yes" | "No" | "Sometimes"
+  relayLeg?: string;           // "Swim" | "Bike" | "Run" (only for Triathlon Relay)
   // Current volume for scaling
   weeklyRunDistance?: number;
   easyRunPace?: string;        // "X:XX" min/km
@@ -128,13 +129,14 @@ const PHASE_PROPORTIONS: Record<string, [number, number, number, number]> = {
   "Full Ironman":       [0.33, 0.33, 0.25, 0.09],
   "Sprint Triathlon":   [0.30, 0.35, 0.25, 0.10],
   "Cycling Event":      [0.30, 0.35, 0.20, 0.15],
+  "Triathlon Relay":    [0.30, 0.35, 0.25, 0.10],
 };
 
 /** Minimum taper weeks by event type */
 const MIN_TAPER: Record<string, number> = {
   "Marathon": 2, "Half Marathon": 1, "10K": 1, "5K": 1,
   "Olympic Triathlon": 1, "70.3 Ironman": 2, "Full Ironman": 2,
-  "Sprint Triathlon": 1, "Cycling Event": 1,
+  "Sprint Triathlon": 1, "Cycling Event": 1, "Triathlon Relay": 1,
 };
 
 /* ─── Main entry point ───────────────────────────────────────── */
@@ -194,6 +196,7 @@ export function buildSkeleton(inputs: AthleteInputs): PlanSkeleton {
       isLastWeek: w === totalWeeks,
       preferredTimes: inputs.preferredTimes,
       strengthDays: inputs.strengthDays?.map(d => FULL_TO_SHORT[d] || d),
+      relayLeg: inputs.relayLeg,
     });
 
     // Apply load-day constraints (strength days + other sports)
@@ -250,6 +253,7 @@ export function parseAthleteInputs(d: Record<string, unknown>, sub: Record<strin
     weakestDiscipline: d.weakestDiscipline ? String(d.weakestDiscipline) : undefined,
     preferredTimes: Array.isArray(d.preferredTimes) ? (d.preferredTimes as string[]) : [],
     doubleDays: d.doubleDays ? String(d.doubleDays) : undefined,
+    relayLeg: d.relayLeg ? String(d.relayLeg) : undefined,
     weeklyRunDistance: d.weeklyRunDistance ? parseFloat(String(d.weeklyRunDistance)) : undefined,
     easyRunPace: d.easyRunPace ? String(d.easyRunPace) : undefined,
     weeklyBikeVolume: d.weeklyBikeVolume ? parseFloat(String(d.weeklyBikeVolume)) : undefined,
@@ -862,12 +866,15 @@ interface SessionAssignmentContext {
   isLastWeek: boolean;
   preferredTimes: string[];
   strengthDays?: string[];
+  relayLeg?: string;
 }
 
 function assignSessionsForWeek(ctx: SessionAssignmentContext): SessionSlot[] {
   const isTri = TRIATHLON_EVENTS.has(ctx.eventType);
   const isCycling = ctx.eventType === "Cycling Event";
+  const isRelay = ctx.eventType === "Triathlon Relay";
 
+  if (isRelay) return assignRelaySessions(ctx);
   if (isTri) return assignTriathlonSessions(ctx);
   if (isCycling) return assignCyclingSessions(ctx);
   return assignRunningSessions(ctx);
@@ -1048,6 +1055,118 @@ function roleToRunSession(role: string, phase: Phase, dur: number, day: string, 
     default: // "E"
       return { day, sessionType: "easy-run", discipline: "run", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, timeSlot: time };
   }
+}
+
+/* ─── Relay Session Templates ───────────────────────────────── */
+
+function assignRelaySessions(ctx: SessionAssignmentContext): SessionSlot[] {
+  const leg = ctx.relayLeg;
+
+  // Bike relay → reuse cycling sessions
+  if (leg === "Bike") return assignCyclingSessions(ctx);
+
+  // Run relay → reuse running sessions
+  if (leg === "Run") return assignRunningSessions(ctx);
+
+  // Swim relay → single-discipline swim plan
+  return assignSwimRelaySessions(ctx);
+}
+
+function assignSwimRelaySessions(ctx: SessionAssignmentContext): SessionSlot[] {
+  const { trainingDays, longDay, phase, isRecovery, totalMinutes } = ctx;
+  const n = trainingDays.length;
+  const sessions: SessionSlot[] = [];
+
+  // Roles: L=long endurance, Q1=threshold, Q2=technique/drill, E=easy endurance, ES=easy+strength, R=recovery
+  type Role = "L" | "Q1" | "Q2" | "E" | "ES" | "R";
+  let roles: Role[];
+
+  if (n <= 3) {
+    roles = ["E", "Q1", "L"];
+  } else if (n === 4) {
+    roles = ["R", "Q1", "Q2", "L"];
+  } else if (n === 5) {
+    roles = ["R", "Q1", "Q2", "ES", "L"];
+  } else {
+    roles = ["R", "Q1", "Q2", "ES", "E", "L"];
+    while (roles.length < n) roles.splice(roles.length - 1, 0, "E");
+  }
+
+  // BASE: no threshold, focus on technique + endurance
+  if (phase === "BASE" || isRecovery) {
+    roles = roles.map(r => {
+      if (r === "Q1" && isRecovery) return "E";
+      return r;
+    });
+  }
+
+  // Race week: everything easy
+  if (ctx.isLastWeek) {
+    roles = roles.map(r => (r === "L" || r === "Q1" || r === "Q2" ? "E" : r));
+  }
+
+  // Simple assignment: long on longDay, rest fills naturally
+  const daySlots: (Role | null)[] = new Array(n).fill(null);
+  const longIdx = trainingDays.indexOf(longDay);
+  if (longIdx >= 0 && roles.includes("L")) daySlots[longIdx] = "L";
+
+  // Fill remaining
+  const unplaced = roles.filter((r, i) => {
+    const placed = daySlots.filter(s => s === r).length;
+    const total = roles.slice(0, i + 1).filter(rr => rr === r).length;
+    return placed < total - (daySlots.filter(s => s === r).length > 0 ? 1 : 0);
+  });
+
+  // Simpler: just fill remaining from the role list
+  let roleIdx = 0;
+  for (let i = 0; i < n; i++) {
+    if (daySlots[i] !== null) continue;
+    // Find next unplaced role
+    while (roleIdx < roles.length) {
+      const r = roles[roleIdx];
+      const alreadyPlaced = daySlots.filter(s => s === r).length;
+      const totalNeeded = roles.filter(rr => rr === r).length;
+      if (alreadyPlaced < totalNeeded) {
+        daySlots[i] = r;
+        roleIdx++;
+        break;
+      }
+      roleIdx++;
+    }
+    if (daySlots[i] === null) daySlots[i] = "E";
+  }
+
+  const perSession = Math.round(totalMinutes / n);
+  const isWeekend = (d: string) => WEEKEND.has(d);
+
+  for (let i = 0; i < n; i++) {
+    const day = trainingDays[i];
+    const role = daySlots[i] || "E";
+    const maxDur = isWeekend(day) ? ctx.maxWeekendMinutes : ctx.maxWeekdayMinutes;
+    const dur = Math.min(perSession, maxDur);
+
+    switch (role) {
+      case "L":
+        sessions.push({ day, sessionType: "swim-endurance", discipline: "swim", durationMinutes: Math.min(Math.round(dur * 1.3), maxDur), zone: "Z2", isKeySession: true });
+        break;
+      case "Q1":
+        sessions.push({ day, sessionType: "swim-threshold", discipline: "swim", durationMinutes: dur, zone: "Z3-Z4", isKeySession: true });
+        break;
+      case "Q2":
+        sessions.push({ day, sessionType: "swim-technique", discipline: "swim", durationMinutes: dur, zone: "Z2-Z3", isKeySession: false });
+        break;
+      case "R":
+        sessions.push({ day, sessionType: "swim-technique", discipline: "swim", durationMinutes: Math.min(dur, 30), zone: "Z1", isKeySession: false });
+        break;
+      case "ES":
+        sessions.push({ day, sessionType: "swim-endurance", discipline: "swim", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false, includeStrength: true });
+        break;
+      default:
+        sessions.push({ day, sessionType: "swim-endurance", discipline: "swim", durationMinutes: dur, zone: "Z1-Z2", isKeySession: false });
+    }
+  }
+
+  return sessions;
 }
 
 /* ─── Triathlon Session Templates ────────────────────────────── */

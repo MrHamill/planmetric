@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
     const research = loadResearchContent(
       d.trainingFor as string,
       isNaN(age as number) ? undefined : age,
+      d.relayLeg ? String(d.relayLeg) : undefined,
     );
 
     /* ── Detect actual progress in part1 to prevent duplicate weeks ── */

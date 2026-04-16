@@ -4,6 +4,7 @@ import { useState } from "react";
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
+const RELAY = ["Triathlon Relay"];
 const CYCLING = ["Cycling Event"];
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -15,6 +16,8 @@ interface FD {
   hasRace: string; trainingFor: string; raceName: string; raceDate: string;
   planWeeks: string; mainGoal: string; targetTime: string;
   completedRaceBefore: string; previousFinishTime: string;
+  // Relay-specific
+  relayLeg: string; relayDistance: string; relayTargetTime: string;
   // S3 — Fitness
   trainingConsistency: string; recentRaceResult: string;
   splitSwim: string; splitT1: string; splitBike: string; splitT2: string; splitRun: string;
@@ -23,6 +26,7 @@ interface FD {
   swimPaceEasy: string; swimPaceHard: string; weeklySwimVolume: string;
   longestSwim: string;
   poolAccess: string; openWaterAccess: string; wetsuit: string;
+  swimTechLevel: string; swimEquipment: string[];
   // S5 — Bike
   avgBikeSpeed: string; weeklyBikeVolume: string; longestRide: string;
   ftp: string; ftpUnknown: boolean; bikeType: string; powerMeter: string; indoorTrainer: string;
@@ -61,11 +65,13 @@ const INIT: FD = {
   fullName: "", email: "", age: "", gender: "", height: "", weight: "", location: "",
   hasRace: "", trainingFor: "", raceName: "", raceDate: "", planWeeks: "", mainGoal: "", targetTime: "",
   completedRaceBefore: "", previousFinishTime: "",
+  relayLeg: "", relayDistance: "", relayTargetTime: "",
   trainingConsistency: "", recentRaceResult: "",
   splitSwim: "", splitT1: "", splitBike: "", splitT2: "", splitRun: "",
   maxHR: "", maxHRUnknown: false, restingHR: "", restingHRUnknown: false,
   swimPaceEasy: "", swimPaceHard: "", weeklySwimVolume: "", longestSwim: "",
   poolAccess: "", openWaterAccess: "", wetsuit: "",
+  swimTechLevel: "", swimEquipment: [],
   avgBikeSpeed: "", weeklyBikeVolume: "", longestRide: "", ftp: "",
   ftpUnknown: false, bikeType: "", powerMeter: "", indoorTrainer: "",
   weeklyRunDistance: "", longestRun: "", easyRunPace: "", recentRunRace: "", treadmillAccess: "",
@@ -260,13 +266,17 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
   const [error, setError]         = useState("");
 
   const isTri = TRIATHLON.includes(form.trainingFor);
+  const isRelay = RELAY.includes(form.trainingFor);
   const isCyc = CYCLING.includes(form.trainingFor);
+  const relaySwim = isRelay && form.relayLeg === "Swim";
+  const relayBike = isRelay && form.relayLeg === "Bike";
+  const relayRun  = isRelay && form.relayLeg === "Run";
 
   const visible = [
     1, 2, 3,
-    ...(isTri ? [4] : []),
-    ...(isTri || isCyc ? [5] : []),
-    6,
+    ...(isTri || relaySwim ? [4] : []),
+    ...(isTri || isCyc || relayBike ? [5] : []),
+    ...(!isRelay || relayRun ? [6] : []),
     ...(isTri ? [7] : []),
     8, 12, 9, 10, 11, 13,
   ];
@@ -297,19 +307,23 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
       case 2: {
         if (!s("hasRace")) return false;
         if (!s("trainingFor")) return false;
+        if (isRelay && (!s("relayLeg") || !s("relayDistance"))) return false;
         const isRace = form.hasRace === "Yes";
         const isNoRace = form.hasRace === "No";
         if (isRace && !s("raceDate")) return false;
         if (isNoRace && !s("planWeeks")) return false;
         if (!s("mainGoal")) return false;
-        if (isRace && !s("completedRaceBefore")) return false;
+        if (isRace && !isRelay && !s("completedRaceBefore")) return false;
         return true;
       }
 
       case 3:
         return s("trainingConsistency") && s("recentRaceResult");
 
-      case 4: // Swim (triathlon)
+      case 4: // Swim (triathlon or relay swim)
+        if (relaySwim) {
+          return s("weeklySwimVolume") && s("longestSwim") && s("poolAccess") && s("wetsuit") && s("swimTechLevel") && (form.swimEquipment.length > 0);
+        }
         return s("weeklySwimVolume") && s("longestSwim") && s("poolAccess") && s("openWaterAccess") && s("wetsuit");
 
       case 5: // Bike
@@ -322,7 +336,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         return s("weakestDiscipline");
 
       case 8: { // Schedule
-        const triFields = isTri ? s("doubleDays") : true;
+        const triFields = (isTri && !isRelay) ? s("doubleDays") : true;
         const base = s("trainingDaysPerWeek") && triFields
           && a("preferredTimes") && a("availableDays")
           && s("maxWeekdaySession") && s("maxWeekendSession")
@@ -432,10 +446,26 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
               <SelectInput value={form.hasRace} onChange={v => upd("hasRace", v)} options={["Yes", "No"]} error={mt("hasRace")} />
             </F>
             {(isRace || isNoRace) && (
-              <F label="What are you training for? *" error={mt("trainingFor")}>
-                <SelectInput value={form.trainingFor} onChange={v => upd("trainingFor", v)}
-                  options={["Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Marathon", "Half Marathon", "10K", "5K"]} error={mt("trainingFor")} />
-              </F>
+              <>
+                <F label="What are you training for? *" error={mt("trainingFor")}>
+                  <SelectInput value={form.trainingFor} onChange={v => { upd("trainingFor", v); if (v !== "Triathlon Relay") { upd("relayLeg", ""); upd("relayDistance", ""); upd("relayTargetTime", ""); } }}
+                    options={["Olympic Triathlon", "70.3 Ironman", "Full Ironman", "Triathlon Relay", "Marathon", "Half Marathon", "10K", "5K"]} error={mt("trainingFor")} />
+                </F>
+                {isRelay && (
+                  <>
+                    <F label="Your relay leg *" error={mt("relayLeg")}>
+                      <SelectInput value={form.relayLeg} onChange={v => upd("relayLeg", v)}
+                        options={["Swim", "Bike", "Run"]} error={mt("relayLeg")} />
+                    </F>
+                    <F label="Leg distance *" note='e.g. "1500m" for swim, "40km" for bike, "10km" for run' error={mt("relayDistance")}>
+                      <TextInput value={form.relayDistance} onChange={v => upd("relayDistance", v)} placeholder="e.g. 1500m or 40km" error={mt("relayDistance")} />
+                    </F>
+                    <F label="Target time for your leg" note="Leave blank if you don't have one">
+                      <TextInput value={form.relayTargetTime} onChange={v => upd("relayTargetTime", v)} placeholder="e.g. 25:00 or 1:15:00" />
+                    </F>
+                  </>
+                )}
+              </>
             )}
             {isRace && (
               <>
@@ -464,12 +494,14 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                       : ["General fitness", "Build endurance", "Get faster", "Hit a target time"]
                     } error={mt("mainGoal")} />
                 </F>
-                <F label="Target finish time (optional)" note="Leave blank if you don't have one — e.g. 3:30 marathon, Sub 5 hours">
-                  <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. 3:30" />
-                </F>
+                {!isRelay && (
+                  <F label="Target finish time (optional)" note="Leave blank if you don't have one — e.g. 3:30 marathon, Sub 5 hours">
+                    <TextInput value={form.targetTime} onChange={v => upd("targetTime", v)} placeholder="e.g. 3:30" />
+                  </F>
+                )}
               </>
             )}
-            {isRace && (
+            {isRace && !isRelay && (
               <>
                 <F label="Have you completed a race at or longer than this distance before? *" error={mt("completedRaceBefore")}>
                   <SelectInput value={form.completedRaceBefore} onChange={v => upd("completedRaceBefore", v)} options={["Yes", "No"]} error={mt("completedRaceBefore")} />
@@ -495,7 +527,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           <F label="Most recent race result *" note='e.g. "2:35 Olympic Tri" or "52 min 10K". Write "No recent race" if none.' error={mt("recentRaceResult")}>
             <TextInput value={form.recentRaceResult} onChange={v => upd("recentRaceResult", v)} placeholder='e.g. "52 min 10K"' error={mt("recentRaceResult")} />
           </F>
-          {isTri && (
+          {isTri && !isRelay && (
             <div>
               <label className={lbl} style={lblStyle}>Individual split times from that race *</label>
               <p className={hint} style={{ ...hintStyle, marginBottom: "8px", marginTop: 0 }}>Use mm:ss or h:mm:ss format. Leave blank if unknown.</p>
@@ -525,7 +557,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         </div>
       );
 
-      /* ── Section 4: Swim (triathlon only) ── */
+      /* ── Section 4: Swim (triathlon or relay swim) ── */
       case 4: return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -543,17 +575,31 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           <F label="Longest continuous swim in last 4 weeks (metres) *" note="Determines where race-distance building starts" error={mt("longestSwim")}>
             <TextInput value={form.longestSwim} onChange={v => upd("longestSwim", v)} type="number" placeholder="e.g. 1500" error={mt("longestSwim")} />
           </F>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 ${relaySwim ? "sm:grid-cols-2" : "sm:grid-cols-3"} gap-6`}>
             <F label="Pool access *" error={mt("poolAccess")}>
               <SelectInput value={form.poolAccess} onChange={v => upd("poolAccess", v)} options={["Year-round", "Seasonal", "No access"]} error={mt("poolAccess")} />
             </F>
-            <F label="Open water access *" error={mt("openWaterAccess")}>
-              <SelectInput value={form.openWaterAccess} onChange={v => upd("openWaterAccess", v)} options={["Yes — easy access", "Yes — but limited", "No"]} error={mt("openWaterAccess")} />
-            </F>
+            {!relaySwim && (
+              <F label="Open water access *" error={mt("openWaterAccess")}>
+                <SelectInput value={form.openWaterAccess} onChange={v => upd("openWaterAccess", v)} options={["Yes — easy access", "Yes — but limited", "No"]} error={mt("openWaterAccess")} />
+              </F>
+            )}
             <F label="Wetsuit? *" error={mt("wetsuit")}>
               <SelectInput value={form.wetsuit} onChange={v => upd("wetsuit", v)} options={["Yes", "No"]} error={mt("wetsuit")} />
             </F>
           </div>
+          {relaySwim && (
+            <>
+              <F label="Swim technique level *" note="Helps us set the right drill and session complexity" error={mt("swimTechLevel")}>
+                <SelectInput value={form.swimTechLevel} onChange={v => upd("swimTechLevel", v)}
+                  options={["Beginner — learning freestyle", "Intermediate — can swim laps comfortably", "Advanced — squad trained or competitive background"]} error={mt("swimTechLevel")} />
+              </F>
+              <F label="Swim equipment you have access to *" error={form.swimEquipment.length === 0}>
+                <MultiSelect selected={form.swimEquipment} onChange={v => upd("swimEquipment", v)}
+                  options={["Kickboard", "Pull buoy", "Fins", "Paddles", "Swim snorkel", "None of these"]} error={form.swimEquipment.length === 0} />
+              </F>
+            </>
+          )}
         </div>
       );
 
@@ -632,11 +678,11 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
         const showCombos = ["Yes", "Sometimes"].includes(form.doubleDays);
         return (
           <div className="space-y-6">
-            <div className={`grid grid-cols-1 ${isTri ? "sm:grid-cols-2" : ""} gap-6`}>
+            <div className={`grid grid-cols-1 ${isTri && !isRelay ? "sm:grid-cols-2" : ""} gap-6`}>
               <F label="Training days per week *" error={mt("trainingDaysPerWeek")}>
                 <SelectInput value={form.trainingDaysPerWeek} onChange={v => upd("trainingDaysPerWeek", v)} options={["3", "4", "5", "6", "7"]} error={mt("trainingDaysPerWeek")} />
               </F>
-              {isTri && (
+              {isTri && !isRelay && (
                 <F label="Double days? *" note="Two sessions in one day" error={mt("doubleDays")}>
                   <SelectInput value={form.doubleDays} onChange={v => upd("doubleDays", v)} options={["Yes", "No", "Sometimes"]} error={mt("doubleDays")} />
                 </F>
@@ -660,7 +706,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
                   options={["1 hour", "90 min", "2 hours", "3 hours", "No limit"]} error={mt("maxWeekendSession")} />
               </F>
             </div>
-            {isTri && showCombos && (
+            {isTri && !isRelay && showCombos && (
               <F label="Double-day combos that work for you *" error={mt("doubleDayCombos")}>
                 <MultiSelect selected={form.doubleDayCombos} onChange={v => upd("doubleDayCombos", v)}
                   options={["AM swim + PM run", "AM ride + PM swim", "AM run + PM swim", "AM ride + PM run", "Any combo"]} error={mt("doubleDayCombos")} />

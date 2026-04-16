@@ -16,6 +16,7 @@ export const maxDuration = 300;
 
 const CHUNK_SIZE = 5;
 const TRIATHLON = ["Sprint Triathlon", "Olympic Triathlon", "70.3 Ironman", "Full Ironman"];
+const RELAY = ["Triathlon Relay"];
 const CYCLING = ["Cycling Event"];
 
 /* ─── POST /api/generate-plan ─────────────────────────────────────
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
     const research = loadResearchContent(
       d.trainingFor as string,
       isNaN(age as number) ? undefined : age,
+      d.relayLeg ? String(d.relayLeg) : undefined,
     );
 
     /* ── Call AI for session content (weeks 1-${endWeek}) ──── */
@@ -276,6 +278,8 @@ function buildConditionalRules(d: Record<string, unknown>): string {
   const rules: string[] = [];
   const trainingFor = String(d.trainingFor || "");
   const isTri = TRIATHLON.includes(trainingFor);
+  const isRelay = RELAY.includes(trainingFor);
+  const relayLeg = String(d.relayLeg || "");
   const isCycling = CYCLING.includes(trainingFor);
 
   // GPS / HRM awareness
@@ -290,8 +294,8 @@ function buildConditionalRules(d: Record<string, unknown>): string {
     rules.push("- METRICS: This athlete has NO GPS watch or heart rate monitor. Use RPE (Rate of Perceived Exertion) as the ONLY metric. Describe effort using feel and breathing — never prescribe specific pace or HR numbers in warm-up, main set, or cool-down.");
   }
 
-  // Power meter (tri/cycling only)
-  if (isTri || isCycling) {
+  // Power meter (tri/cycling/relay bike only)
+  if (isTri || isCycling || (isRelay && relayLeg === "Bike")) {
     const pm = String(d.powerMeter || "");
     if (pm === "Yes") {
       rules.push("- POWER METER: This athlete has a power meter. For ALL bike sessions, prescribe power targets in watts (referencing FTP zones) as the primary metric. HR is secondary.");
@@ -300,16 +304,16 @@ function buildConditionalRules(d: Record<string, unknown>): string {
     }
   }
 
-  // Treadmill access
+  // Treadmill access (not relevant for relay swim/bike)
   const treadmill = String(d.treadmillAccess || "");
-  if (treadmill === "Yes") {
+  if (treadmill === "Yes" && !(isRelay && relayLeg !== "Run")) {
     rules.push("- TREADMILL: This athlete has treadmill access. For tempo and interval run sessions, include a brief treadmill alternative in the coaching note (adjust pace: 5-10s/km slower, set 1% incline for road simulation).");
   } else if (treadmill === "No") {
     rules.push("- TREADMILL: This athlete has NO treadmill access. Never reference treadmill running as an option.");
   }
 
-  // Pool / open water / wetsuit (tri only)
-  if (isTri) {
+  // Pool / open water / wetsuit (tri or relay swim)
+  if (isTri || (isRelay && relayLeg === "Swim")) {
     const pool = String(d.poolAccess || "");
     if (pool === "Seasonal" || pool === "No access") {
       rules.push(`- POOL ACCESS: This athlete has ${pool.toLowerCase()} pool access. When pool is unavailable, suggest dryland swim-specific alternatives (resistance bands, bench pull) in the coaching note.`);
@@ -332,6 +336,25 @@ function buildConditionalRules(d: Record<string, unknown>): string {
   const shifts = String(d.workShifts || "");
   if (shifts.includes("rotating") || shifts.includes("night") || shifts.includes("FIFO")) {
     rules.push(`- SHIFT WORK: This athlete works ${shifts.replace("Yes — ", "")}. On EVERY hard session (tempo, interval, VO2max) coaching note, include: "If you're coming off a night shift or disrupted sleep, drop this to Zone 2 and halve the interval volume. A depleted session done smart beats a quality session done exhausted." Never assume a fixed daily schedule.`);
+  }
+
+  // Relay swim-specific rules
+  if (isRelay && relayLeg === "Swim") {
+    const techLevel = String(d.swimTechLevel || "");
+    if (techLevel.startsWith("Beginner")) {
+      rules.push("- SWIM TECHNIQUE LEVEL: Beginner. Focus 40% of sessions on technique drills (catch-up, fingertip drag, bilateral breathing). Keep main sets short (50-100m reps). Coaching notes should explain WHY each drill matters.");
+    } else if (techLevel.startsWith("Intermediate")) {
+      rules.push("- SWIM TECHNIQUE LEVEL: Intermediate. Include 1-2 technique-focused sessions per week with specific drill sets. Main sets can use 100-200m reps. Include pacing and stroke count awareness in coaching notes.");
+    } else if (techLevel.startsWith("Advanced")) {
+      rules.push("- SWIM TECHNIQUE LEVEL: Advanced. Prescribe race-pace sets, negative-split swims, and open water simulation (sighting every 6-8 strokes in BUILD/PEAK). Main sets can use 200-400m reps.");
+    }
+    const equipment = Array.isArray(d.swimEquipment) ? (d.swimEquipment as string[]) : [];
+    if (equipment.length > 0 && !equipment.includes("None of these")) {
+      rules.push(`- SWIM EQUIPMENT: This athlete has: ${equipment.join(", ")}. Use these in drill and main sets where appropriate. Pull buoy for catch work, fins for kick sets, paddles for power development.`);
+    } else {
+      rules.push("- SWIM EQUIPMENT: This athlete has no swim equipment. All drills and sets must be equipment-free.");
+    }
+    rules.push("- OPEN WATER RELAY: This is a triathlon relay swim leg — the race is in open water. Include sighting practice, mass start simulation, and open water pacing in BUILD and PEAK phases. Pool training should include sets that simulate open water conditions.");
   }
 
   // Strength training
@@ -391,6 +414,11 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
 
   lines.push("\n=== RACE & GOAL ===");
   add("Training For", d.trainingFor);
+  if (d.trainingFor === "Triathlon Relay") {
+    add("Relay Leg", d.relayLeg);
+    add("Leg Distance", d.relayDistance);
+    add("Leg Target Time", d.relayTargetTime);
+  }
   add("Race Name", d.raceName); add("Race Date", d.raceDate);
   add("Main Goal", d.mainGoal); add("Target Time", d.targetTime);
   add("Completed Before", d.completedRaceBefore);
@@ -424,34 +452,51 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   add("Max HR", d.maxHRUnknown ? "Unknown" : d.maxHR ? `${d.maxHR} BPM` : "");
   add("Resting HR", d.restingHRUnknown ? "Unknown" : d.restingHR ? `${d.restingHR} BPM` : "");
 
-  lines.push("\n=== SWIM ===");
-  add("Easy Pace", d.swimPaceEasy ? `${d.swimPaceEasy}/100m` : "");
-  add("Threshold Pace", d.swimPaceHard ? `${d.swimPaceHard}/100m` : "");
-  add("Weekly Volume", d.weeklySwimVolume);
-  add("Longest Swim", d.longestSwim ? `${d.longestSwim}m` : "");
+  const isRelay = d.trainingFor === "Triathlon Relay";
+  const relayLeg = String(d.relayLeg || "");
 
-  lines.push("\n=== BIKE ===");
-  add("Avg Speed", d.avgBikeSpeed ? `${d.avgBikeSpeed} km/h` : "");
-  add("FTP", d.ftpUnknown ? "Unknown" : d.ftp ? `${d.ftp}W` : "");
-  add("Weekly Volume", d.weeklyBikeVolume);
-  add("Longest Ride", d.longestRide);
+  if (!isRelay || relayLeg === "Swim") {
+    lines.push("\n=== SWIM ===");
+    add("Easy Pace", d.swimPaceEasy ? `${d.swimPaceEasy}/100m` : "");
+    add("Threshold Pace", d.swimPaceHard ? `${d.swimPaceHard}/100m` : "");
+    add("Weekly Volume", d.weeklySwimVolume);
+    add("Longest Swim", d.longestSwim ? `${d.longestSwim}m` : "");
+    if (isRelay) {
+      add("Technique Level", d.swimTechLevel);
+      add("Swim Equipment", Array.isArray(d.swimEquipment) ? (d.swimEquipment as string[]).join(", ") : "");
+    }
+  }
 
-  lines.push("\n=== RUN ===");
-  add("Weekly Distance", d.weeklyRunDistance ? `${d.weeklyRunDistance} km` : "");
-  add("Longest Run", d.longestRun ? `${d.longestRun} km` : "");
-  add("Easy Pace", d.easyRunPace ? `${d.easyRunPace}/km` : "");
-  add("Recent Race", d.recentRunRace);
+  if (!isRelay || relayLeg === "Bike") {
+    lines.push("\n=== BIKE ===");
+    add("Avg Speed", d.avgBikeSpeed ? `${d.avgBikeSpeed} km/h` : "");
+    add("FTP", d.ftpUnknown ? "Unknown" : d.ftp ? `${d.ftp}W` : "");
+    add("Weekly Volume", d.weeklyBikeVolume);
+    add("Longest Ride", d.longestRide);
+  }
+
+  if (!isRelay || relayLeg === "Run") {
+    lines.push("\n=== RUN ===");
+    add("Weekly Distance", d.weeklyRunDistance ? `${d.weeklyRunDistance} km` : "");
+    add("Longest Run", d.longestRun ? `${d.longestRun} km` : "");
+    add("Easy Pace", d.easyRunPace ? `${d.easyRunPace}/km` : "");
+    add("Recent Race", d.recentRunRace);
+  }
 
   lines.push("\n=== EQUIPMENT ===");
   add("GPS / HR Monitor", d.gpsWatch);
   add("Power Meter", d.powerMeter);
   add("Treadmill Access", d.treadmillAccess);
 
-  const isTri = TRIATHLON.includes(String(d.trainingFor || ""));
-  if (isTri) {
+  const isTri2 = TRIATHLON.includes(String(d.trainingFor || ""));
+  if (isTri2 || (isRelay && relayLeg === "Swim")) {
     lines.push("\n=== SWIM ACCESS ===");
     add("Pool Access", d.poolAccess);
-    add("Open Water Access", d.openWaterAccess);
+    if (isRelay) {
+      add("Open Water Access", "Yes — race is open water (triathlon relay)");
+    } else {
+      add("Open Water Access", d.openWaterAccess);
+    }
     add("Wetsuit", d.wetsuit);
   }
 
@@ -486,7 +531,7 @@ function buildAthleteProfile(d: Record<string, unknown>, sub: Record<string, unk
   return lines.join("\n");
 }
 
-function loadResearchContent(trainingFor: string, athleteAge?: number): string {
+function loadResearchContent(trainingFor: string, athleteAge?: number, relayLeg?: string): string {
   const researchDir = path.resolve(process.cwd(), "docs/research");
 
   const files = [
@@ -496,6 +541,10 @@ function loadResearchContent(trainingFor: string, athleteAge?: number): string {
 
   if (TRIATHLON.includes(trainingFor)) {
     files.push("swim.md", "bike.md", "run.md");
+  } else if (RELAY.includes(trainingFor)) {
+    if (relayLeg === "Swim") files.push("swim.md");
+    else if (relayLeg === "Bike") files.push("bike.md");
+    else files.push("run.md");
   } else if (CYCLING.includes(trainingFor)) {
     files.push("bike.md");
   } else {
