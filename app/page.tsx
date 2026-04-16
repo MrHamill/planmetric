@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FadeIn, FadeInHero, FadeInScale, FadeInSlide, HoverCard } from "@/components/FadeIn";
+import { FadeIn, FadeInHero, FadeInScale, HoverCard } from "@/components/FadeIn";
 import { HeroWordReveal } from "@/components/HeroWordReveal";
 import { ScrollButton } from "@/components/ScrollButton";
 import type { Metadata } from "next";
@@ -152,21 +152,12 @@ export default function HomePage() {
           style={{ background: "rgba(0,0,0,0.65)" }}
         />
 
-        <div className="relative z-10 px-8 md:px-24 max-w-4xl pt-28">
-          <FadeInHero delay={0.1}>
-            <span
-              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-8"
-              style={{ color: ACCENT }}
-            >
-              Precision Endurance
-            </span>
-          </FadeInHero>
-
-          <h1 className="font-headline text-[clamp(2.8rem,8vw,6rem)] font-extrabold leading-[1.05] tracking-tight mb-8">
+        <div className="relative z-10 px-8 md:px-24 pt-28">
+          <h1 className="font-headline text-[clamp(4rem,15vw,13rem)] font-extrabold leading-[0.95] tracking-tighter mb-10">
             <HeroWordReveal />
           </h1>
 
-          <FadeInHero delay={0.95}>
+          <FadeInHero delay={0.7}>
             <p
               className="font-body text-lg md:text-xl leading-relaxed max-w-xl mb-5"
               style={{ color: "rgba(245,245,240,0.75)" }}
@@ -176,7 +167,7 @@ export default function HomePage() {
             </p>
           </FadeInHero>
 
-          <FadeInHero delay={1.15}>
+          <FadeInHero delay={0.85}>
             <p
               className="font-label text-xs tracking-wider mb-12"
               style={{ color: DIM }}
@@ -185,7 +176,7 @@ export default function HomePage() {
             </p>
           </FadeInHero>
 
-          <FadeInScale delay={1.3} className="flex flex-col sm:flex-row items-center gap-4">
+          <FadeInScale delay={1.0} className="flex flex-col sm:flex-row items-center gap-4">
             <Link
               href="/pricing"
               className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
@@ -221,27 +212,25 @@ export default function HomePage() {
 
         <div className="relative z-10 px-8 md:px-24 max-w-6xl mx-auto">
           <FadeIn>
-            <span
-              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-16"
-              style={{ color: ACCENT }}
-            >
-              How It Works
-            </span>
+            <h2 className="font-headline text-3xl md:text-5xl font-bold mb-20">
+              How it{" "}
+              <span style={{ color: ACCENT }}>works</span>.
+            </h2>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-14 lg:gap-10">
             {STEPS.map((step, i) => (
               <FadeIn key={step.num} delay={i * 0.15}>
                 <span
-                  className="font-headline text-5xl font-extrabold block mb-4"
-                  style={{ color: "rgba(245,245,240,0.06)" }}
+                  className="font-headline text-6xl font-extrabold block mb-4"
+                  style={{ color: "rgba(184,92,44,0.25)" }}
                 >
                   {step.num}
                 </span>
-                <h3 className="font-headline text-lg font-bold mb-3">
+                <h3 className="font-headline text-xl font-bold mb-3">
                   {step.title}
                 </h3>
-                <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                <p className="font-body text-sm leading-relaxed" style={{ color: "rgba(245,245,240,0.7)" }}>
                   {step.body}
                 </p>
               </FadeIn>
@@ -260,68 +249,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ──────────── SECTION 3 — METHODOLOGY TEASER ──────── */}
-      <section className="relative py-32 md:py-44 overflow-hidden" style={{ background: BG }}>
-        <div className="relative z-10 px-8 md:px-24 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
-
-          <div className="flex-1 max-w-xl">
-            <FadeIn>
-              <span
-                className="font-label text-[11px] tracking-[0.35em] uppercase block mb-10"
-                style={{ color: DIM }}
-              >
-                Our Methodology
-              </span>
-            </FadeIn>
-
-            <FadeIn delay={0.05}>
-              <h2 className="font-headline text-3xl md:text-4xl font-bold leading-snug mb-8">
-                No templates.{"\n"}No guesswork.{"\n"}Built from your{" "}
-                <span style={{ color: ACCENT }}>biology</span>.
-              </h2>
-            </FadeIn>
-
-            <FadeIn delay={0.1}>
-              <p
-                className="font-body text-base leading-relaxed mb-8"
-                style={{ color: DIM }}
-              >
-                We analyse your heart rate zones, training history, injury data,
-                and race date to engineer a plan that adapts to your
-                life&nbsp;&mdash; not the other way around. Every plan is
-                reviewed before delivery to make sure it makes sense for your life.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.15}>
-              <Link
-                href="/methodology"
-                className="font-label text-sm tracking-wider underline underline-offset-4 transition-colors duration-200"
-                style={{ color: ACCENT }}
-              >
-                Read more &rarr;
-              </Link>
-            </FadeIn>
-          </div>
-
-          <FadeInSlide className="hidden md:block flex-1 relative h-[500px] max-w-[45%]">
-            <img
-              src="/images/ocean-exit.png"
-              alt="Swimmer exiting the ocean"
-              className="w-full h-full object-cover rounded-sm"
-              style={{ filter: "grayscale(100%)" }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(to right, ${BG} 0%, transparent 40%)`,
-              }}
-            />
-          </FadeInSlide>
-        </div>
-      </section>
-
-      {/* ──────────────── SECTION 3.5 — HOW WE'RE DIFFERENT ── */}
+      {/* ──────────────── SECTION 3 — HOW WE'RE DIFFERENT ──── */}
       <section className="py-32 md:py-44 px-8 md:px-24" style={{ background: BG }}>
         <div className="max-w-6xl mx-auto">
           <FadeIn>
