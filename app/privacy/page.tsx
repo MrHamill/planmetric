@@ -82,7 +82,7 @@ export default function PrivacyPage() {
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>
-              <span><strong className="text-on-surface">Coaches or specialists</strong> engaged by Plan Metric to review your plan — bound by the same confidentiality obligations.</span>
+              <span><strong className="text-on-surface">Specialists</strong> engaged by Plan Metric to review your plan — bound by the same confidentiality obligations.</span>
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>

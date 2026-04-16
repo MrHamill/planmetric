@@ -109,7 +109,7 @@ export default function WhyTrainingPlansFailArticle() {
             </FadeIn>
 
             <FadeIn delay={0.28}>
-              <p>The plan should include recovery weeks every four weeks, progressive volume increases within the 10% rule, and a taper protocol that reduces volume by 20&ndash;50% in the final 2&ndash;3 weeks while maintaining intensity. And every plan should be reviewed by a human coach who can spot the things algorithms miss &mdash; life stress, motivation, the difference between a schedule that looks good on paper and one an athlete can actually follow.</p>
+              <p>The plan should include recovery weeks every four weeks, progressive volume increases within the 10% rule, and a taper protocol that reduces volume by 20&ndash;50% in the final 2&ndash;3 weeks while maintaining intensity. And every plan should be reviewed to spot the things algorithms miss &mdash; life stress, motivation, the difference between a schedule that looks good on paper and one an athlete can actually follow.</p>
             </FadeIn>
 
             <FadeIn delay={0.29}>

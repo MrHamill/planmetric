@@ -37,11 +37,11 @@ const COMPARISON = [
   { feature: "Personalisation", starter: "Pre-built template", premium: "Fully customised from intake data", elite: "Fully customised + ongoing adjustments" },
   { feature: "Delivery Time", starter: "Instant download", premium: "Within 48 hours", elite: "Within 48 hours + monthly updates" },
   { feature: "Intake Form", starter: "\u2014", premium: "8\u201310 min detailed intake", elite: "8\u201310 min detailed intake" },
-  { feature: "Coach Review", starter: "\u2014", premium: "Reviewed by head coach", elite: "Reviewed by head coach" },
+  { feature: "Quality Review", starter: "\u2014", premium: "Reviewed before delivery", elite: "Reviewed before delivery" },
   { feature: "Monthly Check-ins", starter: "\u2014", premium: "\u2014", elite: "Monthly video call" },
   { feature: "Plan Adjustments", starter: "\u2014", premium: "\u2014", elite: "Unlimited adjustments" },
   { feature: "Race Execution", starter: "Basic", premium: "Detailed + pacing strategy", elite: "Detailed + race week protocol" },
-  { feature: "Coach Support", starter: "\u2014", premium: "Email support", elite: "Priority email + monthly call" },
+  { feature: "Support", starter: "\u2014", premium: "Email support", elite: "Priority email + monthly call" },
   { feature: "Brick Sessions", starter: "\u2014", premium: "\u2713", elite: "Race simulation sessions" },
   { feature: "Nutrition Guidance", starter: "\u2014", premium: "Basic guidelines", elite: "Personalised nutrition plan" },
 ];
@@ -64,7 +64,7 @@ const PLANS = [
     level: "02",
     name: "PREMIUM",
     line: "Fully personalised to your exact data and race.",
-    features: ["Data-driven intake analysis", "Pace & HR zones (KM based)", "Weekly schedule & Coach notes", "Final review by lead coach"],
+    features: ["Data-driven intake analysis", "Pace & HR zones (KM based)", "Weekly schedule & coaching notes", "Reviewed before delivery"],
     price: "$99.99",
     freq: "one-time",
     cta: "Select Premium",
@@ -78,7 +78,7 @@ const PLANS = [
     features: ["Dynamic plan adjustments", "Monthly 1:1 check-ins", "Unlimited email support"],
     price: "$99",
     freq: "/month",
-    cta: "Sold Out",
+    cta: "Join Waitlist",
     featured: false,
     soldOut: true,
   },
@@ -166,7 +166,7 @@ export default function PricingPage() {
                   key={plan.key}
                   id={plan.key}
                   className={`relative rounded-sm flex flex-col group ${
-                    plan.soldOut ? "cursor-default opacity-50" : "cursor-pointer"
+                    plan.soldOut ? "cursor-default opacity-60" : "cursor-pointer"
                   } ${plan.featured ? "p-10 md:p-12 md:-my-4 z-10" : "p-10"}`}
                   style={{
                     background: CARD_BG,
@@ -248,16 +248,27 @@ export default function PricingPage() {
 
                   {/* CTA button */}
                   <div className="relative z-10">
-                    <span
-                      className="block w-full py-4 text-xs font-label font-bold uppercase tracking-widest text-center rounded-sm transition-all duration-200 group-hover:scale-[1.01]"
-                      style={
-                        plan.featured
-                          ? { background: ACCENT, color: TEXT }
-                          : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
-                      }
-                    >
-                      {plan.cta}
-                    </span>
+                    {plan.soldOut ? (
+                      <a
+                        href="mailto:admin@planmetric.com.au?subject=Elite%20Waitlist"
+                        className="block w-full py-4 text-xs font-label font-bold uppercase tracking-widest text-center rounded-sm transition-all duration-200 hover:scale-[1.01]"
+                        style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {plan.cta}
+                      </a>
+                    ) : (
+                      <span
+                        className="block w-full py-4 text-xs font-label font-bold uppercase tracking-widest text-center rounded-sm transition-all duration-200 group-hover:scale-[1.01]"
+                        style={
+                          plan.featured
+                            ? { background: ACCENT, color: TEXT }
+                            : { border: `1px solid ${CARD_BORDER}`, color: TEXT }
+                        }
+                      >
+                        {plan.cta}
+                      </span>
+                    )}
                   </div>
                 </motion.div>
               );

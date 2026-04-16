@@ -41,7 +41,7 @@ export default function TermsPage() {
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>
-              <span><strong className="text-on-surface">Premium ($99.99, one-time)</strong> — Personalised plan built from your intake data, reviewed by our head coach.</span>
+              <span><strong className="text-on-surface">Premium ($99.99, one-time)</strong> — Personalised plan built from your intake data, reviewed before delivery.</span>
             </li>
             <li className="flex gap-3">
               <span className="text-primary font-bold">—</span>

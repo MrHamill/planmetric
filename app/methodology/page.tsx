@@ -98,8 +98,8 @@ const PRINCIPLES = [
   },
   {
     number: "02",
-    title: "Human Review, Not Just Algorithms",
-    body: "Every plan is checked by a coach before it reaches you. Algorithms build the structure. Humans ensure it makes sense for your life.",
+    title: "Reviewed Before Delivery",
+    body: "Every plan is checked before it reaches you. The engine builds the structure. A final review ensures it makes sense for your life.",
   },
   {
     number: "03",
@@ -121,8 +121,8 @@ const BUILD_STEPS = [
   },
   {
     number: "03",
-    title: "A coach reviews every block",
-    body: "No plan leaves without a human checking it makes sense for your specific situation.",
+    title: "Every block is reviewed",
+    body: "No plan leaves without a final check to make sure it makes sense for your specific situation.",
   },
   {
     number: "04",

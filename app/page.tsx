@@ -79,7 +79,7 @@ const PLANS = [
     price: "$99",
     freq: "/month",
     body: "Dynamic monthly adjustments with 1:1 coaching.",
-    cta: "Sold Out",
+    cta: "Join Waitlist",
     featured: false,
     soldOut: true,
   },
@@ -97,8 +97,29 @@ const DIFFERENTIATORS = [
   },
   {
     title: "vs. Hiring a Coach",
-    body: "A coach costs $200\u2013400/month. We deliver the same personalised, race-specific plan \u2014 once \u2014 for $99.99.",
+    body: "A good coach costs $200\u2013400/month. Our plan engine delivers the same periodised, race-specific detail \u2014 once \u2014 for $99.99. No ongoing fees, no lock-in.",
   },
+];
+
+/* ─── "How It's Built" data ──────────────────────────────────── */
+const HOW_BUILT = [
+  { icon: "timeline", text: "Built on published periodisation science \u2014 Base, Build, Peak, Taper" },
+  { icon: "query_stats", text: "50+ data points from your intake form feed the plan engine" },
+  { icon: "monitor_heart", text: "Training zones calculated from your heart rate, pace, or power" },
+  { icon: "science", text: "Every session structured around proven, widely-tested methods" },
+  { icon: "calendar_month", text: "Plan runs from purchase date to race day \u2014 not a preset length" },
+];
+
+/* ─── "What You Get" data ────────────────────────────────────── */
+const WHAT_YOU_GET = [
+  { icon: "fitness_center", text: "Every session detailed: warm-up, main set, cool-down" },
+  { icon: "chat", text: "Personalised coaching notes explaining the why behind each workout" },
+  { icon: "speed", text: "HR, pace, and power zones matched to your equipment" },
+  { icon: "water_drop", text: "Hydration and fuelling guidance for long sessions" },
+  { icon: "trending_up", text: "Built-in recovery weeks and progressive overload" },
+  { icon: "flag", text: "Race day protocol: pre-race timeline, pacing strategy, mental cues" },
+  { icon: "menu_book", text: "Glossary of training terms and coach tips" },
+  { icon: "devices", text: "HTML format \u2014 works on any device, yours to keep forever" },
 ];
 
 /* ─── JSON-LD ────────────────────────────────────────────────── */
@@ -267,8 +288,8 @@ export default function HomePage() {
               >
                 We analyse your heart rate zones, training history, injury data,
                 and race date to engineer a plan that adapts to your
-                life&nbsp;&mdash; not the other way around. Every block is
-                reviewed by a human coach before delivery.
+                life&nbsp;&mdash; not the other way around. Every plan is
+                reviewed before delivery to make sure it makes sense for your life.
               </p>
             </FadeIn>
 
@@ -342,6 +363,98 @@ export default function HomePage() {
               </FadeIn>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ──────── SECTION 3.75 — WHAT'S INSIDE A PREMIUM PLAN ──── */}
+      <section className="py-32 md:py-44 px-8 md:px-24" style={{ background: BG }}>
+        <div className="max-w-6xl mx-auto">
+          <FadeIn>
+            <span
+              className="font-label text-[11px] tracking-[0.35em] uppercase block mb-6"
+              style={{ color: DIM }}
+            >
+              Inside the Plan
+            </span>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="font-headline text-3xl md:text-5xl font-bold mb-20">
+              What&rsquo;s inside a{" "}
+              <span style={{ color: ACCENT }}>Premium</span> plan.
+            </h2>
+          </FadeIn>
+
+          {/* Part A — How It's Built */}
+          <FadeIn delay={0.1}>
+            <h3 className="font-headline text-xl font-bold tracking-wide mb-10">
+              How it&rsquo;s built
+            </h3>
+          </FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+            {HOW_BUILT.map((item, i) => (
+              <FadeIn key={item.icon} delay={0.15 + i * 0.1}>
+                <HoverCard
+                  tag="div"
+                  className="p-8 rounded-sm flex items-start gap-5"
+                  style={{
+                    background: CARD_BG,
+                    border: `1px solid ${CARD_BORDER}`,
+                  }}
+                >
+                  <span
+                    className="material-symbols-outlined text-2xl shrink-0 mt-0.5"
+                    style={{ color: ACCENT }}
+                  >
+                    {item.icon}
+                  </span>
+                  <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                    {item.text}
+                  </p>
+                </HoverCard>
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Part B — What You Get */}
+          <FadeIn delay={0.1}>
+            <h3 className="font-headline text-xl font-bold tracking-wide mb-10">
+              What you get
+            </h3>
+          </FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {WHAT_YOU_GET.map((item, i) => (
+              <FadeIn key={item.icon} delay={0.15 + i * 0.08}>
+                <HoverCard
+                  tag="div"
+                  className="p-8 rounded-sm flex items-start gap-5"
+                  style={{
+                    background: CARD_BG,
+                    border: `1px solid ${CARD_BORDER}`,
+                  }}
+                >
+                  <span
+                    className="material-symbols-outlined text-2xl shrink-0 mt-0.5"
+                    style={{ color: ACCENT }}
+                  >
+                    {item.icon}
+                  </span>
+                  <p className="font-body text-sm leading-relaxed" style={{ color: DIM }}>
+                    {item.text}
+                  </p>
+                </HoverCard>
+              </FadeIn>
+            ))}
+          </div>
+
+          <FadeIn delay={0.3} className="text-center mt-16">
+            <Link
+              href="/pricing"
+              className="inline-block font-label text-sm font-bold tracking-widest uppercase px-10 py-4 rounded-sm transition-transform duration-200 hover:scale-[1.02]"
+              style={{ background: ACCENT, color: TEXT }}
+            >
+              Build Your Plan &rarr;
+            </Link>
+          </FadeIn>
         </div>
       </section>
 
@@ -422,12 +535,13 @@ export default function HomePage() {
                     {plan.body}
                   </p>
                   {plan.soldOut ? (
-                    <span
-                      className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm opacity-40 cursor-default"
+                    <a
+                      href="mailto:admin@planmetric.com.au?subject=Elite%20Waitlist"
+                      className="block w-full text-center font-label text-xs font-bold tracking-widest uppercase py-3 rounded-sm opacity-60 hover:opacity-90 transition-all duration-200 hover:scale-[1.02]"
                       style={{ border: `1px solid ${CARD_BORDER}`, color: TEXT }}
                     >
                       {plan.cta}
-                    </span>
+                    </a>
                   ) : (
                     <Link
                       href="/pricing"

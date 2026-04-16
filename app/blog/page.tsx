@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "The Journal",
-  description: "Evidence-based articles on endurance training, nutrition, and race preparation. Written by coaches, backed by science.",
+  description: "Evidence-based articles on endurance training, nutrition, and race preparation. Backed by published research.",
   openGraph: {
     title: "The Journal — Plan Metric",
     description: "Evidence-based articles on endurance training, nutrition, and race preparation.",
@@ -96,7 +96,7 @@ export default function BlogPage() {
               style={{ color: DIM }}
             >
               Evidence-based articles on endurance training, nutrition, and
-              race preparation. Written by coaches, backed by science.
+              race preparation. Backed by published research.
             </p>
           </FadeInHero>
         </div>

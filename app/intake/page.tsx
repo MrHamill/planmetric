@@ -229,7 +229,7 @@ const META: Record<number, { num: string; title: string; sub: string }> = {
   8:  { num: "08", title: "Schedule & Availability", sub: "We build around your life, not the other way around." },
   9:  { num: "09", title: "Equipment & Access",      sub: "What you have determines what we can prescribe." },
   10: { num: "10", title: "Health & Recovery",       sub: "Injuries and recovery are hard data points, not optional details." },
-  11: { num: "11", title: "Motivation & Preferences",sub: "Your voice shapes your coach notes and plan tone." },
+  11: { num: "11", title: "Motivation & Preferences",sub: "Your voice shapes your coaching notes and plan tone." },
   12: { num: "08b", title: "Other Sports & Commitments", sub: "Other physical activities count as training load — we need to plan around them." },
   13: { num: "Final", title: "Anything Else?", sub: "This plan is built for you. If there's anything we've missed, now's the time." },
 };
@@ -243,7 +243,7 @@ const PLANS = [
     price: "$99.99",
     billing: "one-time",
     badge: "MOST SELECTED",
-    features: ["Physiological Profiling", "Pace & HR zones (KM based)", "Weekly schedule & Coach notes", "Final Review by Lead Coach"],
+    features: ["Physiological Profiling", "Pace & HR zones (KM based)", "Weekly schedule & coaching notes", "Reviewed before delivery"],
   },
   {
     id: "elite",
@@ -836,7 +836,7 @@ export default function IntakePage({ preSelectedPlan }: { preSelectedPlan?: stri
           <F label="What motivates you most? *" error={mt("motivation")}>
             <TextareaInput value={form.motivation} onChange={v => upd("motivation", v)} placeholder='e.g. "Feeling fit", "Racing friends", "Proving something to myself"' rows={3} error={mt("motivation")} />
           </F>
-          <F label="What does success look like on race day? *" note="This is your voice — it shapes your coach notes" error={mt("successDefinition")}>
+          <F label="What does success look like on race day? *" note="This is your voice — it shapes your coaching notes" error={mt("successDefinition")}>
             <TextareaInput value={form.successDefinition} onChange={v => upd("successDefinition", v)} placeholder="Describe your ideal race day outcome in your own words..." rows={4} error={mt("successDefinition")} />
           </F>
         </div>

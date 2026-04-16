@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | Plan Metric",
   },
   description:
-    "Personalised endurance training plans for triathletes, runners, and cyclists. Built on data. Reviewed by humans.",
+    "Personalised endurance training plans for triathletes, runners, and cyclists. Built on data. Powered by sports science.",
   metadataBase: new URL("https://planmetric.com.au"),
   openGraph: {
     type: "website",
